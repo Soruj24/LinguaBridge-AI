@@ -8,6 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ModeToggle } from "@/components/mode-toggle";
 import { LogOut, Plus, MessageSquare, Settings, Search } from "lucide-react";
 import { useSocket } from "@/components/socket-provider";
 import { NewChatDialog } from "@/components/new-chat-dialog";
@@ -32,20 +34,29 @@ interface Chat {
   updatedAt: string;
 }
 
-export function Sidebar() {
+interface SidebarProps {
+  className?: string;
+  onClose?: () => void;
+}
+
+export function Sidebar({ className, onClose }: SidebarProps) {
   const { data: session } = useSession();
   const pathname = usePathname();
   const router = useRouter();
   const socket = useSocket();
   const [chats, setChats] = useState<Chat[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchChats = useCallback(async () => {
     try {
+      setIsLoading(true);
       const res = await axios.get("/api/chat");
       setChats(res.data);
     } catch (error) {
       console.error("Failed to fetch chats", error);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -84,7 +95,7 @@ export function Sidebar() {
   });
 
   return (
-    <div className="flex flex-col h-screen w-80 border-r bg-background/95 backdrop-blur-xl shadow-lg z-50">
+    <div className={cn("flex flex-col h-screen w-80 border-r bg-background/95 backdrop-blur-xl shadow-lg z-50", className)}>
       <div className="p-4 border-b space-y-4">
         <div className="flex justify-between items-center">
           <h1 className="font-bold text-xl flex items-center gap-2">
@@ -110,7 +121,17 @@ export function Sidebar() {
 
       <ScrollArea className="flex-1">
         <div className="p-2 space-y-2">
-          {filteredChats.map((chat) => {
+          {isLoading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-3 p-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-4 w-[120px]" />
+                  <Skeleton className="h-3 w-[180px]" />
+                </div>
+              </div>
+            ))
+          ) : filteredChats.map((chat) => {
             const other = getOtherParticipant(chat);
             if (!other) return null;
             const isActive = pathname === `/chat/${chat._id}`;
@@ -119,6 +140,7 @@ export function Sidebar() {
               <Link
                 key={chat._id}
                 href={`/chat/${chat._id}`}
+                onClick={onClose}
                 className={cn(
                   "flex items-start gap-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02]",
                   isActive ? "bg-primary/10 shadow-sm border-l-4 border-primary pl-2" : "hover:bg-muted/50"
@@ -158,8 +180,9 @@ export function Sidebar() {
                 </div>
               </Link>
             );
-          })}
-          {filteredChats.length === 0 && (
+          })
+          }
+          {!isLoading && filteredChats.length === 0 && (
             <div className="text-center text-muted-foreground p-4 text-sm">
               No chats found
             </div>

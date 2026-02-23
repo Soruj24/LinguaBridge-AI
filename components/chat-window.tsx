@@ -5,18 +5,18 @@ import { useSession } from "next-auth/react";
 import { useSocket } from "./socket-provider";
 import axios from "axios";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import TextareaAutosize from "react-textarea-autosize";
 import {
-  Send,
-  Volume2,
-  Globe,
-  Sparkles,
-  FileText,
+  Send, 
+  Sparkles, 
   Wand2,
   Phone,
   Video,
+  ArrowLeft,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { MessageBubble } from "@/components/message-bubble";
@@ -34,7 +34,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { VoiceRecorder } from "@/components/voice-recorder";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { TypingIndicator } from "@/components/typing-indicator";
 
 interface Message {
@@ -47,6 +47,7 @@ interface Message {
   voiceUrl?: string;
   translatedVoiceUrl?: string;
   createdAt: string;
+  isOptimistic?: boolean;
 }
 
 interface Chat {
@@ -62,6 +63,7 @@ interface Chat {
 
 export function ChatWindow({ chatId }: { chatId: string }) {
   const { data: session } = useSession();
+  const router = useRouter();
   const socket = useSocket();
   const [messages, setMessages] = useState<Message[]>([]);
   const [chat, setChat] = useState<Chat | null>(null);
@@ -69,6 +71,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
@@ -81,6 +84,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    setIsLoading(true);
     fetchMessages();
     fetchSuggestions();
   }, [chatId]);
@@ -148,18 +152,14 @@ export function ChatWindow({ chatId }: { chatId: string }) {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNewMessage(e.target.value);
-
-    if (socket && session?.user) {
-      // We need the user ID.
-      // Let's look at getReceiverId. It uses session.user.email to find the OTHER participant.
-      // We need OUR id.
-      const myId = chat?.participants.find(
-        (p) => p.email === session.user?.email,
-      )?._id;
-      if (myId) {
-        socket.emit("typing", { chatId, userId: myId });
+    
+    // Typing indicator logic
+    if (socket && session?.user && chat) {
+      const me = chat.participants.find((p) => p.email === session.user?.email);
+      if (me) {
+        socket.emit("typing", { chatId, userId: me._id });
       }
     }
   };
@@ -185,6 +185,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
       toast.error("Failed to load chat");
     } finally {
       setIsLoadingMore(false);
+      setIsLoading(false);
     }
   };
 
@@ -352,8 +353,11 @@ export function ChatWindow({ chatId }: { chatId: string }) {
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-zinc-950">
       {/* Header */}
-      <div className="p-4 border-b bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md sticky top-0 flex justify-between items-center shadow-sm z-50">
-        <div className="flex items-center gap-3">
+      <div className="p-3 md:p-4 border-b bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md sticky top-0 flex justify-between items-center shadow-sm z-50">
+        <div className="flex items-center gap-2 md:gap-3">
+          <Button variant="ghost" size="icon" className="md:hidden -ml-2" onClick={() => router.push('/dashboard')}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
           {chat?.participants
             .filter((p) => p.email !== session?.user?.email)
             .map((p) => (
@@ -414,16 +418,38 @@ export function ChatWindow({ chatId }: { chatId: string }) {
       </div>
       <ScrollArea className="flex-1 p-4" onScroll={onScroll}>
         <div className="space-y-6 pb-4">
-          <AnimatePresence mode="popLayout">
-            {messages.map((msg) => (
-              <MessageBubble
-                key={msg._id}
-                message={msg}
-                isMe={msg.senderId._id === session?.user?.id}
-                onDelete={handleDeleteMessage}
-              />
-            ))}
-          </AnimatePresence>
+          {isLoading ? (
+            <div className="space-y-6">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`flex w-full mt-2 space-x-3 max-w-md ${
+                    i % 2 === 0 ? "ml-auto justify-end" : ""
+                  }`}
+                >
+                  {i % 2 !== 0 && <Skeleton className="h-8 w-8 rounded-full" />}
+                  <Skeleton
+                    className={`h-12 rounded-2xl ${
+                      i % 2 === 0
+                        ? "w-48 rounded-br-none"
+                        : "w-64 rounded-bl-none"
+                    }`}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {messages.map((msg) => (
+                <MessageBubble
+                  key={msg._id}
+                  message={msg}
+                  isMe={msg.senderId._id === session?.user?.id}
+                  onDelete={handleDeleteMessage}
+                />
+              ))}
+            </AnimatePresence>
+          )}
           {isTyping && typingUser && (
             <div className="flex items-center gap-2 ml-4">
                <Avatar className="h-8 w-8">
@@ -454,13 +480,20 @@ export function ChatWindow({ chatId }: { chatId: string }) {
       )}
 
       {/* Input Area */}
-      <div className="p-4 border-t flex items-center gap-2 bg-background/80 backdrop-blur-md sticky bottom-0 z-50 shadow-lg">
-        <Input
-          className="bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary/20 rounded-full px-4 h-11 transition-all"
+      <div className="p-3 md:p-4 border-t flex items-end gap-2 bg-background/80 backdrop-blur-md sticky bottom-0 z-50 shadow-lg pb-[env(safe-area-inset-bottom)]">
+        <TextareaAutosize
+          className="flex-1 bg-muted/50 border-0 focus:ring-1 focus:ring-primary/20 rounded-[24px] px-4 py-3 min-h-[48px] max-h-[150px] transition-all text-base resize-none focus:outline-none placeholder:text-muted-foreground"
           placeholder="Type a message..."
           value={newMessage}
           onChange={handleInputChange}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              sendMessage();
+            }
+          }}
+          minRows={1}
+          maxRows={6}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -498,7 +531,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
         <Button
           size="icon"
           onClick={sendMessage}
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          className="h-12 w-12 rounded-xl bg-white text-slate-900 hover:bg-slate-100 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300 shadow-sm transition-all"
         >
           <Send className="h-5 w-5" />
         </Button>

@@ -77,19 +77,29 @@ app.prepare().then(async () => {
     socket.on("send_message", async (message, callback) => {
       // message: { chatId, text, senderId, receiverId }
       try {
-        const processedMessage = await processMessage({
-          senderId: message.senderId,
-          receiverId: message.receiverId,
-          text: message.text,
-          chatId: message.chatId,
-        });
+        let processedMessage;
+        
+        // If message has _id, it's likely already processed/saved (e.g. via voice API)
+        if (message._id) {
+            processedMessage = message;
+        } else {
+            processedMessage = await processMessage({
+              senderId: message.senderId,
+              receiverId: message.receiverId,
+              text: message.text,
+              chatId: message.chatId,
+            });
+        }
 
         // Emit to the room (including sender so they get the confirmed/translated message)
         io.to(message.chatId).emit("receive_message", processedMessage);
         
         // Also emit new_message event for sidebar updates via user rooms
-        io.to(message.receiverId).emit("new_message", processedMessage);
-        io.to(message.senderId).emit("new_message", processedMessage);
+        const sId = typeof message.senderId === 'object' ? message.senderId._id : message.senderId;
+        const rId = typeof message.receiverId === 'object' ? message.receiverId._id : message.receiverId;
+        
+        io.to(rId).emit("new_message", processedMessage);
+        io.to(sId).emit("new_message", processedMessage);
 
         if (callback) callback({ status: "ok", data: processedMessage });
       } catch (error) {

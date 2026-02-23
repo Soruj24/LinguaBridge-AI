@@ -70,7 +70,7 @@ export function MessageBubble({ message, isMe, onDelete }: MessageBubbleProps) {
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-      transition={{ type: "spring", stiffness: 260, damping: 20 }}
+      transition={{ type: "spring", stiffness: 150, damping: 20 }}
       className={cn("flex w-full mt-2 space-x-3 max-w-md group", isMe ? "ml-auto justify-end" : "")}
     >
       {!isMe && (
@@ -109,6 +109,9 @@ export function MessageBubble({ message, isMe, onDelete }: MessageBubbleProps) {
 
         {/* Meta */}
         <div className="flex items-center justify-end mt-1 gap-2">
+             {message.isOptimistic && (
+               <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+             )}
              {!message.voiceUrl && !message.translatedVoiceUrl && (
                 <Button
                     variant="ghost"
@@ -136,9 +139,9 @@ export function MessageBubble({ message, isMe, onDelete }: MessageBubbleProps) {
                     <Trash2 className="h-3 w-3" />
                 </Button>
              )}
-             <div className="text-[10px] opacity-70">
+             <span className="text-[10px] text-muted-foreground/80 font-medium">
                 {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-             </div>
+             </span>
         </div>
       </div>
 

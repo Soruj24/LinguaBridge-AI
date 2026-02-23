@@ -46,7 +46,7 @@ export function ComparisonTable() {
             <th className="p-4 font-medium w-1/3">Feature</th>
             <th className="p-4 font-medium text-center w-1/6">Free</th>
             <th className="p-4 font-medium text-center w-1/6 bg-primary/5 text-primary border-t-2 border-primary relative">
-              <span className="absolute -top-3 left-0 right-0 mx-auto w-fit bg-primary text-primary-foreground text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">
+              <span className="absolute -top-3 left-0 right-0 mx-auto w-fit bg-gradient-to-r from-primary to-purple-600 text-white shadow-md text-[10px] px-3 py-0.5 rounded-full uppercase tracking-wider font-bold">
                 Most Popular
               </span>
               Pro

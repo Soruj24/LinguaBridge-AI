@@ -105,11 +105,13 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
             <Button
                 size="icon"
                 className={cn(
-                    "rounded-full h-11 w-11 transition-all duration-200 shadow-sm",
-                    isRecording ? "bg-red-500 hover:bg-red-600 shadow-red-500/30" : "bg-primary hover:bg-primary/90"
+                    "rounded-full h-16 w-16 transition-all duration-200 shadow-lg border-0",
+                    isRecording 
+                        ? "bg-red-500 hover:bg-red-600 shadow-red-500/30 text-white" 
+                        : "bg-white text-slate-900 hover:bg-slate-100 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300"
                 )}
             >
-                <Mic className={cn("h-5 w-5 text-white transition-transform", isRecording ? "scale-110" : "")} />
+                <Mic className={cn("h-7 w-7 transition-transform", isRecording ? "scale-110 text-white" : "text-slate-900")} />
             </Button>
         </motion.div>
     </div>
