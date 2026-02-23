@@ -92,11 +92,55 @@
   },
   "Dashboard": {
     "welcomeBack": "مرحبًا بعودتك، {name}",
+    "defaultUser": "مستخدم",
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
     "logout": "تسجيل الخروج",
     "recentConversations": "المحادثات الأخيرة",
     "noMessages": "لا توجد رسائل بعد",
-    "noConversations": "لا توجد محادثات بعد. ابدأ الدردشة!"
+    "noConversations": "لا توجد محادثات بعد. ابدأ الدردشة!",
+    "dailyActivity": "النشاط اليومي",
+    "messagesSent": "الرسائل المرسلة",
+    "translationsDone": "الترجمات المنجزة",
+    "voiceTranslations": "الترجمات الصوتية",
+    "fromLastWeek": "من الأسبوع الماضي",
+    "increase": "زيادة",
+    "thisWeek": "هذا الأسبوع",
+    "languageUsage": "استخدام اللغة",
+    "premiumPlan": "الخطة المميزة",
+    "unlockUnlimited": "فتح ترجمات غير محدودة وميزات صوتية.",
+    "unlimitedText": "ترجمات نصية غير محدودة",
+    "highQualityVoice": "مخرجات صوتية عالية الجودة",
+    "prioritySupport": "دعم ذو أولوية",
+    "upgradeNow": "الترقية الآن",
+    "days": {
+      "Mon": "الاثنين",
+      "Tue": "الثلاثاء",
+      "Wed": "الأربعاء",
+      "Thu": "الخميس",
+      "Fri": "الجمعة",
+      "Sat": "السبت",
+      "Sun": "الأحد"
+    },
+    "languages": {
+      "English": "الإنجليزية",
+      "Spanish": "الإسبانية",
+      "French": "الفرنسية",
+      "German": "الألمانية",
+      "Hindi": "الهندية",
+      "Arabic": "العربية",
+      "Chinese": "الصينية",
+      "Bengali": "البنغالية"
+    }
+  },
+  "Landing": {
+    "header": {
+      "features": "الميزات",
+      "howItWorks": "كيف يعمل",
+      "login": "تسجيل الدخول"
+    },
+    "hero": {
+      "title": "كسر حواجز اللغة على الفور"
+    }
   }
 }

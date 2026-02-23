@@ -2,21 +2,22 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
-
-const data = [
-  { name: "English", value: 400 },
-  { name: "Spanish", value: 300 },
-  { name: "French", value: 300 },
-  { name: "German", value: 200 },
-];
-
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
+import { useTranslations } from "next-intl";
 
 export function LanguageChart() {
+  const t = useTranslations('Dashboard');
+
+  const data = [
+    { name: t('languages.English'), value: 400 },
+    { name: t('languages.Spanish'), value: 300 },
+    { name: t('languages.French'), value: 300 },
+    { name: t('languages.German'), value: 200 },
+  ];
+  
   return (
     <Card className="h-full hover:shadow-lg transition-shadow">
       <CardHeader>
-        <CardTitle>Language Usage</CardTitle>
+        <CardTitle>{t('languageUsage')}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -32,7 +33,7 @@ export function LanguageChart() {
               dataKey="value"
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell key={`cell-${index}`} fill={['#0088FE', '#00C49F', '#FFBB28', '#FF8042'][index % 4]} />
               ))}
             </Pie>
             <Tooltip 

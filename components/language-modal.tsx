@@ -9,8 +9,9 @@ import { cn } from "@/lib/utils";
 import axios from "axios";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useRouter } from "@/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { usePathname } from "next/navigation";
 
 // Comprehensive list of languages with native names and flags
 const LANGUAGES = [
@@ -62,6 +63,7 @@ export function LanguageModal({
   const t = useTranslations('LanguageModal');
   const tCommon = useTranslations('Common');
   const { data: session, update } = useSession();
+  const locale = useLocale();
   const [internalOpen, setInternalOpen] = useState(false);
   
   const isControlled = open !== undefined;
@@ -69,9 +71,16 @@ export function LanguageModal({
   const setIsOpen = isControlled ? onOpenChange : setInternalOpen;
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(locale);
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+
+  const SUPPORTED_LOCALES = ['en', 'bn', 'es', 'fr', 'ar', 'zh', 'hi'];
+
+  useEffect(() => {
+    setSelectedLanguage(locale);
+  }, [locale]);
 
   useEffect(() => {
     // Auto-open logic only if not controlled (or if we want to force it)
@@ -121,22 +130,8 @@ export function LanguageModal({
       // Redirect to the new locale path if supported
       const supportedLocales = ['en', 'bn', 'es', 'fr', 'ar', 'zh', 'hi'];
       if (supportedLocales.includes(selectedLanguage)) {
-        // Construct new URL
-        const currentPath = window.location.pathname;
-        const segments = currentPath.split('/');
-        // Check if current path starts with a locale
-        const firstSegment = segments[1];
-        if (supportedLocales.includes(firstSegment)) {
-           segments[1] = selectedLanguage;
-        } else {
-           segments.splice(1, 0, selectedLanguage);
-        }
-        const newPath = segments.join('/');
-        router.push(newPath);
+        router.replace(pathname, {locale: selectedLanguage});
       } else {
-         // If selected language is not fully localized yet, stay on current locale but update DB
-         // Or default to English if strict
-         // For now, we only switch URL for supported locales
          router.refresh();
       }
 
@@ -188,7 +183,14 @@ export function LanguageModal({
               >
                 <span className="text-2xl shadow-sm rounded-full overflow-hidden">{lang.flag}</span>
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-sm truncate">{lang.native}</div>
+                  <div className="font-semibold text-sm truncate flex items-center gap-2">
+                    {lang.native}
+                    {SUPPORTED_LOCALES.includes(lang.code) && (
+                      <span className="text-[10px] uppercase tracking-wider bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">
+                        UI
+                      </span>
+                    )}
+                  </div>
                   <div className="text-xs text-muted-foreground truncate">{lang.name}</div>
                 </div>
                 {selectedLanguage === lang.code && (

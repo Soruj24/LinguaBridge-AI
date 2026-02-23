@@ -92,11 +92,55 @@
   },
   "Dashboard": {
     "welcomeBack": "वापसी पर स्वागत है, {name}",
+    "defaultUser": "उपयोगकर्ता",
     "profile": "प्रोफ़ाइल",
     "settings": "सेटिंग्स",
     "logout": "लॉग आउट",
     "recentConversations": "हाल की बातचीत",
     "noMessages": "अभी तक कोई संदेश नहीं",
-    "noConversations": "अभी तक कोई बातचीत नहीं। चैट शुरू करें!"
+    "noConversations": "अभी तक कोई बातचीत नहीं। चैट शुरू करें!",
+    "dailyActivity": "दैनिक गतिविधि",
+    "messagesSent": "भेजे गए संदेश",
+    "translationsDone": "किए गए अनुवाद",
+    "voiceTranslations": "वॉयस अनुवाद",
+    "fromLastWeek": "पिछले सप्ताह से",
+    "increase": "वृद्धि",
+    "thisWeek": "इस सप्ताह",
+    "languageUsage": "भाषा का उपयोग",
+    "premiumPlan": "प्रीमियम योजना",
+    "unlockUnlimited": "असीमित अनुवाद और आवाज सुविधाओं को अनलॉक करें।",
+    "unlimitedText": "असीमित पाठ अनुवाद",
+    "highQualityVoice": "उच्च गुणवत्ता वाला वॉयस आउटपुट",
+    "prioritySupport": "प्राथमिकता समर्थन",
+    "upgradeNow": "अभी अपग्रेड करें",
+    "days": {
+      "Mon": "सोम",
+      "Tue": "मंगल",
+      "Wed": "बुध",
+      "Thu": "गुरु",
+      "Fri": "शुक्र",
+      "Sat": "शनि",
+      "Sun": "रवि"
+    },
+    "languages": {
+      "English": "अंग्रेज़ी",
+      "Spanish": "स्पेनिश",
+      "French": "फ्रेंच",
+      "German": "जर्मन",
+      "Hindi": "हिन्दी",
+      "Arabic": "अरबी",
+      "Chinese": "चीनी",
+      "Bengali": "बंगाली"
+    }
+  },
+  "Landing": {
+    "header": {
+      "features": "विशेषताएं",
+      "howItWorks": "यह कैसे काम करता है",
+      "login": "लॉग इन"
+    },
+    "hero": {
+      "title": "भाषा की बाधाओं को तुरंत तोड़ें"
+    }
   }
 }

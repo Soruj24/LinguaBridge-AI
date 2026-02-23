@@ -1,6 +1,6 @@
 import { ChatWindow } from "@/components/chat-window";
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { redirect } from "@/navigation";
 
 export default async function ChatPage({ params }: { params: { id: string } }) {
   const session = await auth();

@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Settings, User } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { signOut } from "next-auth/react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useTranslations } from "next-intl";
@@ -26,7 +26,7 @@ export function DashboardNavbar() {
     <div className="flex h-16 items-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 sticky top-0 z-50">
       <div className="flex-1">
         <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-          {t('welcomeBack', { name: user?.name?.split(" ")[0] || "User" })}
+          {t('welcomeBack', { name: user?.name?.split(" ")[0] || t('defaultUser') })}
         </h1>
       </div>
       <div className="flex items-center gap-4">

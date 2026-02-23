@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter, Link } from "@/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -34,6 +33,7 @@ import {
 import { toast } from "sonner";
 import { Globe } from "lucide-react";
 import axios from "axios";
+import { useLocale } from "next-intl";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -48,24 +48,13 @@ const languages = [
   { code: "hi", name: "Hindi" },
   { code: "es", name: "Spanish" },
   { code: "fr", name: "French" },
-  { code: "de", name: "German" },
-  { code: "zh", name: "Chinese" },
-  { code: "ja", name: "Japanese" },
-  { code: "ko", name: "Korean" },
-  { code: "ru", name: "Russian" },
-  { code: "pt", name: "Portuguese" },
-  { code: "it", name: "Italian" },
-  { code: "nl", name: "Dutch" },
-  { code: "pl", name: "Polish" },
-  { code: "tr", name: "Turkish" },
   { code: "ar", name: "Arabic" },
-  { code: "vi", name: "Vietnamese" },
-  { code: "th", name: "Thai" },
-  { code: "id", name: "Indonesian" },
+  { code: "zh", name: "Chinese" },
 ];
 
 export default function RegisterPage() {
   const router = useRouter();
+  const locale = useLocale();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -74,7 +63,7 @@ export default function RegisterPage() {
       name: "",
       email: "",
       password: "",
-      preferredLanguage: "en",
+      preferredLanguage: locale,
     },
   });
 

@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { Link } from "@/navigation";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Chat {
   _id: string;
@@ -26,6 +26,7 @@ interface Chat {
 
 export function RecentConversations() {
   const t = useTranslations('Dashboard');
+  const locale = useLocale();
   const { data: session } = useSession();
   const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,7 +91,7 @@ export function RecentConversations() {
                   </p>
                 </div>
                 <div className="text-xs text-muted-foreground whitespace-nowrap">
-                    {new Date(chat.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                    {new Date(chat.updatedAt).toLocaleDateString(locale, { month: 'short', day: 'numeric' })}
                 </div>
               </Link>
             );

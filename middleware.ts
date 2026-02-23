@@ -1,61 +1,79 @@
 import createMiddleware from 'next-intl/middleware';
-import { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import NextAuth from "next-auth";
 import { authConfig } from "./auth.config";
 
 const { auth } = NextAuth(authConfig);
 
+const locales = ['en', 'bn', 'es', 'fr', 'ar', 'zh', 'hi'];
 const intlMiddleware = createMiddleware({
-  // A list of all locales that are supported
-  locales: ['en', 'bn', 'es', 'fr', 'ar', 'zh', 'hi'],
- 
-  // Used when no locale matches
+  locales,
   defaultLocale: 'en'
 });
 
 export default auth(async function middleware(request: any) {
-  // Step 1: Run next-intl middleware (handles locale detection and redirection)
+  // Step 1: Run next-intl middleware first to handle basic locale routing
   const response = intlMiddleware(request);
 
-  // Step 2: Run auth middleware
-  // We need to extract the locale from the pathname to pass to auth logic if needed,
-  // or just run auth check.
-  
+  // Step 2: Auth check
   const session = request.auth;
   const isLoggedIn = !!session?.user;
-  
+  const userLocale = session?.user?.preferredLanguage;
+
   const { pathname } = request.nextUrl;
   
-  // Check if the path is protected (dashboard, chat)
-  // We need to account for the locale prefix: /en/dashboard, /bn/chat, etc.
-  const isProtectedRoute = 
-    pathname.match(/^\/(en|bn|es|fr|ar|zh|hi)\/(dashboard|chat)/) || 
-    pathname.match(/^\/(dashboard|chat)/); // Fallback for no locale if configured (but we are using prefixes)
+  // Check if current path starts with a supported locale
+  const pathSegments = pathname.split('/');
+  const firstSegment = pathSegments[1];
+  const isLocaleInPath = locales.includes(firstSegment);
+  
+  // Language Enforcement Logic: Redirect to user's preferred language if logged in
+  if (isLoggedIn && userLocale && isLocaleInPath) {
+    if (firstSegment !== userLocale) {
+      // Replace the locale segment with the user's preferred locale
+      const newPathname = pathname.replace(`/${firstSegment}`, `/${userLocale}`);
+      const newUrl = new URL(newPathname, request.url);
+      // Preserve search params
+      newUrl.search = request.nextUrl.search;
+      return NextResponse.redirect(newUrl);
+    }
+  }
 
+  // Auth Guards
+  // We normalize the path to check for protected routes regardless of locale
+  const pathWithoutLocale = isLocaleInPath 
+    ? '/' + pathSegments.slice(2).join('/') 
+    : pathname;
+    
+  // Handle root path normalization (e.g. /en -> /)
+  const normalizedPath = pathWithoutLocale === '' ? '/' : pathWithoutLocale;
+
+  const isProtectedRoute = 
+    normalizedPath.startsWith('/dashboard') || 
+    normalizedPath.startsWith('/chat');
+    
   const isAuthPage = 
-    pathname.match(/^\/(en|bn|es|fr|ar|zh|hi)\/(login|register)/) ||
-    pathname.match(/^\/(login|register)/);
+    normalizedPath === '/login' || 
+    normalizedPath === '/register';
 
   if (isProtectedRoute) {
     if (!isLoggedIn) {
-      // Redirect to login (preserving locale)
-      const locale = pathname.split('/')[1] || 'en';
+      const locale = isLocaleInPath ? firstSegment : 'en';
       const loginUrl = new URL(`/${locale}/login`, request.url);
-      return Response.redirect(loginUrl);
+      return NextResponse.redirect(loginUrl);
     }
   }
 
   if (isAuthPage && isLoggedIn) {
-      // Redirect to dashboard (preserving locale)
-      const locale = pathname.split('/')[1] || 'en';
+      const locale = userLocale || (isLocaleInPath ? firstSegment : 'en');
       const dashboardUrl = new URL(`/${locale}/dashboard`, request.url);
-      return Response.redirect(dashboardUrl);
+      return NextResponse.redirect(dashboardUrl);
   }
 
   return response;
 });
- 
+
 export const config = {
   // Match only internationalized pathnames
-  matcher: ['/', '/(bn|en|es|fr|ar|zh|hi)/:path*']
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
 };

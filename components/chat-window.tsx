@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useSocket } from "./socket-provider";
 import axios from "axios";
@@ -16,7 +16,7 @@ import {
   Video,
   ArrowLeft,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { MessageBubble } from "@/components/message-bubble";
@@ -82,8 +82,11 @@ export function ChatWindow({ chatId }: { chatId: string }) {
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isRewriting, setIsRewriting] = useState(false);
+  const [isRestoringScroll, setIsRestoringScroll] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const prevScrollHeightRef = useRef(0);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -100,6 +103,20 @@ export function ChatWindow({ chatId }: { chatId: string }) {
         if (message.chatId === chatId) {
           setMessages((prev) => {
             if (prev.some((m) => m._id === message._id)) return prev;
+
+            // Check if we have an optimistic message that matches this real message
+            const optimisticMatchIndex = prev.findIndex(m => 
+              m.isOptimistic && 
+              m.originalText === message.originalText && 
+              m.senderId._id === message.senderId._id
+            );
+
+            if (optimisticMatchIndex !== -1) {
+              const newMessages = [...prev];
+              newMessages[optimisticMatchIndex] = message;
+              return newMessages;
+            }
+
             return [...prev, message];
           });
           scrollToBottom();
@@ -169,7 +186,13 @@ export function ChatWindow({ chatId }: { chatId: string }) {
 
   const fetchMessages = async (before?: string) => {
     try {
-      if (before) setIsLoadingMore(true);
+      if (before) {
+        setIsLoadingMore(true);
+        if (viewportRef.current) {
+          prevScrollHeightRef.current = viewportRef.current.scrollHeight;
+          setIsRestoringScroll(true);
+        }
+      }
 
       const url =
         `/api/chat/${chatId}?limit=20` + (before ? `&before=${before}` : "");
@@ -187,8 +210,11 @@ export function ChatWindow({ chatId }: { chatId: string }) {
       console.error(error);
       toast.error("Failed to load chat");
     } finally {
-      setIsLoadingMore(false);
-      setIsLoading(false);
+      if (!before) {
+        setIsLoadingMore(false);
+        setIsLoading(false);
+      }
+      // If 'before' is true, isLoadingMore is handled in useLayoutEffect
     }
   };
 
@@ -221,8 +247,22 @@ export function ChatWindow({ chatId }: { chatId: string }) {
     }
   };
 
+  useLayoutEffect(() => {
+    if (isRestoringScroll && viewportRef.current) {
+      const newScrollHeight = viewportRef.current.scrollHeight;
+      const diff = newScrollHeight - prevScrollHeightRef.current;
+      if (diff > 0) {
+        viewportRef.current.scrollTop = diff;
+      }
+      setIsRestoringScroll(false);
+      setIsLoadingMore(false);
+    }
+  }, [messages, isRestoringScroll]);
+
   const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
+    viewportRef.current = target; // Capture ref
+
     if (
       target.scrollTop === 0 &&
       hasMore &&
@@ -230,14 +270,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
       messages.length > 0
     ) {
       const firstMessage = messages[0];
-      const oldHeight = target.scrollHeight;
-
-      fetchMessages(firstMessage.createdAt).then(() => {
-        // Restore scroll position
-        requestAnimationFrame(() => {
-          target.scrollTop = target.scrollHeight - oldHeight;
-        });
-      });
+      fetchMessages(firstMessage.createdAt);
     }
   };
 
@@ -323,6 +356,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
         },
         originalText: newMessage,
         createdAt: new Date().toISOString(),
+        isOptimistic: true,
       };
 
       setMessages((prev) => [...prev, tempMessage]);
@@ -354,9 +388,9 @@ export function ChatWindow({ chatId }: { chatId: string }) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-zinc-950">
-      {/* Header */}
-      <div className="p-3 md:p-4 border-b bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md sticky top-0 flex justify-between items-center shadow-sm z-50">
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-zinc-950 relative">
+      {/* Header - Fixed/Absolute on top */}
+      <div className="absolute top-0 left-0 right-0 p-3 md:p-4 pt-[calc(0.75rem+env(safe-area-inset-top))] md:pt-[calc(1rem+env(safe-area-inset-top))] border-b bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md flex justify-between items-center shadow-sm z-50">
         <div className="flex items-center gap-2 md:gap-3">
           <Button variant="ghost" size="icon" className="md:hidden -ml-2" onClick={() => router.push('/dashboard')}>
             <ArrowLeft className="h-5 w-5" />
@@ -419,9 +453,11 @@ export function ChatWindow({ chatId }: { chatId: string }) {
           </Dialog>
         </div>
       </div>
-      <TrustBanner />
-      <ScrollArea className="flex-1 p-4" onScroll={onScroll}>
-        <div className="space-y-6 pb-4">
+      
+      {/* Scrollable Content */}
+      <ScrollArea className="flex-1 h-full px-4" onScroll={onScroll} viewportRef={viewportRef}>
+        <div className="space-y-6 pb-4 pt-[calc(4.5rem+env(safe-area-inset-top))]">
+          <TrustBanner />
           {isLoading ? (
             <div className="space-y-6">
               {[...Array(3)].map((_, i) => (

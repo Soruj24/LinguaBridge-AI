@@ -92,11 +92,55 @@
   },
   "Dashboard": {
     "welcomeBack": "স্বাগতম ফিরে এসেছেন, {name}",
+    "defaultUser": "ব্যবহারকারী",
     "profile": "প্রোফাইল",
     "settings": "সেটিংস",
     "logout": "লॉग আউট",
     "recentConversations": "সাম্প্রতিক কথোপকথন",
     "noMessages": "এখনও কোন বার্তা নেই",
-    "noConversations": "এখনও কোন কথোপকথন নেই। চ্যাট শুরু করুন!"
+    "noConversations": "এখনও কোন কথোপকথন নেই। চ্যাট শুরু করুন!",
+    "dailyActivity": "দৈনিক কার্যকলাপ",
+    "messagesSent": "বার্তা পাঠানো হয়েছে",
+    "translationsDone": "অনুবাদ সম্পন্ন",
+    "voiceTranslations": "ভয়েস অনুবাদ",
+    "fromLastWeek": "গত সপ্তাহ থেকে",
+    "increase": "বৃদ্ধি",
+    "thisWeek": "এই সপ্তাহে",
+    "languageUsage": "ভাষার ব্যবহার",
+    "premiumPlan": "প্রিমিয়াম পরিকল্পনা",
+    "unlockUnlimited": "সীমাহীন অনুবাদ এবং ভয়েস বৈশিষ্ট্য আনলক করুন।",
+    "unlimitedText": "সীমাহীন পাঠ্য অনুবাদ",
+    "highQualityVoice": "উচ্চ মানের ভয়েস আউটপুট",
+    "prioritySupport": "অগ্রাধিকার সমর্থন",
+    "upgradeNow": "এখন আপগ্রেড করুন",
+    "days": {
+      "Mon": "সোম",
+      "Tue": "মঙ্গল",
+      "Wed": "বুধ",
+      "Thu": "বৃহস্পতি",
+      "Fri": "শুক্র",
+      "Sat": "শনি",
+      "Sun": "রবি"
+    },
+    "languages": {
+      "English": "ইংরেজি",
+      "Spanish": "স্প্যানিশ",
+      "French": "ফরাসি",
+      "German": "জার্মান",
+      "Hindi": "হিন্দি",
+      "Arabic": "আরবি",
+      "Chinese": "চীনা",
+      "Bengali": "বাংলা"
+    }
+  },
+  "Landing": {
+    "header": {
+      "features": "বৈশিষ্ট্য",
+      "howItWorks": "কিভাবে কাজ করে",
+      "login": "লগইন"
+    },
+    "hero": {
+      "title": "তাত্ক্ষণিকভাবে ভাষার বাধা ভাঙুন"
+    }
   }
 }

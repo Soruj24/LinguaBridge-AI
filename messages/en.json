@@ -92,12 +92,46 @@
   },
   "Dashboard": {
     "welcomeBack": "Welcome back, {name}",
+    "defaultUser": "User",
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Log out",
     "recentConversations": "Recent Conversations",
     "noMessages": "No messages yet",
-    "noConversations": "No conversations yet. Start chatting!"
+    "noConversations": "No conversations yet. Start chatting!",
+    "dailyActivity": "Daily Activity",
+    "messagesSent": "Messages Sent",
+    "translationsDone": "Translations Done",
+    "voiceTranslations": "Voice Translations",
+    "fromLastWeek": "from last week",
+    "increase": "increase",
+    "thisWeek": "this week",
+    "languageUsage": "Language Usage",
+    "premiumPlan": "Premium Plan",
+    "unlockUnlimited": "Unlock unlimited translations and voice features.",
+    "unlimitedText": "Unlimited text translations",
+    "highQualityVoice": "High-quality voice output",
+    "prioritySupport": "Priority support",
+    "upgradeNow": "Upgrade Now",
+    "days": {
+      "Mon": "Mon",
+      "Tue": "Tue",
+      "Wed": "Wed",
+      "Thu": "Thu",
+      "Fri": "Fri",
+      "Sat": "Sat",
+      "Sun": "Sun"
+    },
+    "languages": {
+      "English": "English",
+      "Spanish": "Spanish",
+      "French": "French",
+      "German": "German",
+      "Hindi": "Hindi",
+      "Arabic": "Arabic",
+      "Chinese": "Chinese",
+      "Bengali": "Bengali"
+    }
   },
   "Landing": {
     "header": {

@@ -92,11 +92,55 @@
   },
   "Dashboard": {
     "welcomeBack": "欢迎回来，{name}",
+    "defaultUser": "用户",
     "profile": "个人资料",
     "settings": "设置",
     "logout": "登出",
     "recentConversations": "最近的对话",
     "noMessages": "暂无消息",
-    "noConversations": "暂无对话。开始聊天！"
+    "noConversations": "暂无对话。开始聊天！",
+    "dailyActivity": "每日活动",
+    "messagesSent": "发送的消息",
+    "translationsDone": "完成的翻译",
+    "voiceTranslations": "语音翻译",
+    "fromLastWeek": "比上周",
+    "increase": "增长",
+    "thisWeek": "本周",
+    "languageUsage": "语言使用",
+    "premiumPlan": "高级计划",
+    "unlockUnlimited": "解锁无限翻译和语音功能。",
+    "unlimitedText": "无限文本翻译",
+    "highQualityVoice": "高质量语音输出",
+    "prioritySupport": "优先支持",
+    "upgradeNow": "立即升级",
+    "days": {
+      "Mon": "周一",
+      "Tue": "周二",
+      "Wed": "周三",
+      "Thu": "周四",
+      "Fri": "周五",
+      "Sat": "周六",
+      "Sun": "周日"
+    },
+    "languages": {
+      "English": "英语",
+      "Spanish": "西班牙语",
+      "French": "法语",
+      "German": "德语",
+      "Hindi": "印地语",
+      "Arabic": "阿拉伯语",
+      "Chinese": "中文",
+      "Bengali": "孟加拉语"
+    }
+  },
+  "Landing": {
+    "header": {
+      "features": "功能",
+      "howItWorks": "工作原理",
+      "login": "登录"
+    },
+    "hero": {
+      "title": "瞬间打破语言障碍"
+    }
   }
 }

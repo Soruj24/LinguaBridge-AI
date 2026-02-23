@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter, Link } from "@/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 import {
   Form,
   FormControl,
@@ -55,15 +55,30 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        toast.error("Invalid email or password");
-      } else {
+        toast.error("Invalid credentials");
+        setIsLoading(false);
+        return;
+      }
+
+      if (result?.ok) {
         toast.success("Logged in successfully");
-        router.replace("/dashboard");
-        router.refresh();
+        
+        try {
+          // Fetch user profile to get preferred language
+          const { data } = await axios.get("/api/user/me");
+          const preferredLanguage = data.preferredLanguage || "en";
+          
+          // Redirect to dashboard with preferred language
+          router.push("/dashboard", { locale: preferredLanguage });
+          router.refresh();
+        } catch (error) {
+          console.error("Failed to fetch user preferences", error);
+          router.push("/dashboard");
+          router.refresh();
+        }
       }
     } catch (error) {
       toast.error("Something went wrong");
-    } finally {
       setIsLoading(false);
     }
   }

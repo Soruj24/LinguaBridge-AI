@@ -256,35 +256,7 @@ export function MessageBubble({ message, isMe, onDelete, currentUserId, isSameSe
              )}
           </div>
           
-          {/* Translation Toggles & Language Badges */}
-          {message.translatedText && (
-            <div className={cn("flex flex-wrap items-center justify-between gap-2 mt-2 pt-2 border-t", isMe ? "border-primary-foreground/10" : "border-border/40")}>
-               <div className="flex items-center gap-1.5 text-[9px] font-medium opacity-70 uppercase tracking-wider">
-                  <Globe className="h-2.5 w-2.5" />
-                  <span>{message.languageFrom?.substring(0, 2) || "AU"}</span>
-                  <span className="opacity-40">→</span>
-                  <Languages className="h-2.5 w-2.5" />
-                  <span>{message.languageTo?.substring(0, 2) || "EN"}</span>
-               </div>
-               
-               <div className="flex gap-0.5 bg-black/5 dark:bg-white/5 rounded-md p-0.5">
-                 {(["original", "translated", "both"] as const).map((mode) => (
-                   <button 
-                     key={mode}
-                     onClick={() => setViewMode(mode)}
-                     className={cn(
-                       "text-[9px] px-1.5 py-0.5 rounded-sm transition-all font-medium capitalize", 
-                       viewMode === mode 
-                         ? "bg-background text-foreground shadow-sm" 
-                         : "opacity-50 hover:opacity-100 hover:bg-background/50"
-                     )}
-                   >
-                     {mode === "original" ? t('originalShort') : mode === "translated" ? t('translatedShort') : t('bothShort')}
-                   </button>
-                 ))}
-               </div>
-            </div>
-          )}
+
 
           {/* Meta Info (Timestamp + Status) */}
           <div className={cn("flex items-center justify-end gap-1 select-none absolute bottom-1 right-2 opacity-0 group-hover:opacity-100 transition-opacity", isMe ? "text-primary-foreground/70" : "text-foreground/50")}>

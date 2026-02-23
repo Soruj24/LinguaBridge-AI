@@ -10,22 +10,25 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
-const data = [
-  { name: "Mon", messages: 120 },
-  { name: "Tue", messages: 150 },
-  { name: "Wed", messages: 180 },
-  { name: "Thu", messages: 140 },
-  { name: "Fri", messages: 200 },
-  { name: "Sat", messages: 170 },
-  { name: "Sun", messages: 190 },
-];
+import { useTranslations } from "next-intl";
 
 export function AnalyticsChart() {
+  const t = useTranslations('Dashboard');
+  
+  const data = [
+    { name: t('days.Mon'), messages: 120 },
+    { name: t('days.Tue'), messages: 150 },
+    { name: t('days.Wed'), messages: 180 },
+    { name: t('days.Thu'), messages: 140 },
+    { name: t('days.Fri'), messages: 200 },
+    { name: t('days.Sat'), messages: 170 },
+    { name: t('days.Sun'), messages: 190 },
+  ];
+
   return (
     <Card className="h-full hover:shadow-lg transition-shadow">
       <CardHeader>
-        <CardTitle>Daily Activity</CardTitle>
+        <CardTitle>{t('dailyActivity')}</CardTitle>
       </CardHeader>
       <CardContent className="pl-2">
         <ResponsiveContainer width="100%" height={350}>

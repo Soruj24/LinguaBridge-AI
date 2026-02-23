@@ -92,12 +92,46 @@
   },
   "Dashboard": {
     "welcomeBack": "Bienvenido de nuevo, {name}",
+    "defaultUser": "Usuario",
     "profile": "Perfil",
     "settings": "Ajustes",
     "logout": "Cerrar sesión",
     "recentConversations": "Conversaciones recientes",
     "noMessages": "Aún no hay mensajes",
-    "noConversations": "Aún no hay conversaciones. ¡Empieza a chatear!"
+    "noConversations": "Aún no hay conversaciones. ¡Empieza a chatear!",
+    "dailyActivity": "Actividad diaria",
+    "messagesSent": "Mensajes enviados",
+    "translationsDone": "Traducciones realizadas",
+    "voiceTranslations": "Traducciones de voz",
+    "fromLastWeek": "desde la semana pasada",
+    "increase": "aumento",
+    "thisWeek": "esta semana",
+    "languageUsage": "Uso del idioma",
+    "premiumPlan": "Plan Premium",
+    "unlockUnlimited": "Desbloquea traducciones ilimitadas y funciones de voz.",
+    "unlimitedText": "Traducciones de texto ilimitadas",
+    "highQualityVoice": "Salida de voz de alta calidad",
+    "prioritySupport": "Soporte prioritario",
+    "upgradeNow": "Actualizar ahora",
+    "days": {
+      "Mon": "Lun",
+      "Tue": "Mar",
+      "Wed": "Mié",
+      "Thu": "Jue",
+      "Fri": "Vie",
+      "Sat": "Sáb",
+      "Sun": "Dom"
+    },
+    "languages": {
+      "English": "Inglés",
+      "Spanish": "Español",
+      "French": "Francés",
+      "German": "Alemán",
+      "Hindi": "Hindi",
+      "Arabic": "Árabe",
+      "Chinese": "Chino",
+      "Bengali": "Bengalí"
+    }
   },
   "Landing": {
     "header": {

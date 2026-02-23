@@ -92,11 +92,55 @@
   },
   "Dashboard": {
     "welcomeBack": "Bon retour, {name}",
+    "defaultUser": "Utilisateur",
     "profile": "Profil",
     "settings": "Paramètres",
     "logout": "Se déconnecter",
     "recentConversations": "Conversations récentes",
     "noMessages": "Pas encore de messages",
-    "noConversations": "Pas encore de conversations. Commencez à discuter !"
+    "noConversations": "Pas encore de conversations. Commencez à discuter !",
+    "dailyActivity": "Activité quotidienne",
+    "messagesSent": "Messages envoyés",
+    "translationsDone": "Traductions effectuées",
+    "voiceTranslations": "Traductions vocales",
+    "fromLastWeek": "depuis la semaine dernière",
+    "increase": "augmentation",
+    "thisWeek": "cette semaine",
+    "languageUsage": "Utilisation de la langue",
+    "premiumPlan": "Plan Premium",
+    "unlockUnlimited": "Débloquez des traductions illimitées et des fonctionnalités vocales.",
+    "unlimitedText": "Traductions de texte illimitées",
+    "highQualityVoice": "Sortie vocale de haute qualité",
+    "prioritySupport": "Support prioritaire",
+    "upgradeNow": "Mettre à niveau",
+    "days": {
+      "Mon": "Lun",
+      "Tue": "Mar",
+      "Wed": "Mer",
+      "Thu": "Jeu",
+      "Fri": "Ven",
+      "Sat": "Sam",
+      "Sun": "Dim"
+    },
+    "languages": {
+      "English": "Anglais",
+      "Spanish": "Espagnol",
+      "French": "Français",
+      "German": "Allemand",
+      "Hindi": "Hindi",
+      "Arabic": "Arabe",
+      "Chinese": "Chinois",
+      "Bengali": "Bengali"
+    }
+  },
+  "Landing": {
+    "header": {
+      "features": "Fonctionnalités",
+      "howItWorks": "Comment ça marche",
+      "login": "Connexion"
+    },
+    "hero": {
+      "title": "Brisez les barrières linguistiques instantanément"
+    }
   }
 }

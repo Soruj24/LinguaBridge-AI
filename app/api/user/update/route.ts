@@ -28,20 +28,23 @@ export async function PUT(req: Request) {
 
     await connectDB();
 
-    const updateData: any = {
-      ...(name && { name }),
-      ...(preferredLanguage && { preferredLanguage }),
-      ...(avatar !== undefined && { avatar }),
-    };
+    const updateData: any = {};
+    if (name) updateData.name = name;
+    if (preferredLanguage) updateData.preferredLanguage = preferredLanguage;
+    if (avatar !== undefined) updateData.avatar = avatar;
 
     if (preferences) {
-        updateData.preferences = preferences;
+        // Use dot notation to update specific preference fields without overwriting the whole object
+        if (preferences.lowBandwidth !== undefined) updateData['preferences.lowBandwidth'] = preferences.lowBandwidth;
+        if (preferences.reduceMotion !== undefined) updateData['preferences.reduceMotion'] = preferences.reduceMotion;
+        if (preferences.highContrast !== undefined) updateData['preferences.highContrast'] = preferences.highContrast;
+        if (preferences.autoPlayAudio !== undefined) updateData['preferences.autoPlayAudio'] = preferences.autoPlayAudio;
     }
 
     const user = await User.findOneAndUpdate(
       { email: session.user.email },
-      updateData,
-      { new: true, upsert: false } // upsert: false because we are updating an existing user
+      { $set: updateData },
+      { new: true, upsert: false }
     ).select("-password");
 
     return NextResponse.json(user);
