@@ -136,7 +136,7 @@ const languageMap: Record<string, string> = {
 export async function processTranslationPipeline(
   text: string,
   targetLanguageCode: string
-): Promise<{ original: string; detectedLanguage: string; translated: string }> {
+): Promise<{ original: string; detectedLanguage: string; translated: string; phonetic: string }> {
   try {
     const targetLanguage = languageMap[targetLanguageCode] || targetLanguageCode;
 
@@ -145,6 +145,7 @@ export async function processTranslationPipeline(
         original: z.string().describe("The original input text"),
         detectedLanguage: z.string().describe("ISO 639-1 language code of the original text"),
         translated: z.string().describe(`The translated text in ${targetLanguage}`),
+        phonetic: z.string().describe("IPA pronunciation or standard transliteration (e.g. Pinyin) of the ORIGINAL text. Empty if not applicable/needed."),
       })
     );
 
@@ -153,6 +154,7 @@ export async function processTranslationPipeline(
     const prompt = new PromptTemplate({
       template: `You are a sophisticated translation engine.
 Analyze the input text, detect its language, and translate it into {targetLanguage}.
+Also provide the phonetic pronunciation (IPA or standard transliteration) of the ORIGINAL text to help the receiver pronounce it.
 If the text is already in {targetLanguage}, the translated text should be the same as the original.
 
 {format_instructions}
@@ -181,14 +183,16 @@ Input Text:
         return {
             original: text,
             detectedLanguage: "unknown",
-            translated: fallbackTranslation
+            translated: fallbackTranslation,
+            phonetic: ""
         };
     } catch (fallbackError) {
         console.error("Fallback translation also failed:", fallbackError);
         return {
             original: text,
             detectedLanguage: "unknown",
-            translated: text
+            translated: text,
+            phonetic: ""
         };
     }
   }

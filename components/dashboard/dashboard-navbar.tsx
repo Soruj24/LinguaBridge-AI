@@ -15,8 +15,10 @@ import { LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { ModeToggle } from "@/components/mode-toggle";
+import { useTranslations } from "next-intl";
 
 export function DashboardNavbar() {
+  const t = useTranslations('Dashboard');
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -24,7 +26,7 @@ export function DashboardNavbar() {
     <div className="flex h-16 items-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 sticky top-0 z-50">
       <div className="flex-1">
         <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-          Welcome back, {user?.name?.split(" ")[0] || "User"}
+          {t('welcomeBack', { name: user?.name?.split(" ")[0] || "User" })}
         </h1>
       </div>
       <div className="flex items-center gap-4">
@@ -51,19 +53,19 @@ export function DashboardNavbar() {
             <DropdownMenuItem asChild>
               <Link href="/settings">
                 <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+                <span>{t('profile')}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href="/settings">
                 <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+                <span>{t('settings')}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut()}>
               <LogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
+              <span>{t('logout')}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

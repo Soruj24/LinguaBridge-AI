@@ -22,6 +22,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "en", // Default language
     },
+    preferences: {
+      lowBandwidth: { type: Boolean, default: false },
+      reduceMotion: { type: Boolean, default: false },
+      highContrast: { type: Boolean, default: false },
+      autoPlayAudio: { type: Boolean, default: true },
+    },
   },
   { timestamps: true }
 );

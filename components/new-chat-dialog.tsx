@@ -17,8 +17,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Loader2, UserPlus } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export function NewChatDialog({ children, onChatCreated }: { children?: React.ReactNode; onChatCreated?: () => void }) {
+  const t = useTranslations('NewChat');
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState<any[]>([]);
@@ -36,7 +38,7 @@ export function NewChatDialog({ children, onChatCreated }: { children?: React.Re
       setUsers(res.data);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to search users");
+      toast.error(t('searchFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -52,7 +54,7 @@ export function NewChatDialog({ children, onChatCreated }: { children?: React.Re
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to start chat");
+      toast.error(t('startFailed'));
     }
   };
 
@@ -62,18 +64,18 @@ export function NewChatDialog({ children, onChatCreated }: { children?: React.Re
         {children || (
           <Button variant="ghost" className="w-full justify-start gap-2 mb-2">
             <UserPlus className="h-4 w-4" />
-            New Chat
+            {t('title')}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>New Chat</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <form onSubmit={handleSearch} className="flex gap-2">
             <Input
-              placeholder="Search users by name or email..."
+              placeholder={t('searchPlaceholder')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -83,7 +85,7 @@ export function NewChatDialog({ children, onChatCreated }: { children?: React.Re
           </form>
           <ScrollArea className="h-[300px] pr-4">
             {users.length === 0 && !isLoading && query && (
-              <p className="text-center text-muted-foreground py-4">No users found.</p>
+              <p className="text-center text-muted-foreground py-4">{t('noUsersFound')}</p>
             )}
             <div className="space-y-2">
               {users.map((user) => (

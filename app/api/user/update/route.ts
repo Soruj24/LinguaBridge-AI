@@ -8,6 +8,12 @@ const updateSchema = z.object({
   name: z.string().min(2).optional(),
   preferredLanguage: z.string().min(2).optional(),
   avatar: z.string().url().optional().or(z.literal("")),
+  preferences: z.object({
+    lowBandwidth: z.boolean().optional(),
+    reduceMotion: z.boolean().optional(),
+    highContrast: z.boolean().optional(),
+    autoPlayAudio: z.boolean().optional(),
+  }).optional(),
 });
 
 export async function PUT(req: Request) {
@@ -18,18 +24,24 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { name, preferredLanguage, avatar } = updateSchema.parse(body);
+    const { name, preferredLanguage, avatar, preferences } = updateSchema.parse(body);
 
     await connectDB();
 
+    const updateData: any = {
+      ...(name && { name }),
+      ...(preferredLanguage && { preferredLanguage }),
+      ...(avatar !== undefined && { avatar }),
+    };
+
+    if (preferences) {
+        updateData.preferences = preferences;
+    }
+
     const user = await User.findOneAndUpdate(
       { email: session.user.email },
-      { 
-        ...(name && { name }),
-        ...(preferredLanguage && { preferredLanguage }),
-        ...(avatar !== undefined && { avatar }),
-      },
-      { new: true }
+      updateData,
+      { new: true, upsert: false } // upsert: false because we are updating an existing user
     ).select("-password");
 
     return NextResponse.json(user);

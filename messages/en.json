@@ -1,0 +1,157 @@
+{
+  "Common": {
+    "language": "English",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "Auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Log out",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name"
+  },
+  "Sidebar": {
+    "newChat": "New Chat",
+    "search": "Search chats...",
+    "settings": "Settings",
+    "languageRegion": "Language & Region",
+    "noChats": "No chats found",
+    "startConversation": "Start a conversation"
+  },
+  "Chat": {
+    "typeMessage": "Type a message...",
+    "original": "Original",
+    "originalShort": "Orig",
+    "translated": "Translated",
+    "translatedShort": "Trans",
+    "both": "Both",
+    "bothShort": "Both",
+    "ipa": "IPA",
+    "voiceMessage": "Voice Message",
+    "audioHidden": "Audio message hidden (Low Bandwidth)",
+    "offline": "You are currently offline. Check your internet connection.",
+    "conversationSummary": "Conversation Summary",
+    "generatingSummary": "Generating summary...",
+    "noSummary": "No summary available.",
+    "rewrittenAs": "Rewritten as {tone}",
+    "rewriteFailed": "Failed to rewrite text",
+    "sendFailed": "Failed to send message",
+    "trustBanner": "Messages are end-to-end encrypted. Your privacy is our priority."
+  },
+  "Settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "accessibility": "Accessibility",
+    "language": "Language",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System",
+    "reduceMotion": "Reduce Motion",
+    "lowBandwidth": "Low Bandwidth Mode",
+    "highContrast": "High Contrast",
+    "autoPlayAudio": "Auto-play Audio"
+  },
+  "LanguageModal": {
+    "title": "Select Your Language",
+    "description": "Choose your preferred language for translation and interface.",
+    "searchPlaceholder": "Search language (e.g. Spanish, Español)...",
+    "noResults": "No languages found matching \"{query}\"",
+    "confirm": "Confirm Language",
+    "saving": "Saving..."
+  },
+  "NewChat": {
+    "title": "New Chat",
+    "searchPlaceholder": "Search users by name or email...",
+    "noUsersFound": "No users found.",
+    "searchFailed": "Failed to search users",
+    "startFailed": "Failed to start chat"
+  },
+  "MobileNav": {
+    "dashboard": "Dashboard",
+    "chats": "Chats",
+    "settings": "Settings"
+  },
+  "Feedback": {
+    "title": "Send Feedback",
+    "description": "Help us improve LinguaBridge AI. Share your thoughts or report issues.",
+    "emailLabel": "Email (Optional)",
+    "emailPlaceholder": "your@email.com",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Tell us what you think...",
+    "submit": "Submit Feedback",
+    "submitting": "Submitting...",
+    "success": "Thank you for your feedback!",
+    "trigger": "Feedback"
+  },
+  "Dashboard": {
+    "welcomeBack": "Welcome back, {name}",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Log out",
+    "recentConversations": "Recent Conversations",
+    "noMessages": "No messages yet",
+    "noConversations": "No conversations yet. Start chatting!"
+  },
+  "Landing": {
+    "header": {
+      "features": "Features",
+      "howItWorks": "How it Works",
+      "login": "Login"
+    },
+    "hero": {
+      "title": "Break Language Barriers Instantly",
+      "subtitle": "Chat seamlessly with anyone, anywhere. Real-time AI translation for text and voice messages in over 50 languages.",
+      "getStarted": "Get Started for Free",
+      "signIn": "Sign In"
+    },
+    "features": {
+      "keyFeatures": "Key Features",
+      "title": "Communication Without Limits",
+      "description": "Experience the future of global communication with our cutting-edge AI technology.",
+      "cards": {
+        "chat": {
+          "title": "Real-time Chat",
+          "description": "Instant messaging with ultra-low latency. Messages are translated as they arrive."
+        },
+        "voice": {
+          "title": "Voice Translation",
+          "description": "Speak naturally. We transcribe, translate, and synthesize your voice into the target language."
+        },
+        "autoDetect": {
+          "title": "Auto-Detection",
+          "description": "Our AI automatically detects the language you're speaking or typing."
+        },
+        "globalConnect": {
+          "title": "Global Connect",
+          "description": "Find and connect with users worldwide without worrying about language differences."
+        },
+        "lightningFast": {
+          "title": "Lightning Fast",
+          "description": "Powered by Redis and Socket.io for instant message delivery and updates."
+        },
+        "secure": {
+          "title": "Secure & Private",
+          "description": "Your conversations are private and secure. We prioritize your data privacy."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to start conversing?",
+      "subtitle": "Join LinguaBridge AI today and connect with the world.",
+      "signUp": "Sign Up Now",
+      "noCreditCard": "No credit card required. Start chatting immediately."
+    },
+    "footer": {
+      "rights": "All rights reserved.",
+      "terms": "Terms of Service",
+      "privacy": "Privacy"
+    }
+  }
+}

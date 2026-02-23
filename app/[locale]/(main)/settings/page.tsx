@@ -34,10 +34,18 @@ import { toast } from "sonner";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 
+import { Switch } from "@/components/ui/switch";
+
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   preferredLanguage: z.string().min(2, "Language is required"),
   avatar: z.string().url().optional().or(z.literal("")),
+  preferences: z.object({
+    lowBandwidth: z.boolean().default(false),
+    reduceMotion: z.boolean().default(false),
+    highContrast: z.boolean().default(false),
+    autoPlayAudio: z.boolean().default(true),
+  }),
 });
 
 const languages = [
@@ -72,15 +80,29 @@ export default function SettingsPage() {
       name: "",
       preferredLanguage: "en",
       avatar: "",
+      preferences: {
+        lowBandwidth: false,
+        reduceMotion: false,
+        highContrast: false,
+        autoPlayAudio: true,
+      },
     },
   });
 
   useEffect(() => {
     if (session?.user) {
+      // Safely cast user to any to access custom fields not in default NextAuth types yet
+      const user = session.user as any;
       form.reset({
-        name: session.user.name || "",
-        preferredLanguage: (session.user as any).preferredLanguage || "en",
-        avatar: (session.user as any).avatar || "",
+        name: user.name || "",
+        preferredLanguage: user.preferredLanguage || "en",
+        avatar: user.avatar || "",
+        preferences: {
+          lowBandwidth: user.preferences?.lowBandwidth || false,
+          reduceMotion: user.preferences?.reduceMotion || false,
+          highContrast: user.preferences?.highContrast || false,
+          autoPlayAudio: user.preferences?.autoPlayAudio ?? true,
+        },
       });
     }
   }, [session, form]);
@@ -182,6 +204,71 @@ export default function SettingsPage() {
                   </FormItem>
                 )}
               />
+              <div className="pt-4 border-t mt-4">
+                <h3 className="text-sm font-semibold mb-3">Accessibility & Data</h3>
+                <div className="space-y-3">
+                  <FormField
+                    control={form.control}
+                    name="preferences.lowBandwidth"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-sm">Low Bandwidth Mode</FormLabel>
+                          <FormDescription className="text-xs">
+                            Disable animations and high-res media.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="preferences.reduceMotion"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-sm">Reduce Motion</FormLabel>
+                          <FormDescription className="text-xs">
+                            Minimize UI animations.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="preferences.autoPlayAudio"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-sm">Auto-play Audio</FormLabel>
+                          <FormDescription className="text-xs">
+                            Automatically play voice messages.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Changes

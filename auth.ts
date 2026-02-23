@@ -42,11 +42,21 @@ export const { auth, signIn, signOut, handlers } = (NextAuth as any)({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }: { token: any; user: any }) {
+    async jwt({ token, user, trigger, session }: { token: any; user: any; trigger?: string; session?: any }) {
       if (user) {
         token.id = user._id?.toString();
         token.preferredLanguage = (user as any).preferredLanguage;
         token.avatar = (user as any).avatar;
+        token.preferences = (user as any).preferences;
+      }
+      
+      // Handle session updates (e.g. from update())
+      if (trigger === "update" && session) {
+        token.preferredLanguage = session.preferredLanguage;
+        token.avatar = session.avatar;
+        if (session.user?.preferences) {
+            token.preferences = session.user.preferences;
+        }
       }
       return token;
     },
@@ -56,6 +66,7 @@ export const { auth, signIn, signOut, handlers } = (NextAuth as any)({
         session.user.preferredLanguage = token.preferredLanguage;
         session.user.avatar = token.avatar;
         session.user.image = token.avatar || session.user.image;
+        session.user.preferences = token.preferences;
       }
       return session;
     },

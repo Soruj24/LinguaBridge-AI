@@ -1,0 +1,157 @@
+{
+  "Common": {
+    "language": "Español",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "Auth": {
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "name": "Nombre"
+  },
+  "Sidebar": {
+    "newChat": "Nuevo chat",
+    "search": "Buscar chats...",
+    "settings": "Ajustes",
+    "languageRegion": "Idioma y región",
+    "noChats": "No se encontraron chats",
+    "startConversation": "Iniciar una conversación"
+  },
+  "Chat": {
+    "typeMessage": "Escribe un mensaje...",
+    "original": "Original",
+    "originalShort": "Orig",
+    "translated": "Traducido",
+    "translatedShort": "Trad",
+    "both": "Ambos",
+    "bothShort": "Ambos",
+    "ipa": "AFI",
+    "voiceMessage": "Mensaje de voz",
+    "audioHidden": "Mensaje de audio oculto (Bajo ancho de banda)",
+    "offline": "Estás desconectado. Verifica tu conexión a internet.",
+    "conversationSummary": "Resumen de la conversación",
+    "generatingSummary": "Generando resumen...",
+    "noSummary": "No hay resumen disponible.",
+    "rewrittenAs": "Reescrito como {tone}",
+    "rewriteFailed": "Error al reescribir el texto",
+    "sendFailed": "Error al enviar mensaje",
+    "trustBanner": "Los mensajes están cifrados de extremo a extremo. Tu privacidad es nuestra prioridad."
+  },
+  "Settings": {
+    "title": "Ajustes",
+    "appearance": "Apariencia",
+    "accessibility": "Accesibilidad",
+    "language": "Idioma",
+    "theme": "Tema",
+    "dark": "Oscuro",
+    "light": "Claro",
+    "system": "Sistema",
+    "reduceMotion": "Reducir movimiento",
+    "lowBandwidth": "Modo de bajo ancho de banda",
+    "highContrast": "Alto contraste",
+    "autoPlayAudio": "Reproducir audio automáticamente"
+  },
+  "LanguageModal": {
+    "title": "Selecciona tu idioma",
+    "description": "Elige tu idioma preferido para la traducción y la interfaz.",
+    "searchPlaceholder": "Buscar idioma (ej. Spanish, Español)...",
+    "noResults": "No se encontraron idiomas que coincidan con \"{query}\"",
+    "confirm": "Confirmar idioma",
+    "saving": "Guardando..."
+  },
+  "NewChat": {
+    "title": "Nuevo chat",
+    "searchPlaceholder": "Buscar usuarios por nombre o correo...",
+    "noUsersFound": "No se encontraron usuarios.",
+    "searchFailed": "Error al buscar usuarios",
+    "startFailed": "Error al iniciar chat"
+  },
+  "MobileNav": {
+    "dashboard": "Panel",
+    "chats": "Chats",
+    "settings": "Ajustes"
+  },
+  "Feedback": {
+    "title": "Enviar comentarios",
+    "description": "Ayúdanos a mejorar LinguaBridge AI. Comparte tus pensamientos o reporta problemas.",
+    "emailLabel": "Correo electrónico (Opcional)",
+    "emailPlaceholder": "tu@email.com",
+    "messageLabel": "Mensaje",
+    "messagePlaceholder": "Cuéntanos qué piensas...",
+    "submit": "Enviar comentarios",
+    "submitting": "Enviando...",
+    "success": "¡Gracias por tus comentarios!",
+    "trigger": "Comentarios"
+  },
+  "Dashboard": {
+    "welcomeBack": "Bienvenido de nuevo, {name}",
+    "profile": "Perfil",
+    "settings": "Ajustes",
+    "logout": "Cerrar sesión",
+    "recentConversations": "Conversaciones recientes",
+    "noMessages": "Aún no hay mensajes",
+    "noConversations": "Aún no hay conversaciones. ¡Empieza a chatear!"
+  },
+  "Landing": {
+    "header": {
+      "features": "Características",
+      "howItWorks": "Cómo funciona",
+      "login": "Iniciar sesión"
+    },
+    "hero": {
+      "title": "Rompe las barreras del idioma al instante",
+      "subtitle": "Chatea sin problemas con cualquier persona, en cualquier lugar. Traducción de IA en tiempo real para mensajes de texto y voz en más de 50 idiomas.",
+      "getStarted": "Empieza gratis",
+      "signIn": "Iniciar sesión"
+    },
+    "features": {
+      "keyFeatures": "Características principales",
+      "title": "Comunicación sin límites",
+      "description": "Experimenta el futuro de la comunicación global con nuestra tecnología de IA de vanguardia.",
+      "cards": {
+        "chat": {
+          "title": "Chat en tiempo real",
+          "description": "Mensajería instantánea con latencia ultra baja. Los mensajes se traducen a medida que llegan."
+        },
+        "voice": {
+          "title": "Traducción de voz",
+          "description": "Habla con naturalidad. Transcribimos, traducimos y sintetizamos tu voz al idioma de destino."
+        },
+        "autoDetect": {
+          "title": "Detección automática",
+          "description": "Nuestra IA detecta automáticamente el idioma que hablas o escribes."
+        },
+        "globalConnect": {
+          "title": "Conexión global",
+          "description": "Encuentra y conecta con usuarios de todo el mundo sin preocuparte por las diferencias de idioma."
+        },
+        "lightningFast": {
+          "title": "Ultrarrápido",
+          "description": "Impulsado por Redis y Socket.io para entrega instantánea de mensajes y actualizaciones."
+        },
+        "secure": {
+          "title": "Seguro y privado",
+          "description": "Tus conversaciones son privadas y seguras. Priorizamos la privacidad de tus datos."
+        }
+      }
+    },
+    "cta": {
+      "title": "¿Listo para empezar a conversar?",
+      "subtitle": "Únete a LinguaBridge AI hoy y conecta con el mundo.",
+      "signUp": "Regístrate ahora",
+      "noCreditCard": "No se requiere tarjeta de crédito. Empieza a chatear de inmediato."
+    },
+    "footer": {
+      "rights": "Todos los derechos reservados.",
+      "terms": "Términos de servicio",
+      "privacy": "Privacidad"
+    }
+  }
+}

@@ -10,12 +10,14 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ModeToggle } from "@/components/mode-toggle";
-import { LogOut, Plus, MessageSquare, Settings, Search } from "lucide-react";
+import { LogOut, Plus, MessageSquare, Settings, Search, Globe } from "lucide-react";
 import { useSocket } from "@/components/socket-provider";
 import { NewChatDialog } from "@/components/new-chat-dialog";
+import { LanguageModal } from "@/components/language-modal";
 import axios from "axios";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface Chat {
   _id: string;
@@ -40,6 +42,9 @@ interface SidebarProps {
 }
 
 export function Sidebar({ className, onClose }: SidebarProps) {
+  const t = useTranslations('Sidebar');
+  const tAuth = useTranslations('Auth');
+  const tChat = useTranslations('Chat');
   const { data: session } = useSession();
   const pathname = usePathname();
   const router = useRouter();
@@ -47,6 +52,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
   const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
 
   const fetchChats = useCallback(async () => {
     try {
@@ -86,7 +92,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
 
   const getLastMessageText = (message: Chat["lastMessage"]) => {
     if (!message) return "";
-    return message.originalText || "Voice Message";
+    return message.originalText || tChat('voiceMessage');
   };
 
   const filteredChats = chats.filter((chat) => {
@@ -111,7 +117,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search chats..."
+            placeholder={t('search')}
             className="pl-9 bg-background"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -161,7 +167,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                       <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2">
                         {new Date(
                           chat.lastMessage.createdAt,
-                        ).toLocaleTimeString([], {
+                        ).toLocaleTimeString(session?.user?.preferredLanguage || [], {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
@@ -173,7 +179,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                       getLastMessageText(chat.lastMessage)
                     ) : (
                       <span className="italic opacity-70">
-                        Start a conversation
+                        {t('startConversation')}
                       </span>
                     )}
                   </p>
@@ -184,7 +190,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
           }
           {!isLoading && filteredChats.length === 0 && (
             <div className="text-center text-muted-foreground p-4 text-sm">
-              No chats found
+              {t('noChats')}
             </div>
           )}
         </div>
@@ -203,6 +209,17 @@ export function Sidebar({ className, onClose }: SidebarProps) {
             </p>
           </div>
         </div>
+        
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="w-full justify-start gap-2 mb-2 bg-background/50"
+          onClick={() => setShowLanguageModal(true)}
+        >
+          <Globe className="h-4 w-4" />
+          {t('languageRegion')}
+        </Button>
+
         <div className="grid grid-cols-2 gap-2">
           <Button
             variant="outline"
@@ -211,7 +228,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
             onClick={() => router.push("/settings")}
           >
             <Settings className="h-4 w-4" />
-            Settings
+            {t('settings')}
           </Button>
           <Button
             variant="outline"
@@ -220,10 +237,12 @@ export function Sidebar({ className, onClose }: SidebarProps) {
             onClick={() => signOut({ callbackUrl: "/login" })}
           >
             <LogOut className="h-4 w-4" />
-            Log out
+            {tAuth('logout')}
           </Button>
         </div>
       </div>
+      
+      <LanguageModal open={showLanguageModal} onOpenChange={setShowLanguageModal} />
     </div>
   );
 }

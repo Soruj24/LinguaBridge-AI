@@ -1,0 +1,102 @@
+{
+  "Common": {
+    "language": "中文",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功"
+  },
+  "Auth": {
+    "login": "登录",
+    "register": "注册",
+    "logout": "登出",
+    "email": "邮箱",
+    "password": "密码",
+    "name": "姓名"
+  },
+  "Sidebar": {
+    "newChat": "新对话",
+    "search": "搜索...",
+    "settings": "设置",
+    "languageRegion": "语言和区域",
+    "noChats": "未找到对话",
+    "startConversation": "开始对话"
+  },
+  "Chat": {
+    "typeMessage": "输入消息...",
+    "original": "原文",
+    "originalShort": "原",
+    "translated": "译文",
+    "translatedShort": "译",
+    "both": "双语",
+    "bothShort": "双",
+    "ipa": "IPA",
+    "voiceMessage": "语音消息",
+    "audioHidden": "语音消息已隐藏（低带宽模式）",
+    "offline": "您已离线。请检查您的网络连接。",
+    "conversationSummary": "对话摘要",
+    "generatingSummary": "正在生成摘要...",
+    "noSummary": "暂无摘要。",
+    "rewrittenAs": "已重写为 {tone}",
+    "rewriteFailed": "重写文本失败",
+    "sendFailed": "发送消息失败",
+    "trustBanner": "消息经过端到端加密。您的隐私是我们的首要任务。"
+  },
+  "Settings": {
+    "title": "设置",
+    "appearance": "外观",
+    "accessibility": "辅助功能",
+    "language": "语言",
+    "theme": "主题",
+    "dark": "深色",
+    "light": "浅色",
+    "system": "跟随系统",
+    "reduceMotion": "减少动画",
+    "lowBandwidth": "低带宽模式",
+    "highContrast": "高对比度",
+    "autoPlayAudio": "自动播放音频"
+  },
+  "LanguageModal": {
+    "title": "选择您的语言",
+    "description": "选择您用于翻译和界面的首选语言。",
+    "searchPlaceholder": "搜索语言（例如西班牙语）...",
+    "noResults": "未找到匹配 \"{query}\" 的语言",
+    "confirm": "确认语言",
+    "saving": "保存中..."
+  },
+  "NewChat": {
+    "title": "新聊天",
+    "searchPlaceholder": "通过姓名或电子邮件搜索用户...",
+    "noUsersFound": "未找到用户。",
+    "searchFailed": "搜索用户失败",
+    "startFailed": "启动聊天失败"
+  },
+  "MobileNav": {
+    "dashboard": "仪表板",
+    "chats": "聊天",
+    "settings": "设置"
+  },
+  "Feedback": {
+    "title": "发送反馈",
+    "description": "帮助我们改进 LinguaBridge AI。分享您的想法或报告问题。",
+    "emailLabel": "电子邮件（可选）",
+    "emailPlaceholder": "your@email.com",
+    "messageLabel": "消息",
+    "messagePlaceholder": "告诉我们您的想法...",
+    "submit": "提交反馈",
+    "submitting": "提交中...",
+    "success": "感谢您的反馈！",
+    "trigger": "反馈"
+  },
+  "Dashboard": {
+    "welcomeBack": "欢迎回来，{name}",
+    "profile": "个人资料",
+    "settings": "设置",
+    "logout": "登出",
+    "recentConversations": "最近的对话",
+    "noMessages": "暂无消息",
+    "noConversations": "暂无对话。开始聊天！"
+  }
+}

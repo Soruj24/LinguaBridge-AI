@@ -7,8 +7,10 @@ import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "@/components/sidebar";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function MobileNav() {
+  const t = useTranslations('MobileNav');
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -30,7 +32,7 @@ export function MobileNav() {
           )}
         >
           <LayoutDashboard className="h-5 w-5" />
-          Dashboard
+          {t('dashboard')}
         </Link>
 
         <Sheet open={open} onOpenChange={setOpen}>
@@ -44,7 +46,7 @@ export function MobileNav() {
               )}
             >
               <MessageSquare className="h-5 w-5" />
-              Chats
+              {t('chats')}
             </button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-80 border-r-0">
@@ -62,7 +64,7 @@ export function MobileNav() {
           )}
         >
           <Settings className="h-5 w-5" />
-          Settings
+          {t('settings')}
         </Link>
       </div>
     </div>

@@ -36,6 +36,8 @@ import {
 import { VoiceRecorder } from "@/components/voice-recorder";
 import { AnimatePresence } from "framer-motion";
 import { TypingIndicator } from "@/components/typing-indicator";
+import { TrustBanner } from "@/components/trust-banner";
+import { useTranslations } from "next-intl";
 
 interface Message {
   _id: string;
@@ -62,6 +64,7 @@ interface Chat {
 }
 
 export function ChatWindow({ chatId }: { chatId: string }) {
+  const t = useTranslations('Chat');
   const { data: session } = useSession();
   const router = useRouter();
   const socket = useSocket();
@@ -275,10 +278,10 @@ export function ChatWindow({ chatId }: { chatId: string }) {
       });
       if (res.data.rewritten) {
         setNewMessage(res.data.rewritten);
-        toast.success(`Rewritten as ${tone}`);
+        toast.success(t('rewrittenAs', { tone }));
       }
     } catch (error) {
-      toast.error("Failed to rewrite text");
+      toast.error(t('rewriteFailed'));
     } finally {
       setIsRewriting(false);
     }
@@ -302,7 +305,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
         },
         (response: { status: string }) => {
           if (response?.status !== "ok") {
-            toast.error("Failed to send message");
+            toast.error(t('sendFailed'));
             setNewMessage(newMessage); // Restore text
           }
         },
@@ -400,22 +403,23 @@ export function ChatWindow({ chatId }: { chatId: string }) {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Conversation Summary</DialogTitle>
+                <DialogTitle>{t('conversationSummary')}</DialogTitle>
               </DialogHeader>
               <div className="mt-4 text-sm leading-relaxed whitespace-pre-wrap">
                 {isSummarizing ? (
                   <div className="flex items-center justify-center py-8 text-muted-foreground">
                     <Sparkles className="h-5 w-5 animate-spin mr-2" />
-                    Generating summary...
+                    {t('generatingSummary')}
                   </div>
                 ) : (
-                  summary || "No summary available."
+                  summary || t('noSummary')
                 )}
               </div>
             </DialogContent>
           </Dialog>
         </div>
       </div>
+      <TrustBanner />
       <ScrollArea className="flex-1 p-4" onScroll={onScroll}>
         <div className="space-y-6 pb-4">
           {isLoading ? (
@@ -439,15 +443,24 @@ export function ChatWindow({ chatId }: { chatId: string }) {
               ))}
             </div>
           ) : (
-            <AnimatePresence mode="popLayout">
-              {messages.map((msg) => (
-                <MessageBubble
-                  key={msg._id}
-                  message={msg}
-                  isMe={msg.senderId._id === session?.user?.id}
-                  onDelete={handleDeleteMessage}
-                />
-              ))}
+            <AnimatePresence mode="popLayout" initial={false}>
+              {messages.map((msg, index) => {
+                // Check if previous message is from same sender
+                const isSameSender = index > 0 && messages[index - 1].senderId._id === msg.senderId._id;
+                // Check if next message is from same sender (for grouping visuals if needed later)
+                // const isNextSameSender = index < messages.length - 1 && messages[index + 1].senderId._id === msg.senderId._id;
+
+                return (
+                  <MessageBubble
+                    key={msg._id}
+                    message={msg}
+                    isMe={msg.senderId._id === session?.user?.id}
+                    onDelete={handleDeleteMessage}
+                    currentUserId={session?.user?.id}
+                    isSameSender={isSameSender}
+                  />
+                );
+              })}
             </AnimatePresence>
           )}
           {isTyping && typingUser && (
@@ -481,20 +494,23 @@ export function ChatWindow({ chatId }: { chatId: string }) {
 
       {/* Input Area */}
       <div className="p-3 md:p-4 border-t flex items-end gap-2 bg-background/80 backdrop-blur-md sticky bottom-0 z-50 shadow-lg pb-[env(safe-area-inset-bottom)]">
-        <TextareaAutosize
-          className="flex-1 bg-muted/50 border-0 focus:ring-1 focus:ring-primary/20 rounded-[24px] px-4 py-3 min-h-[48px] max-h-[150px] transition-all text-base resize-none focus:outline-none placeholder:text-muted-foreground"
-          placeholder="Type a message..."
-          value={newMessage}
-          onChange={handleInputChange}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
-          minRows={1}
-          maxRows={6}
-        />
+        <div className="flex-1 min-h-[48px] rounded-[24px] bg-muted/50 focus-within:ring-1 focus-within:ring-primary/20 flex flex-col justify-center">
+          <ScrollArea className="w-full max-h-[150px] rounded-[24px]">
+            <TextareaAutosize
+              className="w-full bg-transparent border-0 px-4 py-3 text-base resize-none focus:outline-none placeholder:text-muted-foreground block overflow-hidden"
+              placeholder={t('typeMessage')}
+              value={newMessage}
+              onChange={handleInputChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
+              minRows={1}
+            />
+          </ScrollArea>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

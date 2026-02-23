@@ -1,0 +1,102 @@
+{
+  "Common": {
+    "language": "العربية",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "loading": "جار التحميل...",
+    "error": "خطأ",
+    "success": "نجاح"
+  },
+  "Auth": {
+    "login": "تسجيل الدخول",
+    "register": "تسجيل",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "name": "الاسم"
+  },
+  "Sidebar": {
+    "newChat": "محادثة جديدة",
+    "search": "بحث...",
+    "settings": "الإعدادات",
+    "languageRegion": "اللغة والمنطقة",
+    "noChats": "لا توجد محادثات",
+    "startConversation": "ابدأ محادثة"
+  },
+  "Chat": {
+    "typeMessage": "اكتب رسالة...",
+    "original": "أصلي",
+    "originalShort": "أصل",
+    "translated": "مترجم",
+    "translatedShort": "ترج",
+    "both": "كلاهما",
+    "bothShort": "كل",
+    "ipa": "IPA",
+    "voiceMessage": "رسالة صوتية",
+    "audioHidden": "الرسالة الصوتية مخفية (نطاق ترددي منخفض)",
+    "offline": "أنت غير متصل حاليًا. تحقق من اتصالك بالإنترنت.",
+    "conversationSummary": "ملخص المحادثة",
+    "generatingSummary": "جاري إنشاء الملخص...",
+    "noSummary": "لا يوجد ملخص متاح.",
+    "rewrittenAs": "أعيدت كتابتها بصيغة {tone}",
+    "rewriteFailed": "فشل في إعادة كتابة النص",
+    "sendFailed": "فشل إرسال الرسالة",
+    "trustBanner": "الرسائل مشفرة من طرف إلى طرف. خصوصيتك هي أولويتنا."
+  },
+  "Settings": {
+    "title": "الإعدادات",
+    "appearance": "المظهر",
+    "accessibility": "إمكانية الوصول",
+    "language": "اللغة",
+    "theme": "السمة",
+    "dark": "داكن",
+    "light": "فاتح",
+    "system": "النظام",
+    "reduceMotion": "تقليل الحركة",
+    "lowBandwidth": "وضع النطاق الترددي المنخفض",
+    "highContrast": "تباين عالي",
+    "autoPlayAudio": "تشغيل الصوت تلقائيًا"
+  },
+  "LanguageModal": {
+    "title": "اختر لغتك",
+    "description": "اختر لغتك المفضلة للترجمة والواجهة.",
+    "searchPlaceholder": "البحث عن لغة (مثل الإسبانية)...",
+    "noResults": "لم يتم العثور على لغات مطابقة لـ \"{query}\"",
+    "confirm": "تأكيد اللغة",
+    "saving": "جاري الحفظ..."
+  },
+  "NewChat": {
+    "title": "محادثة جديدة",
+    "searchPlaceholder": "البحث عن المستخدمين بالاسم أو البريد الإلكتروني...",
+    "noUsersFound": "لم يتم العثور على مستخدمين.",
+    "searchFailed": "فشل البحث عن المستخدمين",
+    "startFailed": "فشل بدء المحادثة"
+  },
+  "MobileNav": {
+    "dashboard": "لوحة القيادة",
+    "chats": "المحادثات",
+    "settings": "الإعدادات"
+  },
+  "Feedback": {
+    "title": "إرسال تعليقات",
+    "description": "ساعدنا في تحسين LinguaBridge AI. شارك أفكارك أو أبلغ عن مشكلات.",
+    "emailLabel": "البريد الإلكتروني (اختياري)",
+    "emailPlaceholder": "your@email.com",
+    "messageLabel": "الرسالة",
+    "messagePlaceholder": "أخبرنا برأيك...",
+    "submit": "إرسال التعليقات",
+    "submitting": "جاري الإرسال...",
+    "success": "شكرا لتعليقاتكم!",
+    "trigger": "تعليقات"
+  },
+  "Dashboard": {
+    "welcomeBack": "مرحبًا بعودتك، {name}",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج",
+    "recentConversations": "المحادثات الأخيرة",
+    "noMessages": "لا توجد رسائل بعد",
+    "noConversations": "لا توجد محادثات بعد. ابدأ الدردشة!"
+  }
+}

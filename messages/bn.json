@@ -1,0 +1,102 @@
+{
+  "Common": {
+    "language": "বাংলা",
+    "save": "সংরক্ষণ",
+    "cancel": "বাতিল",
+    "delete": "মুছে ফেলুন",
+    "loading": "লোড হচ্ছে...",
+    "error": "ত্রুটি",
+    "success": "সফল"
+  },
+  "Auth": {
+    "login": "লগইন",
+    "register": "নিবন্ধন",
+    "logout": "লগ আউট",
+    "email": "ইমেল",
+    "password": "পাসওয়ার্ড",
+    "name": "নাম"
+  },
+  "Sidebar": {
+    "newChat": "নতুন চ্যাট",
+    "search": "চ্যাট অনুসন্ধান...",
+    "settings": "সেটিংস",
+    "languageRegion": "ভাষা ও অঞ্চল",
+    "noChats": "কোন চ্যাট পাওয়া যায়নি",
+    "startConversation": "কথপোকথন শুরু করুন"
+  },
+  "Chat": {
+    "typeMessage": "একটি বার্তা টাইপ করুন...",
+    "original": "মূল",
+    "originalShort": "মূল",
+    "translated": "অনূদিত",
+    "translatedShort": "অনু",
+    "both": "উভয়",
+    "bothShort": "উভয়",
+    "ipa": "আইপিএ",
+    "voiceMessage": "ভয়েস বার্তা",
+    "audioHidden": "অডিও বার্তা লুকানো (লো ব্যান্ডউইথ)",
+    "offline": "আপনি বর্তমানে অফলাইনে আছেন। আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন।",
+    "conversationSummary": "কথোপকথনের সারাংশ",
+    "generatingSummary": "সারাংশ তৈরি করা হচ্ছে...",
+    "noSummary": "কোন সারাংশ উপলব্ধ নেই।",
+    "rewrittenAs": "{tone} হিসেবে পুনর্লিখন করা হয়েছে",
+    "rewriteFailed": "টেক্সট পুনর্লিখন করতে ব্যর্থ",
+    "sendFailed": "বার্তা পাঠাতে ব্যর্থ",
+    "trustBanner": "বার্তাগুলি এন্ড-টু-এন্ড এনক্রিপ্ট করা। আপনার গোপনীয়তা আমাদের অগ্রাধিকার।"
+  },
+  "Settings": {
+    "title": "সেটিংস",
+    "appearance": "চেহারা",
+    "accessibility": "অ্যাক্সেসিবিলিটি",
+    "language": "ভাষা",
+    "theme": "থিম",
+    "dark": "অন্ধকার",
+    "light": "আলো",
+    "system": "সিস্টেম",
+    "reduceMotion": "গতি কমান",
+    "lowBandwidth": "লো ব্যান্ডউইথ মোড",
+    "highContrast": "উচ্চ কনট্রাস্ট",
+    "autoPlayAudio": "অডিও স্বয়ংক্রিয়ভাবে চালান"
+  },
+  "LanguageModal": {
+    "title": "আপনার ভাষা নির্বাচন করুন",
+    "description": "অনুবাদ এবং ইন্টারফেসের জন্য আপনার পছন্দের ভাষা বেছে নিন।",
+    "searchPlaceholder": "ভাষা অনুসন্ধান করুন (যেমন স্প্যানিশ, এস্পানোল)...",
+    "noResults": "\"{query}\" এর সাথে মিল রেখে কোন ভাষা পাওয়া যায়নি",
+    "confirm": "ভাষা নিশ্চিত করুন",
+    "saving": "সংরক্ষণ করা হচ্ছে..."
+  },
+  "NewChat": {
+    "title": "নতুন চ্যাট",
+    "searchPlaceholder": "নাম বা ইমেল দ্বারা ব্যবহারকারীদের অনুসন্ধান করুন...",
+    "noUsersFound": "কোন ব্যবহারকারী পাওয়া যায়নি।",
+    "searchFailed": "ব্যবহারকারী অনুসন্ধান করতে ব্যর্থ",
+    "startFailed": "চ্যাট শুরু করতে ব্যর্থ"
+  },
+  "MobileNav": {
+    "dashboard": "ড্যাশবোর্ড",
+    "chats": "চ্যাট",
+    "settings": "সেটিংস"
+  },
+  "Feedback": {
+    "title": "মতামত পাঠান",
+    "description": "লিঙ্গুয়াব্রিজ এআই উন্নত করতে আমাদের সাহায্য করুন। আপনার চিন্তা শেয়ার করুন বা সমস্যা রিপোর্ট করুন।",
+    "emailLabel": "ইমেল (ঐচ্ছিক)",
+    "emailPlaceholder": "your@email.com",
+    "messageLabel": "বার্তা",
+    "messagePlaceholder": "আমাদের জানান আপনি কি ভাবছেন...",
+    "submit": "মতামত জমা দিন",
+    "submitting": "জমা দেওয়া হচ্ছে...",
+    "success": "আপনার মতামতের জন্য ধন্যবাদ!",
+    "trigger": "মতামত"
+  },
+  "Dashboard": {
+    "welcomeBack": "স্বাগতম ফিরে এসেছেন, {name}",
+    "profile": "প্রোফাইল",
+    "settings": "সেটিংস",
+    "logout": "লॉग আউট",
+    "recentConversations": "সাম্প্রতিক কথোপকথন",
+    "noMessages": "এখনও কোন বার্তা নেই",
+    "noConversations": "এখনও কোন কথোপকথন নেই। চ্যাট শুরু করুন!"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "Common": {
+    "language": "Français",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès"
+  },
+  "Auth": {
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "logout": "Déconnexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "name": "Nom"
+  },
+  "Sidebar": {
+    "newChat": "Nouvelle discussion",
+    "search": "Rechercher...",
+    "settings": "Paramètres",
+    "languageRegion": "Langue et région",
+    "noChats": "Aucune discussion trouvée",
+    "startConversation": "Démarrer une conversation"
+  },
+  "Chat": {
+    "typeMessage": "Écrivez un message...",
+    "original": "Original",
+    "originalShort": "Orig",
+    "translated": "Traduit",
+    "translatedShort": "Trad",
+    "both": "Les deux",
+    "bothShort": "Tous",
+    "ipa": "API",
+    "voiceMessage": "Message vocal",
+    "audioHidden": "Message audio masqué (Faible bande passante)",
+    "offline": "Vous êtes actuellement hors ligne. Vérifiez votre connexion Internet.",
+    "conversationSummary": "Résumé de la conversation",
+    "generatingSummary": "Génération du résumé...",
+    "noSummary": "Aucun résumé disponible.",
+    "rewrittenAs": "Réécrit en {tone}",
+    "rewriteFailed": "Échec de la réécriture du texte",
+    "sendFailed": "Échec de l'envoi du message",
+    "trustBanner": "Les messages sont chiffrés de bout en bout. Votre confidentialité est notre priorité."
+  },
+  "Settings": {
+    "title": "Paramètres",
+    "appearance": "Apparence",
+    "accessibility": "Accessibilité",
+    "language": "Langue",
+    "theme": "Thème",
+    "dark": "Sombre",
+    "light": "Clair",
+    "system": "Système",
+    "reduceMotion": "Réduire les animations",
+    "lowBandwidth": "Mode faible bande passante",
+    "highContrast": "Contraste élevé",
+    "autoPlayAudio": "Lecture audio automatique"
+  },
+  "LanguageModal": {
+    "title": "Sélectionnez votre langue",
+    "description": "Choisissez votre langue préférée pour la traduction et l'interface.",
+    "searchPlaceholder": "Rechercher une langue (ex. Espagnol)...",
+    "noResults": "Aucune langue trouvée correspondant à \"{query}\"",
+    "confirm": "Confirmer la langue",
+    "saving": "Enregistrement..."
+  },
+  "NewChat": {
+    "title": "Nouvelle discussion",
+    "searchPlaceholder": "Rechercher des utilisateurs par nom ou e-mail...",
+    "noUsersFound": "Aucun utilisateur trouvé.",
+    "searchFailed": "Échec de la recherche d'utilisateurs",
+    "startFailed": "Échec du démarrage de la discussion"
+  },
+  "MobileNav": {
+    "dashboard": "Tableau de bord",
+    "chats": "Discussions",
+    "settings": "Paramètres"
+  },
+  "Feedback": {
+    "title": "Envoyer des commentaires",
+    "description": "Aidez-nous à améliorer LinguaBridge AI. Partagez vos idées ou signalez des problèmes.",
+    "emailLabel": "E-mail (Facultatif)",
+    "emailPlaceholder": "votre@email.com",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Dites-nous ce que vous pensez...",
+    "submit": "Envoyer",
+    "submitting": "Envoi...",
+    "success": "Merci pour vos commentaires !",
+    "trigger": "Avis"
+  },
+  "Dashboard": {
+    "welcomeBack": "Bon retour, {name}",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "logout": "Se déconnecter",
+    "recentConversations": "Conversations récentes",
+    "noMessages": "Pas encore de messages",
+    "noConversations": "Pas encore de conversations. Commencez à discuter !"
+  }
+}

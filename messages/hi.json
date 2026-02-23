@@ -1,0 +1,102 @@
+{
+  "Common": {
+    "language": "हिन्दी",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि",
+    "success": "सफल"
+  },
+  "Auth": {
+    "login": "लॉग इन",
+    "register": "पंजीकरण",
+    "logout": "लॉग आउट",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "name": "नाम"
+  },
+  "Sidebar": {
+    "newChat": "नई चैट",
+    "search": "चैट खोजें...",
+    "settings": "सेटिंग्स",
+    "languageRegion": "भाषा और क्षेत्र",
+    "noChats": "कोई चैट नहीं मिली",
+    "startConversation": "बातचीत शुरू करें"
+  },
+  "Chat": {
+    "typeMessage": "एक संदेश लिखें...",
+    "original": "मूल",
+    "originalShort": "मूल",
+    "translated": "अनुवादित",
+    "translatedShort": "अनु",
+    "both": "दोनों",
+    "bothShort": "दोनों",
+    "ipa": "आईपीए",
+    "voiceMessage": "वॉयस संदेश",
+    "audioHidden": "ऑडियो संदेश छिपा हुआ है (कम बैंडविड्थ)",
+    "offline": "आप अभी ऑफ़लाइन हैं। अपना इंटरनेट कनेक्शन जांचें।",
+    "conversationSummary": "बातचीत का सारांश",
+    "generatingSummary": "सारांश उत्पन्न हो रहा है...",
+    "noSummary": "कोई सारांश उपलब्ध नहीं है।",
+    "rewrittenAs": "{tone} के रूप में फिर से लिखा गया",
+    "rewriteFailed": "टेक्स्ट को फिर से लिखने में विफल",
+    "sendFailed": "संदेश भेजने में विफल",
+    "trustBanner": "संदेश एंड-टू-एंड एन्क्रिप्टेड हैं। आपकी गोपनीयता हमारी प्राथमिकता है।"
+  },
+  "Settings": {
+    "title": "सेटिंग्स",
+    "appearance": "दिखावट",
+    "accessibility": "पहुंच",
+    "language": "भाषा",
+    "theme": "थीम",
+    "dark": "डार्क",
+    "light": "लाइट",
+    "system": "सिस्टम",
+    "reduceMotion": "मोशन कम करें",
+    "lowBandwidth": "कम बैंडविड्थ मोड",
+    "highContrast": "उच्च कंट्रास्ट",
+    "autoPlayAudio": "ऑडियो ऑटो-प्ले"
+  },
+  "LanguageModal": {
+    "title": "अपनी भाषा चुनें",
+    "description": "अनुवाद और इंटरफ़ेस के लिए अपनी पसंदीदा भाषा चुनें।",
+    "searchPlaceholder": "भाषा खोजें (जैसे स्पेनिश, Español)...",
+    "noResults": "\"{query}\" से मेल खाने वाली कोई भाषा नहीं मिली",
+    "confirm": "भाषा की पुष्टि करें",
+    "saving": "सहेज रहा है..."
+  },
+  "NewChat": {
+    "title": "नई चैट",
+    "searchPlaceholder": "नाम या ईमेल द्वारा उपयोगकर्ताओं को खोजें...",
+    "noUsersFound": "कोई उपयोगकर्ता नहीं मिला।",
+    "searchFailed": "उपयोगकर्ताओं को खोजने में विफल",
+    "startFailed": "चैट शुरू करने में विफल"
+  },
+  "MobileNav": {
+    "dashboard": "डैशबोर्ड",
+    "chats": "चैट",
+    "settings": "सेटिंग्स"
+  },
+  "Feedback": {
+    "title": "प्रतिक्रिया भेजें",
+    "description": "LinguaBridge AI को बेहतर बनाने में हमारी मदद करें। अपने विचार साझा करें या समस्याओं की रिपोर्ट करें।",
+    "emailLabel": "ईमेल (वैकल्पिक)",
+    "emailPlaceholder": "your@email.com",
+    "messageLabel": "संदेश",
+    "messagePlaceholder": "हमें बताएं कि आप क्या सोचते हैं...",
+    "submit": "प्रतिक्रिया जमा करें",
+    "submitting": "जमा कर रहा है...",
+    "success": "आपकी प्रतिक्रिया के लिए धन्यवाद!",
+    "trigger": "प्रतिक्रिया"
+  },
+  "Dashboard": {
+    "welcomeBack": "वापसी पर स्वागत है, {name}",
+    "profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स",
+    "logout": "लॉग आउट",
+    "recentConversations": "हाल की बातचीत",
+    "noMessages": "अभी तक कोई संदेश नहीं",
+    "noConversations": "अभी तक कोई बातचीत नहीं। चैट शुरू करें!"
+  }
+}

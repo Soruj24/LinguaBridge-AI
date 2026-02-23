@@ -8,11 +8,15 @@ import {
   Zap, 
   Users 
 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { FeedbackDialog } from "@/components/feedback-dialog";
 
 export default function Home() {
+  const t = useTranslations('Landing');
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      {/* Header */}
+      <FeedbackDialog />
       <header className="px-4 lg:px-6 h-16 flex items-center border-b sticky top-0 bg-background/95 backdrop-blur z-50">
         <Link className="flex items-center justify-center" href="/">
           <Globe className="h-6 w-6 text-primary mr-2" />
@@ -20,13 +24,13 @@ export default function Home() {
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
           <Link className="text-sm font-medium hover:underline underline-offset-4" href="#features">
-            Features
+            {t('header.features')}
           </Link>
           <Link className="text-sm font-medium hover:underline underline-offset-4" href="#how-it-works">
-            How it Works
+            {t('header.howItWorks')}
           </Link>
           <Link className="text-sm font-medium hover:underline underline-offset-4" href="/login">
-            Login
+            {t('header.login')}
           </Link>
         </nav>
       </header>
@@ -37,21 +41,21 @@ export default function Home() {
           <div className="container mx-auto flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
-                Break Language Barriers Instantly
+                {t('hero.title')}
               </h1>
               <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-                Chat seamlessly with anyone, anywhere. Real-time AI translation for text and voice messages in over 50 languages.
+                {t('hero.subtitle')}
               </p>
             </div>
             <div className="space-x-4 pt-4">
               <Link href="/register">
                 <Button size="lg" className="h-11 px-8">
-                  Get Started for Free
+                  {t('hero.getStarted')}
                 </Button>
               </Link>
               <Link href="/login">
                 <Button variant="outline" size="lg" className="h-11 px-8">
-                  Sign In
+                  {t('hero.signIn')}
                 </Button>
               </Link>
             </div>
@@ -64,46 +68,46 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
-                  Key Features
+                  {t('features.keyFeatures')}
                 </div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Communication Without Limits
+                  {t('features.title')}
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Experience the future of global communication with our cutting-edge AI technology.
+                  {t('features.description')}
                 </p>
               </div>
             </div>
             <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2 lg:grid-cols-3">
               <FeatureCard 
                 icon={<MessageSquare className="h-10 w-10 text-primary" />}
-                title="Real-time Chat"
-                description="Instant messaging with ultra-low latency. Messages are translated as they arrive."
+                title={t('features.cards.chat.title')}
+                description={t('features.cards.chat.description')}
               />
               <FeatureCard 
                 icon={<Mic className="h-10 w-10 text-primary" />}
-                title="Voice Translation"
-                description="Speak naturally. We transcribe, translate, and synthesize your voice into the target language."
+                title={t('features.cards.voice.title')}
+                description={t('features.cards.voice.description')}
               />
               <FeatureCard 
                 icon={<Globe className="h-10 w-10 text-primary" />}
-                title="Auto-Detection"
-                description="Our AI automatically detects the language you're speaking or typing."
+                title={t('features.cards.autoDetect.title')}
+                description={t('features.cards.autoDetect.description')}
               />
               <FeatureCard 
                 icon={<Users className="h-10 w-10 text-primary" />}
-                title="Global Connect"
-                description="Find and connect with users worldwide without worrying about language differences."
+                title={t('features.cards.globalConnect.title')}
+                description={t('features.cards.globalConnect.description')}
               />
               <FeatureCard 
                 icon={<Zap className="h-10 w-10 text-primary" />}
-                title="Lightning Fast"
-                description="Powered by Redis and Socket.io for instant message delivery and updates."
+                title={t('features.cards.lightningFast.title')}
+                description={t('features.cards.lightningFast.description')}
               />
               <FeatureCard 
                 icon={<ShieldCheck className="h-10 w-10 text-primary" />}
-                title="Secure & Private"
-                description="Your conversations are private and secure. We prioritize your data privacy."
+                title={t('features.cards.secure.title')}
+                description={t('features.cards.secure.description')}
               />
             </div>
           </div>
@@ -115,20 +119,20 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
-                  Ready to start conversing?
+                  {t('cta.title')}
                 </h2>
                 <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Join LinguaBridge AI today and connect with the world.
+                  {t('cta.subtitle')}
                 </p>
               </div>
               <div className="w-full max-w-sm space-y-2">
                 <Link href="/register">
                   <Button className="w-full" size="lg">
-                    Sign Up Now
+                    {t('cta.signUp')}
                   </Button>
                 </Link>
                 <p className="text-xs text-muted-foreground">
-                  No credit card required. Start chatting immediately.
+                  {t('cta.noCreditCard')}
                 </p>
               </div>
             </div>
@@ -139,14 +143,14 @@ export default function Home() {
       {/* Footer */}
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
         <p className="text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()} LinguaBridge AI. All rights reserved.
+          &copy; {new Date().getFullYear()} LinguaBridge AI. {t('footer.rights')}
         </p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link className="text-xs hover:underline underline-offset-4" href="#">
-            Terms of Service
+            {t('footer.terms')}
           </Link>
           <Link className="text-xs hover:underline underline-offset-4" href="#">
-            Privacy
+            {t('footer.privacy')}
           </Link>
         </nav>
       </footer>

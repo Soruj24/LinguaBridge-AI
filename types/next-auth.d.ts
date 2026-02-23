@@ -12,6 +12,12 @@ declare module "next-auth" {
       /** The user's preferred language */
       preferredLanguage: string
       avatar?: string
+      preferences?: {
+        lowBandwidth: boolean
+        reduceMotion: boolean
+        highContrast: boolean
+        autoPlayAudio: boolean
+      }
     } & DefaultSession["user"]
   }
 
@@ -19,6 +25,12 @@ declare module "next-auth" {
     preferredLanguage?: string
     avatar?: string
     _id?: string
+    preferences?: {
+      lowBandwidth: boolean
+      reduceMotion: boolean
+      highContrast: boolean
+      autoPlayAudio: boolean
+    }
   }
 }
 
@@ -30,5 +42,11 @@ declare module "next-auth/jwt" {
     /** The user's preferred language */
     preferredLanguage: string
     avatar?: string
+    preferences?: {
+      lowBandwidth: boolean
+      reduceMotion: boolean
+      highContrast: boolean
+      autoPlayAudio: boolean
+    }
   }
 }

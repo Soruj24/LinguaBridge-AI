@@ -35,7 +35,7 @@ export async function processMessage({
 
   // Use the translation pipeline for detection and translation in one go
   console.log(`Processing message: "${text}" for receiver ${receiver.name} (${receiver.preferredLanguage})`);
-  const { detectedLanguage: detectedLang, translated } =
+  const { detectedLanguage: detectedLang, translated, phonetic } =
     await processTranslationPipeline(text, receiver.preferredLanguage);
   console.log(`Translation result: ${translated} (detected: ${detectedLang})`);
 
@@ -74,6 +74,7 @@ export async function processMessage({
     receiverId,
     originalText: text,
     translatedText,
+    phoneticText: phonetic,
     languageFrom: detectedLang,
     languageTo: receiver.preferredLanguage,
     voiceUrl,

@@ -38,6 +38,15 @@ const MessageSchema = new mongoose.Schema(
     translatedVoiceUrl: {
       type: String, // Path to translated voice file if any
     },
+    phoneticText: {
+      type: String, // IPA or transliteration
+    },
+    reactions: [
+      {
+        emoji: { type: String, required: true },
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+      },
+    ],
   },
   { timestamps: true }
 );

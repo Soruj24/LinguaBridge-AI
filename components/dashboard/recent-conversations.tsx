@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface Chat {
   _id: string;
@@ -24,6 +25,7 @@ interface Chat {
 }
 
 export function RecentConversations() {
+  const t = useTranslations('Dashboard');
   const { data: session } = useSession();
   const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +55,7 @@ export function RecentConversations() {
   return (
     <Card className="h-full hover:shadow-lg transition-shadow">
       <CardHeader>
-        <CardTitle>Recent Conversations</CardTitle>
+        <CardTitle>{t('recentConversations')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
@@ -84,7 +86,7 @@ export function RecentConversations() {
                 <div className="flex-1 overflow-hidden">
                   <p className="text-sm font-medium leading-none mb-1">{other?.name}</p>
                   <p className="text-xs text-muted-foreground truncate">
-                    {chat.lastMessage?.originalText || "No messages yet"}
+                    {chat.lastMessage?.originalText || t('noMessages')}
                   </p>
                 </div>
                 <div className="text-xs text-muted-foreground whitespace-nowrap">
@@ -95,7 +97,7 @@ export function RecentConversations() {
           })}
           {chats.length === 0 && (
               <div className="text-center py-8 text-muted-foreground text-sm">
-                No conversations yet. Start chatting!
+                {t('noConversations')}
               </div>
           )}
           </>
