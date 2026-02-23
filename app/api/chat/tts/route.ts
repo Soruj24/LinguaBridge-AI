@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
     const audioBuffer = await textToSpeech(text);
 
-    return new NextResponse(audioBuffer, {
+    return new NextResponse(audioBuffer as unknown as BodyInit, {
       headers: {
         "Content-Type": "audio/mpeg",
         "Content-Length": audioBuffer.length.toString(),

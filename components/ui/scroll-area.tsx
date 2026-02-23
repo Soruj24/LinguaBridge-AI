@@ -13,7 +13,7 @@ function ScrollArea({
   ...props
 }: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & { 
   onScroll?: React.UIEventHandler<HTMLDivElement>;
-  viewportRef?: React.RefObject<HTMLDivElement>;
+  viewportRef?: React.Ref<HTMLDivElement>;
 }) {
   return (
     <ScrollAreaPrimitive.Root

@@ -17,19 +17,21 @@ export default function SubscriptionPage() {
             }}
           />
         </div>
-        
+
         <div className="mx-auto max-w-2xl py-12 text-center sm:py-20">
           <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
             Unlock Your Global Potential
           </h1>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            Choose the perfect plan to break down language barriers. Whether you're a casual learner or a global business, we have a solution for you.
+            Choose the perfect plan to break down language barriers. Whether
+            you're a casual learner or a global business, we have a solution for
+            you.
           </p>
         </div>
 
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <PricingPlans />
-          
+
           <div className="mt-24 sm:mt-32">
             <h2 className="text-3xl font-bold tracking-tight text-center mb-12">
               Compare Features
@@ -37,7 +39,7 @@ export default function SubscriptionPage() {
             <ComparisonTable />
           </div>
         </div>
-        
+
         <div
           className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
           aria-hidden="true"

@@ -4,7 +4,7 @@ import { redirect } from "@/navigation";
 
 export default async function ChatPage({ params }: { params: { id: string } }) {
   const session = await auth();
-  if (!session) redirect("/login");
+  if (!session) redirect({ href: "/login", locale: "en" });
 
   // In Next.js 15, params is a Promise. In 14, it's an object.
   // We can await it to be safe for future upgrades or if using 15.

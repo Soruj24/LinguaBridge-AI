@@ -176,6 +176,28 @@
         }
       }
     },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Get started with LinguaBridge AI in three simple steps.",
+      "steps": {
+        "1": {
+          "title": "Create an Account",
+          "description": "Sign up for free using your email. It takes less than a minute."
+        },
+        "2": {
+          "title": "Set Your Language",
+          "description": "Choose your native language. We support over 50 languages for seamless translation."
+        },
+        "3": {
+          "title": "Start Chatting",
+          "description": "Find users and start chatting. You type in your language, they read in theirs."
+        }
+      }
+    },
+    "about": {
+      "title": "Why LinguaBridge AI?",
+      "description": "LinguaBridge AI exists to dismantle language barriers. In an increasingly connected world, language should not be a wall but a bridge. Our platform empowers you to communicate effortlessly with anyone, anywhere, regardless of their native tongue. Perfect for travelers, international business, and cross-cultural friendships."
+    },
     "cta": {
       "title": "Ready to start conversing?",
       "subtitle": "Join LinguaBridge AI today and connect with the world.",

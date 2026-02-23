@@ -42,20 +42,35 @@ export const { auth, signIn, signOut, handlers } = (NextAuth as any)({
     }),
   ],
   callbacks: {
-    async jwt({ token, user, trigger, session }: { token: any; user: any; trigger?: string; session?: any }) {
+    async jwt({
+      token,
+      user,
+      trigger,
+      session,
+    }: {
+      token: Record<string, unknown>;
+      user: Record<string, unknown>;
+      trigger?: string;
+      session?: Record<string, unknown>;
+    }) {
       if (user) {
-        token.id = user._id?.toString();
-        token.preferredLanguage = (user as any).preferredLanguage;
-        token.avatar = (user as any).avatar;
-        token.preferences = (user as any).preferences;
+        token.id = (user._id as string).toString();
+        token.preferredLanguage = user.preferredLanguage as string;
+        token.avatar = user.avatar as string;
+        token.preferences = user.preferences as Record<string, unknown>;
       }
-      
+
       // Handle session updates (e.g. from update())
       if (trigger === "update" && session) {
         token.preferredLanguage = session.preferredLanguage;
         token.avatar = session.avatar;
-        if (session.user?.preferences) {
-            token.preferences = session.user.preferences;
+        if (
+          (session as { user?: { preferences?: Record<string, unknown> } }).user
+            ?.preferences
+        ) {
+          token.preferences = (
+            session as { user?: { preferences?: Record<string, unknown> } }
+          ).user?.preferences as Record<string, unknown>;
         }
       }
       return token;

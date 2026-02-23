@@ -14,7 +14,8 @@ const registerSchema = z.object({
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, password, preferredLanguage } = registerSchema.parse(body);
+    const { name, email, password, preferredLanguage } =
+      registerSchema.parse(body);
 
     await connectDB();
 
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
     if (existingUser) {
       return NextResponse.json(
         { error: "User already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -36,17 +37,20 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { message: "User created successfully", user: { id: user._id, name: user.name, email: user.email } },
-      { status: 201 }
+      {
+        message: "User created successfully",
+        user: { id: user._id, name: user.name, email: user.email },
+      },
+      { status: 201 },
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof ZodError) {
-        return NextResponse.json({ error: error.issues }, { status: 400 });
+      return NextResponse.json({ error: error.issues }, { status: 400 });
     }
     console.error("Registration error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

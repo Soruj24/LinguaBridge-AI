@@ -8,14 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import TextareaAutosize from "react-textarea-autosize";
-import {
-  Send, 
-  Sparkles, 
-  Wand2,
-  Phone,
-  Video,
-  ArrowLeft,
-} from "lucide-react";
+import { Send, Sparkles, Wand2, Phone, Video, ArrowLeft } from "lucide-react";
 import { useRouter } from "@/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -64,7 +57,7 @@ interface Chat {
 }
 
 export function ChatWindow({ chatId }: { chatId: string }) {
-  const t = useTranslations('Chat');
+  const t = useTranslations("Chat");
   const { data: session } = useSession();
   const router = useRouter();
   const socket = useSocket();
@@ -105,10 +98,11 @@ export function ChatWindow({ chatId }: { chatId: string }) {
             if (prev.some((m) => m._id === message._id)) return prev;
 
             // Check if we have an optimistic message that matches this real message
-            const optimisticMatchIndex = prev.findIndex(m => 
-              m.isOptimistic && 
-              m.originalText === message.originalText && 
-              m.senderId._id === message.senderId._id
+            const optimisticMatchIndex = prev.findIndex(
+              (m) =>
+                m.isOptimistic &&
+                m.originalText === message.originalText &&
+                m.senderId._id === message.senderId._id,
             );
 
             if (optimisticMatchIndex !== -1) {
@@ -172,9 +166,11 @@ export function ChatWindow({ chatId }: { chatId: string }) {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setNewMessage(e.target.value);
-    
+
     // Typing indicator logic
     if (socket && session?.user && chat) {
       const me = chat.participants.find((p) => p.email === session.user?.email);
@@ -261,7 +257,6 @@ export function ChatWindow({ chatId }: { chatId: string }) {
 
   const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
-    viewportRef.current = target; // Capture ref
 
     if (
       target.scrollTop === 0 &&
@@ -311,10 +306,10 @@ export function ChatWindow({ chatId }: { chatId: string }) {
       });
       if (res.data.rewritten) {
         setNewMessage(res.data.rewritten);
-        toast.success(t('rewrittenAs', { tone }));
+        toast.success(t("rewrittenAs", { tone }));
       }
     } catch (error) {
-      toast.error(t('rewriteFailed'));
+      toast.error(t("rewriteFailed"));
     } finally {
       setIsRewriting(false);
     }
@@ -338,7 +333,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
         },
         (response: { status: string }) => {
           if (response?.status !== "ok") {
-            toast.error(t('sendFailed'));
+            toast.error(t("sendFailed"));
             setNewMessage(newMessage); // Restore text
           }
         },
@@ -392,7 +387,12 @@ export function ChatWindow({ chatId }: { chatId: string }) {
       {/* Header - Fixed/Absolute on top */}
       <div className="absolute top-0 left-0 right-0 p-3 md:p-4 pt-[calc(0.75rem+env(safe-area-inset-top))] md:pt-[calc(1rem+env(safe-area-inset-top))] border-b bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md flex justify-between items-center shadow-sm z-50">
         <div className="flex items-center gap-2 md:gap-3">
-          <Button variant="ghost" size="icon" className="md:hidden -ml-2" onClick={() => router.push('/dashboard')}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden -ml-2"
+            onClick={() => router.push("/dashboard")}
+          >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           {chat?.participants
@@ -417,10 +417,18 @@ export function ChatWindow({ chatId }: { chatId: string }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-primary"
+          >
             <Phone className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-primary"
+          >
             <Video className="h-5 w-5" />
           </Button>
           <Dialog open={isSummaryOpen} onOpenChange={setIsSummaryOpen}>
@@ -437,25 +445,29 @@ export function ChatWindow({ chatId }: { chatId: string }) {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{t('conversationSummary')}</DialogTitle>
+                <DialogTitle>{t("conversationSummary")}</DialogTitle>
               </DialogHeader>
               <div className="mt-4 text-sm leading-relaxed whitespace-pre-wrap">
                 {isSummarizing ? (
                   <div className="flex items-center justify-center py-8 text-muted-foreground">
                     <Sparkles className="h-5 w-5 animate-spin mr-2" />
-                    {t('generatingSummary')}
+                    {t("generatingSummary")}
                   </div>
                 ) : (
-                  summary || t('noSummary')
+                  summary || t("noSummary")
                 )}
               </div>
             </DialogContent>
           </Dialog>
         </div>
       </div>
-      
+
       {/* Scrollable Content */}
-      <ScrollArea className="flex-1 h-full px-4" onScroll={onScroll} viewportRef={viewportRef}>
+      <ScrollArea
+        className="flex-1 h-full px-4"
+        onScroll={onScroll}
+        viewportRef={viewportRef}
+      >
         <div className="space-y-6 pb-4 pt-[calc(4.5rem+env(safe-area-inset-top))]">
           <TrustBanner />
           {isLoading ? (
@@ -482,7 +494,9 @@ export function ChatWindow({ chatId }: { chatId: string }) {
             <AnimatePresence mode="popLayout" initial={false}>
               {messages.map((msg, index) => {
                 // Check if previous message is from same sender
-                const isSameSender = index > 0 && messages[index - 1].senderId._id === msg.senderId._id;
+                const isSameSender =
+                  index > 0 &&
+                  messages[index - 1].senderId._id === msg.senderId._id;
                 // Check if next message is from same sender (for grouping visuals if needed later)
                 // const isNextSameSender = index < messages.length - 1 && messages[index + 1].senderId._id === msg.senderId._id;
 
@@ -501,10 +515,10 @@ export function ChatWindow({ chatId }: { chatId: string }) {
           )}
           {isTyping && typingUser && (
             <div className="flex items-center gap-2 ml-4">
-               <Avatar className="h-8 w-8">
-                  <AvatarFallback>{typingUser[0]}</AvatarFallback>
-               </Avatar>
-               <TypingIndicator />
+              <Avatar className="h-8 w-8">
+                <AvatarFallback>{typingUser[0]}</AvatarFallback>
+              </Avatar>
+              <TypingIndicator />
             </div>
           )}
           <div ref={scrollRef} />
@@ -534,7 +548,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
           <ScrollArea className="w-full max-h-[150px] rounded-[24px]">
             <TextareaAutosize
               className="w-full bg-transparent border-0 px-4 py-3 text-base resize-none focus:outline-none placeholder:text-muted-foreground block overflow-hidden"
-              placeholder={t('typeMessage')}
+              placeholder={t("typeMessage")}
               value={newMessage}
               onChange={handleInputChange}
               onKeyDown={(e) => {

@@ -19,11 +19,19 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
-export function NewChatDialog({ children, onChatCreated }: { children?: React.ReactNode; onChatCreated?: () => void }) {
-  const t = useTranslations('NewChat');
+export function NewChatDialog({
+  children,
+  onChatCreated,
+}: {
+  children?: React.ReactNode;
+  onChatCreated?: () => void;
+}) {
+  const t = useTranslations("NewChat");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<
+    { _id: string; name: string; email: string; avatar: string }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { data: session } = useSession();
@@ -38,7 +46,7 @@ export function NewChatDialog({ children, onChatCreated }: { children?: React.Re
       setUsers(res.data);
     } catch (error) {
       console.error(error);
-      toast.error(t('searchFailed'));
+      toast.error(t("searchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +62,7 @@ export function NewChatDialog({ children, onChatCreated }: { children?: React.Re
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error(t('startFailed'));
+      toast.error(t("startFailed"));
     }
   };
 
@@ -64,28 +72,34 @@ export function NewChatDialog({ children, onChatCreated }: { children?: React.Re
         {children || (
           <Button variant="ghost" className="w-full justify-start gap-2 mb-2">
             <UserPlus className="h-4 w-4" />
-            {t('title')}
+            {t("title")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <form onSubmit={handleSearch} className="flex gap-2">
             <Input
-              placeholder={t('searchPlaceholder')}
+              placeholder={t("searchPlaceholder")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Search className="h-4 w-4" />
+              )}
             </Button>
           </form>
           <ScrollArea className="h-[300px] pr-4">
             {users.length === 0 && !isLoading && query && (
-              <p className="text-center text-muted-foreground py-4">{t('noUsersFound')}</p>
+              <p className="text-center text-muted-foreground py-4">
+                {t("noUsersFound")}
+              </p>
             )}
             <div className="space-y-2">
               {users.map((user) => (
@@ -100,10 +114,12 @@ export function NewChatDialog({ children, onChatCreated }: { children?: React.Re
                   </Avatar>
                   <div className="flex-1 overflow-hidden">
                     <p className="font-medium truncate">{user.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {user.email}
+                    </p>
                   </div>
                   <div className="text-xs text-muted-foreground bg-secondary px-2 py-1 rounded-full">
-                    {user.language}
+                    {(user as unknown as { language?: string }).language || ""}
                   </div>
                 </div>
               ))}

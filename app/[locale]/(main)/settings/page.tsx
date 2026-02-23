@@ -41,10 +41,10 @@ const formSchema = z.object({
   preferredLanguage: z.string().min(2, "Language is required"),
   avatar: z.string().url().optional().or(z.literal("")),
   preferences: z.object({
-    lowBandwidth: z.boolean().default(false),
-    reduceMotion: z.boolean().default(false),
-    highContrast: z.boolean().default(false),
-    autoPlayAudio: z.boolean().default(true),
+    lowBandwidth: z.boolean(),
+    reduceMotion: z.boolean(),
+    highContrast: z.boolean(),
+    autoPlayAudio: z.boolean(),
   }),
 });
 
@@ -92,7 +92,17 @@ export default function SettingsPage() {
   useEffect(() => {
     if (session?.user) {
       // Safely cast user to any to access custom fields not in default NextAuth types yet
-      const user = session.user as any;
+      const user = session.user as {
+        name?: string;
+        preferredLanguage?: string;
+        avatar?: string;
+        preferences?: {
+          lowBandwidth?: boolean;
+          reduceMotion?: boolean;
+          highContrast?: boolean;
+          autoPlayAudio?: boolean;
+        };
+      };
       form.reset({
         name: user.name || "",
         preferredLanguage: user.preferredLanguage || "en",
@@ -124,9 +134,11 @@ export default function SettingsPage() {
       });
 
       toast.success("Profile updated successfully");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error(error.response?.data?.error || "Failed to update profile");
+      toast.error(
+        (error as { response?: { data?: { error?: string } } }).response?.data?.error || "Failed to update profile"
+      );
     } finally {
       setIsLoading(false);
     }

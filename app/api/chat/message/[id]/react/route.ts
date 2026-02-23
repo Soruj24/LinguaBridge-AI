@@ -5,7 +5,7 @@ import Message from "@/models/Message";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -30,15 +30,16 @@ export async function POST(
     // Get user ID safely
     const userId = session.user.id;
     if (!userId) {
-       return NextResponse.json({ error: "User ID missing" }, { status: 400 });
+      return NextResponse.json({ error: "User ID missing" }, { status: 400 });
     }
 
     // Check if user already reacted with this emoji
     // Note: reactions might be undefined if it's a new field on old doc, so default to empty array
     if (!message.reactions) message.reactions = [];
-    
+
     const existingReactionIndex = message.reactions.findIndex(
-      (r: any) => r.emoji === emoji && r.userId.toString() === userId
+      (r: { emoji: string; userId: string }) =>
+        r.emoji === emoji && r.userId.toString() === userId,
     );
 
     let action = "added";
@@ -54,17 +55,16 @@ export async function POST(
 
     await message.save();
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       action,
-      reactions: message.reactions 
+      reactions: message.reactions,
     });
-
   } catch (error) {
     console.error("Reaction error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
