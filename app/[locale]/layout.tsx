@@ -23,14 +23,10 @@ export const metadata: Metadata = {
   description: "Real-time AI translation chat",
 };
 
-export default async function RootLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: { locale: string };
-}) {
-  const { locale } = await params;
+export default async function RootLayout(props: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
+  const params = await props.params;
+  const { locale } = params;
+  const { children } = props;
 
   // Ensure that the incoming `locale` is valid
   if (!["en", "bn", "es", "fr", "ar", "zh", "hi"].includes(locale)) {
