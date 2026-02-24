@@ -14,14 +14,37 @@ export async function GET(req: Request) {
 
     await connectDB();
     const currentUser = await User.findOne({ email: session.user.email });
+    const { searchParams } = new URL(req.url);
+    const paginate = searchParams.get("paginate") === "true";
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 100);
+    const sortBy = searchParams.get("sortBy") || "updatedAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
-    const chats = await Chat.find({
-      participants: currentUser._id,
-    })
+    const baseQuery =
+      session.user.role === "admin"
+        ? {}
+        : { participants: currentUser._id };
+
+    const total = await Chat.countDocuments(baseQuery);
+    const chats = await Chat.find(baseQuery)
       .populate("participants", "name email avatar preferredLanguage")
       .populate("lastMessage")
-      .sort({ updatedAt: -1 });
+      .sort({ [sortBy]: sortOrder })
+      .skip((page - 1) * limit)
+      .limit(limit);
 
+    if (paginate) {
+      return NextResponse.json({
+        data: chats,
+        meta: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit),
+        },
+      });
+    }
     return NextResponse.json(chats);
   } catch (error) {
     console.error("Error fetching chats:", error);

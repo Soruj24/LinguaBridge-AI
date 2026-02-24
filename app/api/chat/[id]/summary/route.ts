@@ -28,7 +28,7 @@ export async function POST(
       (p: { email: string }) => p.email === session.user?.email,
     );
 
-    if (!isParticipant) {
+    if (!isParticipant && session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -36,7 +36,8 @@ export async function POST(
     const user = chat.participants.find(
       (p: { email: string }) => p.email === session.user?.email,
     );
-    const preferredLanguage = user?.preferredLanguage || "en";
+    const preferredLanguage =
+      user?.preferredLanguage || session.user.preferredLanguage || "en";
 
     // Get last 50 messages for summary
     const messages = await Message.find({ chatId: id })
@@ -44,7 +45,8 @@ export async function POST(
       .limit(50);
 
     const formattedMessages = messages.reverse().map((msg) => {
-      const isMe = msg.senderId.toString() === user._id.toString();
+      const isMe =
+        user && msg.senderId.toString() === user._id.toString() && isParticipant;
       const text = isMe
         ? msg.originalText
         : msg.translatedText || msg.originalText;

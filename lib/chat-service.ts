@@ -32,6 +32,7 @@ export async function processMessage({
 
   const sender = await User.findById(senderId);
   if (!sender) throw new Error("Sender not found");
+  if (sender.isActive === false) throw new Error("Sender is inactive");
 
   // Use the translation pipeline for detection and translation in one go
   console.log(`Processing message: "${text}" for receiver ${receiver.name} (${receiver.preferredLanguage})`);

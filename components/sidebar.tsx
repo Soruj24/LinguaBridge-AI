@@ -57,7 +57,8 @@ export function Sidebar({ className, onClose }: SidebarProps) {
     try {
       setIsLoading(true);
       const res = await axios.get("/api/chat");
-      setChats(res.data);
+      const data = Array.isArray(res.data) ? res.data : res.data?.data || [];
+      setChats(data);
     } catch (error) {
       console.error("Failed to fetch chats", error);
     } finally {

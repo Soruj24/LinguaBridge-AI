@@ -53,7 +53,8 @@ export default auth(async function middleware(request: any) {
 
   const isProtectedRoute =
     normalizedPath.startsWith("/dashboard") ||
-    normalizedPath.startsWith("/chat");
+    normalizedPath.startsWith("/chat") ||
+    normalizedPath.startsWith("/admin");
 
   const isAuthPage =
     normalizedPath === "/login" || normalizedPath === "/register";
@@ -63,6 +64,16 @@ export default auth(async function middleware(request: any) {
       const locale = isLocaleInPath ? firstSegment : "en";
       const loginUrl = new URL(`/${locale}/login`, request.url);
       return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  // Admin-only guard
+  if (normalizedPath.startsWith("/admin")) {
+    const isAdmin = session?.user?.role === "admin";
+    if (!isAdmin) {
+      const locale = userLocale || (isLocaleInPath ? firstSegment : "en");
+      const dashboardUrl = new URL(`/${locale}/dashboard`, request.url);
+      return NextResponse.redirect(dashboardUrl);
     }
   }
 

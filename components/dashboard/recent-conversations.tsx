@@ -35,8 +35,9 @@ export function RecentConversations() {
     async function fetchChats() {
       try {
         const res = await axios.get("/api/chat");
+        const data = Array.isArray(res.data) ? res.data : res.data?.data || [];
         // Sort by updatedAt desc just in case API doesn't
-        const sorted = res.data.sort((a: Chat, b: Chat) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+        const sorted = data.sort((a: Chat, b: Chat) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
         setChats(sorted.slice(0, 5));
       } catch (error) {
         console.error("Failed to fetch chats", error);

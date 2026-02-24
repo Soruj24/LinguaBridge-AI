@@ -32,6 +32,8 @@ export const { auth, signIn, signOut, handlers } = (NextAuth as any)({
           const user = await getUser(email);
           if (!user) return null;
 
+          if (user.isActive === false) return null;
+
           const passwordsMatch = await bcrypt.compare(password, user.password);
           if (passwordsMatch) return user;
         }
@@ -55,6 +57,7 @@ export const { auth, signIn, signOut, handlers } = (NextAuth as any)({
     }) {
       if (user) {
         token.id = (user._id as string).toString();
+        token.role = (user.role as string) || "user";
         token.preferredLanguage = user.preferredLanguage as string;
         token.avatar = user.avatar as string;
         token.preferences = user.preferences as Record<string, unknown>;
@@ -78,6 +81,7 @@ export const { auth, signIn, signOut, handlers } = (NextAuth as any)({
     async session({ session, token }: any) {
       if (token && session.user) {
         session.user.id = token.id as string;
+        session.user.role = token.role as string;
         session.user.preferredLanguage = token.preferredLanguage;
         session.user.avatar = token.avatar;
         session.user.image = token.avatar || session.user.image;

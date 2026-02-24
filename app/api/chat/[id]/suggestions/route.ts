@@ -28,7 +28,7 @@ export async function POST(
       (p: { email: string }) => p.email === session.user?.email,
     );
 
-    if (!isParticipant) {
+    if (!isParticipant && session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -36,7 +36,8 @@ export async function POST(
     const user = chat.participants.find(
       (p: { email: string }) => p.email === session.user?.email,
     );
-    const preferredLanguage = user?.preferredLanguage || "en";
+    const preferredLanguage =
+      user?.preferredLanguage || session.user.preferredLanguage || "en";
 
     // Get last few messages for context
     const messages = await Message.find({ chatId: id })
@@ -55,9 +56,9 @@ export async function POST(
           // But we didn't populate messages here, so it's likely an ObjectId.
           // However, we populated chat.participants.
           const senderIdStr = msg.senderId.toString();
-          const myIdStr = user._id.toString();
+          const myIdStr = user?._id?.toString();
 
-          const isMe = senderIdStr === myIdStr;
+          const isMe = !!myIdStr && senderIdStr === myIdStr && isParticipant;
 
           // If it's me, use original text. If other, use translated text if available, else original.
           const text = isMe

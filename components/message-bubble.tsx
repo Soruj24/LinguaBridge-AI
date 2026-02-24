@@ -433,7 +433,7 @@ export function MessageBubble({
           </PopoverContent>
         </Popover>
 
-        {isMe && onDelete && (
+        {(isMe || session?.user?.role === "admin") && onDelete && (
           <Button
             variant="ghost"
             size="icon"

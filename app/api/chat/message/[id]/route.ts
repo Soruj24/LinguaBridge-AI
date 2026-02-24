@@ -26,7 +26,7 @@ export async function DELETE(
     // Check if senderId is populated and has email
     const senderEmail = message.senderId?.email;
 
-    if (senderEmail !== session.user.email) {
+    if (senderEmail !== session.user.email && session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

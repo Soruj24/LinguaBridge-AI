@@ -9,6 +9,8 @@ declare module "next-auth" {
     user: {
       /** The user's unique identifier */
       id: string
+      /** The user's role */
+      role?: "user" | "admin"
       /** The user's preferred language */
       preferredLanguage: string
       avatar?: string
@@ -22,6 +24,7 @@ declare module "next-auth" {
   }
 
   interface User {
+    role?: "user" | "admin"
     preferredLanguage?: string
     avatar?: string
     _id?: string
@@ -39,6 +42,8 @@ declare module "next-auth/jwt" {
   interface JWT {
     /** The user's unique identifier */
     id: string
+    /** The user's role */
+    role?: "user" | "admin"
     /** The user's preferred language */
     preferredLanguage: string
     avatar?: string
