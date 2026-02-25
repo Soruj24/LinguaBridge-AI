@@ -5,8 +5,14 @@ export const authConfig = {
     newUser: "/register",
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }: any) {
-      const isLoggedIn = !!auth?.user;
+    authorized({
+      auth,
+      request: { nextUrl },
+    }: {
+      auth?: { user?: unknown } | null;
+      request: { nextUrl: URL };
+    }) {
+      const isLoggedIn = !!(auth && (auth as { user?: unknown }).user);
       const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
       const isOnChat = nextUrl.pathname.startsWith("/chat");
       
@@ -23,5 +29,4 @@ export const authConfig = {
     },
   },
   providers: [], // Configured in auth.ts
-} as any;
-
+} as const;

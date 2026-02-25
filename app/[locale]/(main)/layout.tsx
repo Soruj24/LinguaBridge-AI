@@ -11,7 +11,7 @@ export default function MainLayout({
       <div className="hidden md:block h-full">
         <Sidebar />
       </div>
-      <main className="flex-1 w-full h-full overflow-hidden flex flex-col relative">
+      <main className="flex-1 w-full h-full overflow-hidden flex flex-col relative pb-16 md:pb-0 [padding-bottom:env(safe-area-inset-bottom)]">
         {children}
         <MobileNav />
       </main>

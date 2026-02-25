@@ -22,8 +22,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       socketInstance.on("connect", () => {
         console.log("Socket connected:", socketInstance.id);
         // Join user-specific room for notifications
-        if ((session.user as any).id) {
-            socketInstance.emit("join_user", (session.user as any).id);
+        if (session.user.id) {
+          socketInstance.emit("join_user", session.user.id);
         }
       });
 

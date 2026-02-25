@@ -15,7 +15,7 @@ export default function Home() {
   const t = useTranslations('Landing');
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background pb-20 md:pb-0 [padding-bottom:env(safe-area-inset-bottom)]">
       <FeedbackDialog />
       <header className="px-4 lg:px-6 h-16 flex items-center border-b sticky top-0 bg-background/95 backdrop-blur z-50">
         <Link className="flex items-center justify-center" href="/">

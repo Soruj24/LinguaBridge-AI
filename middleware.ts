@@ -1,5 +1,5 @@
 import createMiddleware from "next-intl/middleware";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import NextAuth from "next-auth";
 import { authConfig } from "./auth.config";
 
@@ -11,7 +11,16 @@ const intlMiddleware = createMiddleware({
   defaultLocale: "en",
 });
 
-export default auth(async function middleware(request: any) {
+type SessionUser = {
+  preferredLanguage?: string;
+  role?: "user" | "admin";
+};
+
+type AuthedRequest = NextRequest & {
+  auth?: { user?: SessionUser };
+};
+
+export default auth(async function middleware(request: AuthedRequest) {
   // Step 1: Run next-intl middleware first to handle basic locale routing
   const response = intlMiddleware(request);
 

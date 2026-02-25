@@ -17,7 +17,7 @@ async function getUser(email: string) {
   }
 }
 
-export const { auth, signIn, signOut, handlers } = (NextAuth as any)({
+export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
   session: { strategy: "jwt" },
   providers: [
@@ -78,7 +78,13 @@ export const { auth, signIn, signOut, handlers } = (NextAuth as any)({
       }
       return token;
     },
-    async session({ session, token }: any) {
+    async session({
+      session,
+      token,
+    }: {
+      session: import("next-auth").Session;
+      token: import("next-auth/jwt").JWT;
+    }) {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;

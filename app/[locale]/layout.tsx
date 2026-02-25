@@ -23,6 +23,13 @@ export const metadata: Metadata = {
   description: "Real-time AI translation chat",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+};
+
 export default async function RootLayout(props: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
   const params = await props.params;
   const { locale } = params;

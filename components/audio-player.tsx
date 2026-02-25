@@ -27,8 +27,6 @@ export function AudioPlayer({ src, variant = "receiver" }: AudioPlayerProps) {
         setRandomHeights(Array.from({ length: 20 }, () => Math.max(20, Math.random() * 100)));
       }, 100);
       return () => clearInterval(interval);
-    } else {
-        setRandomHeights([]);
     }
   }, [isPlaying]);
 

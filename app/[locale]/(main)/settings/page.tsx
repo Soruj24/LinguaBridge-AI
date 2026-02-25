@@ -145,7 +145,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full p-4">
+    <div className="flex flex-col items-center justify-center h-full p-4 pb-20 md:pb-6 [padding-bottom:env(safe-area-inset-bottom)]">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Settings</CardTitle>

@@ -1,6 +1,6 @@
  "use client";
  
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
  import { useSession } from "next-auth/react";
  import { useRouter } from "@/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -50,20 +50,20 @@ type ChatItem = {
   );
    const [search, setSearch] = useState("");
  
-   useEffect(() => {
-     if (status === "loading") return;
-     if (!session) {
-       router.push("/login");
-       return;
-     }
-     if (session.user.role !== "admin") {
-       router.push("/dashboard");
-       return;
-     }
-     fetchUsers();
-  }, [status, session, router]);
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      router.push("/login");
+      return;
+    }
+    if (session.user.role !== "admin") {
+      router.push("/dashboard");
+      return;
+    }
+    fetchUsers();
+  }, [status, session, router, fetchUsers]);
  
-  async function fetchUsers() {
+  const fetchUsers = useCallback(async () => {
      try {
        setLoading(true);
       const params = new URLSearchParams();
@@ -80,21 +80,21 @@ type ChatItem = {
      } finally {
        setLoading(false);
      }
-   }
+  }, [page, search, roleFilter, statusFilter, sortBy, sortOrder]);
  
-  async function fetchChats() {
+  const fetchChats = useCallback(async () => {
     try {
       const res = await fetch("/api/chat?paginate=true&page=1&limit=20&sortBy=updatedAt");
       const json = await res.json();
       setChats(json.data || []);
     } catch {}
-  }
+  }, []);
 
   useEffect(() => {
     if (session?.user?.role === "admin") {
       fetchChats();
     }
-  }, [session?.user?.role]);
+  }, [session?.user?.role, fetchChats]);
 
    async function updateUser(payload: Record<string, unknown>) {
      await fetch("/api/user/update", {

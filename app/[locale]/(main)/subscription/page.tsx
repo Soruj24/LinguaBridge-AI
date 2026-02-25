@@ -24,7 +24,7 @@ export default function SubscriptionPage() {
           </h1>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
             Choose the perfect plan to break down language barriers. Whether
-            you're a casual learner or a global business, we have a solution for
+            you&apos;re a casual learner or a global business, we have a solution for
             you.
           </p>
         </div>
