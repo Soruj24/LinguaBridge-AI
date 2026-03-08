@@ -50,6 +50,25 @@ type ChatItem = {
   );
    const [search, setSearch] = useState("");
  
+  const fetchUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      params.set("page", String(page));
+      params.set("limit", "20");
+      if (search) params.set("q", search);
+      if (roleFilter) params.set("role", roleFilter);
+      if (statusFilter) params.set("isActive", statusFilter);
+      params.set("sortBy", sortBy);
+      params.set("sortOrder", sortOrder);
+      const res = await fetch(`/api/users?${params.toString()}`);
+      const json = await res.json();
+      setUsers(json.data || []);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, search, roleFilter, statusFilter, sortBy, sortOrder]);
+
   useEffect(() => {
     if (status === "loading") return;
     if (!session) {
@@ -62,25 +81,6 @@ type ChatItem = {
     }
     fetchUsers();
   }, [status, session, router, fetchUsers]);
- 
-  const fetchUsers = useCallback(async () => {
-     try {
-       setLoading(true);
-      const params = new URLSearchParams();
-      params.set("page", String(page));
-      params.set("limit", "20");
-      if (search) params.set("q", search);
-      if (roleFilter) params.set("role", roleFilter);
-      if (statusFilter) params.set("isActive", statusFilter);
-      params.set("sortBy", sortBy);
-      params.set("sortOrder", sortOrder);
-      const res = await fetch(`/api/users?${params.toString()}`);
-      const json = await res.json();
-      setUsers(json.data || []);
-     } finally {
-       setLoading(false);
-     }
-  }, [page, search, roleFilter, statusFilter, sortBy, sortOrder]);
  
   const fetchChats = useCallback(async () => {
     try {

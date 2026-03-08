@@ -43,22 +43,8 @@ export default async function RootLayout(props: { children: React.ReactNode; par
   const messages = await getMessages();
 
   return (
-    <html
-      lang={locale}
-      dir={["ar", "he", "fa", "ur"].includes(locale) ? "rtl" : "ltr"}
-      suppressHydrationWarning
-    >
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <NextIntlClientProvider messages={messages}>
-          <Providers>
-            <NetworkStatus />
-            {children}
-            <Toaster />
-          </Providers>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages}>
+      {children}
+    </NextIntlClientProvider>
   );
 }
