@@ -2,7 +2,7 @@ import connectDB from "@/lib/db";
 import Message from "@/models/Message";
 import Chat from "@/models/Chat";
 import User from "@/models/User";
-import { processTranslationPipeline, textToSpeech } from "@/lib/ai";
+import { processTranslationPipeline } from "@/lib/ai";
 import fs from "fs";
 import path from "path";
 import { pipeline } from "stream/promises";
@@ -42,32 +42,7 @@ export async function processMessage({
 
   // Use provided translation if available, otherwise use pipeline result
   const translatedText = providedTranslatedText || translated;
-  let translatedVoiceUrl = providedTranslatedVoiceUrl;
-
-  // Only generate TTS if original was voice, translated voice not provided, and languages differ
-  if (
-    voiceUrl &&
-    !translatedVoiceUrl &&
-    detectedLang !== receiver.preferredLanguage
-  ) {
-    try {
-      const buffer = await textToSpeech(translatedText);
-      const fileName = `translated-${Date.now()}-${Math.random().toString(36).substring(7)}.mp3`;
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      const filePath = path.join(uploadDir, fileName);
-      // Using streams for writing file
-      await pipeline(Readable.from(buffer), fs.createWriteStream(filePath));
-
-      translatedVoiceUrl = `/uploads/${fileName}`;
-    } catch (error) {
-      console.error("Failed to generate TTS:", error);
-    }
-  }
+  const translatedVoiceUrl = providedTranslatedVoiceUrl;
 
   const message = await Message.create({
     chatId,

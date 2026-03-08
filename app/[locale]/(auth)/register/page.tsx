@@ -69,6 +69,7 @@ const languages = [
   { code: "el", name: "Greek" },
   { code: "he", name: "Hebrew" },
   { code: "cs", name: "Czech" },
+  { code: "ms", name: "Malay" },
   { code: "sk", name: "Slovak" },
   { code: "uk", name: "Ukrainian" },
   { code: "ro", name: "Romanian" },

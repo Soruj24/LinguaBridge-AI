@@ -33,34 +33,47 @@ export function AudioPlayer({ src, variant = "receiver" }: AudioPlayerProps) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    setIsLoading(true);
+    setDuration(0);
+    setCurrentTime(0);
+    setIsPlaying(false);
 
-    const setAudioData = () => {
-      setDuration(audio.duration);
+    const onLoaded = () => {
+      setDuration(audio.duration || 0);
       setIsLoading(false);
     };
 
-    const setAudioTime = () => {
-      setCurrentTime(audio.currentTime);
+    const onTime = () => {
+      setCurrentTime(audio.currentTime || 0);
     };
 
-    const handleEnded = () => {
-        setIsPlaying(false);
-        setCurrentTime(0);
-    }
+    const onEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
 
-    audio.addEventListener("loadeddata", setAudioData);
-    audio.addEventListener("timeupdate", setAudioTime);
-    audio.addEventListener("ended", handleEnded);
+    const onError = () => {
+      // Allow user to interact even if metadata didn't load
+      setIsLoading(false);
+    };
 
-    // Some browsers need explicit load to get duration if preload is metadata
-    // But metadata is usually enough.
-    
+    audio.addEventListener("loadedmetadata", onLoaded);
+    audio.addEventListener("canplaythrough", onLoaded);
+    audio.addEventListener("timeupdate", onTime);
+    audio.addEventListener("ended", onEnded);
+    audio.addEventListener("error", onError);
+
+    // Explicitly trigger load for some browsers
+    try { audio.load(); } catch {}
+
     return () => {
-      audio.removeEventListener("loadeddata", setAudioData);
-      audio.removeEventListener("timeupdate", setAudioTime);
-      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("loadedmetadata", onLoaded);
+      audio.removeEventListener("canplaythrough", onLoaded);
+      audio.removeEventListener("timeupdate", onTime);
+      audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener("error", onError);
     };
-  }, []);
+  }, [src]);
 
   const togglePlay = () => {
     const audio = audioRef.current;

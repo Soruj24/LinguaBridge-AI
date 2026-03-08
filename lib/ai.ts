@@ -5,6 +5,7 @@ import { StructuredOutputParser } from "@langchain/core/output_parsers";
 import { z } from "zod";
 import OpenAI from "openai";
 import fs from "fs";
+import { languageMap } from "./languages";
 
 const openRouterApiKey =
   process.env.OPENROUTER_API_KEY || process.env.OPEN_ROUTER_API_KEY;
@@ -15,33 +16,49 @@ let openai: OpenAI | null = null;
 function getChatModel() {
   if (chatModel) return chatModel;
 
-  const apiKey =
+  const openaiKey = process.env.OPENAI_API_KEY;
+  const routerKey =
     process.env.OPENROUTER_API_KEY || process.env.OPEN_ROUTER_API_KEY;
-  if (!apiKey) {
-    console.warn("WARNING: OPENROUTER_API_KEY is not set.");
-  }
 
-  chatModel = new ChatOpenAI({
-    modelName: "openai/gpt-4o-mini", // OpenRouter model ID
-    temperature: 0,
-    apiKey: apiKey || "sk-placeholder",
-    configuration: {
-      baseURL: "https://openrouter.ai/api/v1",
-    },
-  });
+  if (openaiKey) {
+    chatModel = new ChatOpenAI({
+      modelName: "gpt-4o-mini",
+      temperature: 0,
+      apiKey: openaiKey,
+      configuration: { baseURL: "https://api.openai.com/v1" },
+    });
+  } else {
+    if (!routerKey) {
+      console.warn("WARNING: Neither OPENAI_API_KEY nor OPENROUTER_API_KEY is set.");
+    }
+    chatModel = new ChatOpenAI({
+      modelName: "openai/gpt-4o-mini", // OpenRouter model ID
+      temperature: 0,
+      apiKey: routerKey || "sk-placeholder",
+      configuration: { baseURL: "https://openrouter.ai/api/v1" },
+    });
+  }
   return chatModel;
 }
 
 function getOpenAI() {
   if (openai) return openai;
 
-  const apiKey =
+  const openaiKey = process.env.OPENAI_API_KEY;
+  const routerKey =
     process.env.OPENROUTER_API_KEY || process.env.OPEN_ROUTER_API_KEY;
 
-  openai = new OpenAI({
-    baseURL: "https://openrouter.ai/api/v1",
-    apiKey: apiKey || "sk-placeholder",
-  });
+  if (openaiKey) {
+    openai = new OpenAI({
+      baseURL: "https://api.openai.com/v1",
+      apiKey: openaiKey,
+    });
+  } else {
+    openai = new OpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey: routerKey || "sk-placeholder",
+    });
+  }
   return openai;
 }
 
@@ -116,27 +133,7 @@ export async function textToSpeech(text: string): Promise<Buffer> {
   }
 }
 
-const languageMap: Record<string, string> = {
-  en: "English",
-  es: "Spanish",
-  fr: "French",
-  de: "German",
-  zh: "Chinese",
-  ja: "Japanese",
-  ko: "Korean",
-  ru: "Russian",
-  pt: "Portuguese",
-  it: "Italian",
-  bn: "Bengali",
-  hi: "Hindi",
-  ar: "Arabic",
-  tr: "Turkish",
-  nl: "Dutch",
-  pl: "Polish",
-  vi: "Vietnamese",
-  th: "Thai",
-  id: "Indonesian",
-};
+// languageMap imported from ./languages
 
 export async function processTranslationPipeline(
   text: string,

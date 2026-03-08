@@ -8,25 +8,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import TextareaAutosize from "react-textarea-autosize";
-import { Send, Sparkles, Wand2, Phone, Video, ArrowLeft } from "lucide-react";
+import { Send, Sparkles, Wand2, ArrowLeft } from "lucide-react";
 import { useRouter } from "@/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { MessageBubble } from "@/components/message-bubble";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { VoiceRecorder } from "@/components/voice-recorder";
 import { AnimatePresence } from "framer-motion";
 import { TypingIndicator } from "@/components/typing-indicator";
 import { TrustBanner } from "@/components/trust-banner";
@@ -71,9 +63,6 @@ export function ChatWindow({ chatId }: { chatId: string }) {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const [summary, setSummary] = useState<string | null>(null);
-  const [isSummarizing, setIsSummarizing] = useState(false);
-  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isRewriting, setIsRewriting] = useState(false);
   const [isRestoringScroll, setIsRestoringScroll] = useState(false);
 
@@ -228,20 +217,6 @@ export function ChatWindow({ chatId }: { chatId: string }) {
     }
   };
 
-  const handleSummarize = async () => {
-    try {
-      setIsSummarizing(true);
-      setIsSummaryOpen(true);
-      const res = await axios.post(`/api/chat/${chatId}/summary`);
-      if (res.data.summary) {
-        setSummary(res.data.summary);
-      }
-    } catch (error) {
-      toast.error("Failed to summarize chat");
-    } finally {
-      setIsSummarizing(false);
-    }
-  };
 
   useLayoutEffect(() => {
     if (isRestoringScroll && viewportRef.current) {
@@ -416,50 +391,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
             ))}
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-primary"
-          >
-            <Phone className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-primary"
-          >
-            <Video className="h-5 w-5" />
-          </Button>
-          <Dialog open={isSummaryOpen} onOpenChange={setIsSummaryOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSummarize}
-                className="gap-2"
-              >
-                <Sparkles className="h-4 w-4 text-yellow-500" />
-                Summarize
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t("conversationSummary")}</DialogTitle>
-              </DialogHeader>
-              <div className="mt-4 text-sm leading-relaxed whitespace-pre-wrap">
-                {isSummarizing ? (
-                  <div className="flex items-center justify-center py-8 text-muted-foreground">
-                    <Sparkles className="h-5 w-5 animate-spin mr-2" />
-                    {t("generatingSummary")}
-                  </div>
-                ) : (
-                  summary || t("noSummary")
-                )}
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+        <div className="flex items-center gap-2" />
       </div>
 
       {/* Scrollable Content */}
@@ -593,7 +525,6 @@ export function ChatWindow({ chatId }: { chatId: string }) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <VoiceRecorder onSend={sendVoiceMessage} />
         <Button
           size="icon"
           onClick={sendMessage}

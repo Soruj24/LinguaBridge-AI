@@ -51,6 +51,20 @@ const LANGUAGES = [
   { code: "ta", name: "Tamil", native: "தமிழ்", flag: "🇮🇳", dir: "ltr" },
   { code: "te", name: "Telugu", native: "తెలుగు", flag: "🇮🇳", dir: "ltr" },
   { code: "mr", name: "Marathi", native: "मराठी", flag: "🇮🇳", dir: "ltr" },
+  { code: "sk", name: "Slovak", native: "Slovenčina", flag: "🇸🇰", dir: "ltr" },
+  { code: "lt", name: "Lithuanian", native: "Lietuvių", flag: "🇱🇹", dir: "ltr" },
+  { code: "lv", name: "Latvian", native: "Latviešu", flag: "🇱🇻", dir: "ltr" },
+  { code: "et", name: "Estonian", native: "Eesti", flag: "🇪🇪", dir: "ltr" },
+  { code: "ml", name: "Malayalam", native: "മലയാളം", flag: "🇮🇳", dir: "ltr" },
+  { code: "kn", name: "Kannada", native: "ಕನ್ನಡ", flag: "🇮🇳", dir: "ltr" },
+  { code: "gu", name: "Gujarati", native: "ગુજરાતી", flag: "🇮🇳", dir: "ltr" },
+  { code: "pa", name: "Punjabi", native: "ਪੰਜਾਬੀ", flag: "🇮🇳", dir: "ltr" },
+  { code: "si", name: "Sinhala", native: "සිංහල", flag: "🇱🇰", dir: "ltr" },
+  { code: "my", name: "Burmese", native: "မြန်မာ", flag: "🇲🇲", dir: "ltr" },
+  { code: "km", name: "Khmer", native: "ខ្មែរ", flag: "🇰🇭", dir: "ltr" },
+  { code: "az", name: "Azerbaijani", native: "Azərbaycan dili", flag: "🇦🇿", dir: "ltr" },
+  { code: "uz", name: "Uzbek", native: "Oʻzbek tili", flag: "🇺🇿", dir: "ltr" },
+  { code: "kk", name: "Kazakh", native: "Қазақ тілі", flag: "🇰🇿", dir: "ltr" },
 ];
 
 export function LanguageModal({ 

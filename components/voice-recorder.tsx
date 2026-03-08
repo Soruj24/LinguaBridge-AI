@@ -7,16 +7,20 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface VoiceRecorderProps {
-  onSend: (blob: Blob) => void;
+  onSend: (blob: Blob) => Promise<void> | void;
+  maxDurationSeconds?: number;
 }
 
 export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
+  const [isSending, setIsSending] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
+  const autoStopRef = useRef<NodeJS.Timeout | null>(null);
+  const MAX_SECONDS = 120;
   
   const startRecording = async () => {
     try {
@@ -36,6 +40,12 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
       timerRef.current = setInterval(() => {
         setDuration(Math.floor((Date.now() - startTimeRef.current) / 1000));
       }, 100);
+      autoStopRef.current = setTimeout(() => {
+        stopRecording(true);
+      }, MAX_SECONDS * 1000);
+      autoStopRef.current = setTimeout(() => {
+        stopRecording(true);
+      }, (MAX_SECONDS) * 1000);
     } catch (err) {
       console.error("Mic access denied", err);
     }
@@ -43,21 +53,33 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
 
   const stopRecording = (shouldSend: boolean) => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-        mediaRecorderRef.current.stop();
-        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-        
-        mediaRecorderRef.current.onstop = () => {
+        const recorder = mediaRecorderRef.current;
+        const stream = recorder.stream;
+        recorder.onstop = async () => {
             if (shouldSend) {
                 const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-                // Only send if duration > 0.5s to avoid accidental clicks
                 if (audioBlob.size > 0 && duration > 0) {
-                    onSend(audioBlob);
+                    try {
+                      setIsSending(true);
+                      const result = onSend(audioBlob);
+                      if (result && typeof (result as Promise<void>).then === "function") {
+                        await result;
+                      }
+                    } finally {
+                      setIsSending(false);
+                    }
                 }
             }
         };
+        recorder.stop();
+        stream.getTracks().forEach(track => track.stop());
     }
     
     if (timerRef.current) clearInterval(timerRef.current);
+    if (autoStopRef.current) {
+      clearTimeout(autoStopRef.current);
+      autoStopRef.current = null;
+    }
     setIsRecording(false);
   };
 
@@ -97,7 +119,7 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
                 }
             }}
             onPointerDown={(e) => {
-                startRecording();
+                if (!isSending) startRecording();
             }}
             className="z-20 touch-none cursor-pointer"
             whileTap={{ scale: 1.1 }}
@@ -110,9 +132,23 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
                         ? "bg-red-500 hover:bg-red-600 shadow-red-500/30 text-white" 
                         : "bg-white text-slate-900 hover:bg-slate-100 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300"
                 )}
+                onClick={() => {
+                    if (isRecording) {
+                        stopRecording(true);
+                    } else {
+                        if (!isSending) startRecording();
+                    }
+                }}
+                disabled={isSending}
+                aria-label={isRecording ? "Stop & send voice" : "Start recording"}
             >
                 <Mic className={cn("h-7 w-7 transition-transform", isRecording ? "scale-110 text-white" : "text-slate-900")} />
             </Button>
+            {isSending && (
+              <div className="absolute -right-2 -top-2 text-[10px] px-2 py-1 rounded bg-background border shadow-sm">
+                Sending...
+              </div>
+            )}
         </motion.div>
     </div>
   );

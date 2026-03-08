@@ -6,6 +6,8 @@ import fs from "fs";
 import path from "path";
 import { pipeline } from "stream/promises";
 import { Readable } from "stream";
+import connectDB from "@/lib/db";
+import User from "@/models/User";
 
 export async function POST(req: Request) {
   try {
@@ -52,26 +54,24 @@ export async function POST(req: Request) {
     const voiceUrl = `/uploads/${fileName}`;
 
     // 2. Convert speech to text using OpenAI Whisper
-    const originalText = await transcribeAudio(filePath);
+    let originalText = "";
+    try {
+      originalText = await transcribeAudio(filePath);
+    } catch (sttError) {
+      console.error("Transcription failed, proceeding with raw voice only:", sttError);
+      originalText = "";
+    }
 
-    // 3. Translate text to target language using GPT-4o-mini
-    // We need the receiver's language. 
-    // To keep this route efficient, we can let processMessage handle it, 
-    // OR we can fetch user here. 
-    // But the prompt asks for "Step 3: Translate... Step 4: Convert... Step 5: Return".
-    // If I let processMessage do it, it's hidden. 
-    // I will let processMessage do it because it already has the logic to check user language.
-    // AND processMessage returns the message object which contains originalText, translatedText, translatedVoiceUrl.
-    
-    // However, the prompt says "Return: originalText, translatedText, translatedVoiceUrl".
-    // I will make sure the response contains these.
-    
+    // 3. No voice translation: rely on server pipeline for text translation only
+
+    // 4. Create and process message (server-side pipeline still validates)
     const message = await processMessage({
       senderId: session.user.id,
       receiverId,
-      text: originalText,
+      text: originalText || "(voice message)",
       chatId,
       voiceUrl,
+      // Do not provide translated voice; server may generate text translation
     });
 
     // 5. Return requested fields
@@ -79,8 +79,7 @@ export async function POST(req: Request) {
       originalText: message.originalText,
       translatedText: message.translatedText,
       translatedVoiceUrl: message.translatedVoiceUrl,
-      // Include full message for UI updates
-      ...JSON.parse(JSON.stringify(message))
+      ...JSON.parse(JSON.stringify(message)),
     });
   } catch (error) {
     console.error("Error processing voice message:", error);
