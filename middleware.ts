@@ -11,13 +11,10 @@ const intlMiddleware = createMiddleware({
   defaultLocale: "en",
 });
 
-type SessionUser = {
-  preferredLanguage?: string;
-  role?: "user" | "admin";
-};
+import type { Session } from "next-auth";
 
 type AuthedRequest = NextRequest & {
-  auth?: { user?: SessionUser };
+  auth?: Session | null;
 };
 
 export default auth(async function middleware(request: AuthedRequest) {
@@ -27,7 +24,7 @@ export default auth(async function middleware(request: AuthedRequest) {
   // Step 2: Auth check
   const session = request.auth;
   const isLoggedIn = !!session?.user;
-  const userLocale = session?.user?.preferredLanguage;
+  const userLocale = (session?.user as { preferredLanguage?: string })?.preferredLanguage;
 
   const { pathname } = request.nextUrl;
 
@@ -78,7 +75,7 @@ export default auth(async function middleware(request: AuthedRequest) {
 
   // Admin-only guard
   if (normalizedPath.startsWith("/admin")) {
-    const isAdmin = session?.user?.role === "admin";
+    const isAdmin = (session?.user as { role?: "user" | "admin" })?.role === "admin";
     if (!isAdmin) {
       const locale = userLocale || (isLocaleInPath ? firstSegment : "en");
       const dashboardUrl = new URL(`/${locale}/dashboard`, request.url);
