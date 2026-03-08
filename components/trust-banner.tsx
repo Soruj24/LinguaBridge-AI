@@ -1,4 +1,4 @@
-import { ShieldCheck, Lock } from "lucide-react";
+import {  Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export function TrustBanner() {

@@ -1,13 +1,17 @@
 "use client";
 
-import { Check, X, Minus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Check, Minus } from "lucide-react";
 
 const features = [
   {
     category: "Translation",
     items: [
-      { name: "Real-time Text Translation", free: true, pro: true, business: true },
+      {
+        name: "Real-time Text Translation",
+        free: true,
+        pro: true,
+        business: true,
+      },
       { name: "Voice Translation", free: false, pro: true, business: true },
       { name: "Languages Supported", free: "5", pro: "50+", business: "100+" },
     ],
@@ -15,9 +19,24 @@ const features = [
   {
     category: "Usage Limits",
     items: [
-      { name: "Messages per day", free: "50", pro: "Unlimited", business: "Unlimited" },
-      { name: "Translation Speed", free: "Standard", pro: "Priority", business: "Instant" },
-      { name: "History Retention", free: "7 days", pro: "30 days", business: "Unlimited" },
+      {
+        name: "Messages per day",
+        free: "50",
+        pro: "Unlimited",
+        business: "Unlimited",
+      },
+      {
+        name: "Translation Speed",
+        free: "Standard",
+        pro: "Priority",
+        business: "Instant",
+      },
+      {
+        name: "History Retention",
+        free: "7 days",
+        pro: "30 days",
+        business: "Unlimited",
+      },
     ],
   },
   {
@@ -32,7 +51,12 @@ const features = [
   {
     category: "Support",
     items: [
-      { name: "Customer Support", free: "Community", pro: "Email", business: "24/7 Priority" },
+      {
+        name: "Customer Support",
+        free: "Community",
+        pro: "Email",
+        business: "24/7 Priority",
+      },
     ],
   },
 ];
@@ -58,12 +82,18 @@ export function ComparisonTable() {
           {features.map((section) => (
             <>
               <tr key={section.category} className="bg-muted/20 border-b">
-                <td colSpan={4} className="p-3 px-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">
+                <td
+                  colSpan={4}
+                  className="p-3 px-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground"
+                >
                   {section.category}
                 </td>
               </tr>
               {section.items.map((item, index) => (
-                <tr key={item.name} className="border-b last:border-0 hover:bg-muted/5 transition-colors">
+                <tr
+                  key={item.name}
+                  className="border-b last:border-0 hover:bg-muted/5 transition-colors"
+                >
                   <td className="p-4 font-medium">{item.name}</td>
                   <td className="p-4 text-center text-muted-foreground">
                     {renderValue(item.free)}
