@@ -41,7 +41,7 @@ export default auth(async function middleware(request: AuthedRequest) {
         `/${firstSegment}`,
         `/${userLocale}`,
       );
-      const newUrl = new URL(newPathname, request.url);
+      const newUrl = new URL(newPathname, request.nextUrl.origin);
       // Preserve search params
       newUrl.search = request.nextUrl.search;
       return NextResponse.redirect(newUrl);
@@ -68,7 +68,7 @@ export default auth(async function middleware(request: AuthedRequest) {
   if (isProtectedRoute) {
     if (!isLoggedIn) {
       const locale = isLocaleInPath ? firstSegment : "en";
-      const loginUrl = new URL(`/${locale}/login`, request.url);
+      const loginUrl = new URL(`/${locale}/login`, request.nextUrl.origin);
       return NextResponse.redirect(loginUrl);
     }
   }
@@ -78,14 +78,14 @@ export default auth(async function middleware(request: AuthedRequest) {
     const isAdmin = (session?.user as { role?: "user" | "admin" })?.role === "admin";
     if (!isAdmin) {
       const locale = userLocale || (isLocaleInPath ? firstSegment : "en");
-      const dashboardUrl = new URL(`/${locale}/dashboard`, request.url);
+      const dashboardUrl = new URL(`/${locale}/dashboard`, request.nextUrl.origin);
       return NextResponse.redirect(dashboardUrl);
     }
   }
 
   if (isAuthPage && isLoggedIn) {
     const locale = userLocale || (isLocaleInPath ? firstSegment : "en");
-    const dashboardUrl = new URL(`/${locale}/dashboard`, request.url);
+    const dashboardUrl = new URL(`/${locale}/dashboard`, request.nextUrl.origin);
     return NextResponse.redirect(dashboardUrl);
   }
 
