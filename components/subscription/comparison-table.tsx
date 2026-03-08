@@ -89,7 +89,7 @@ export function ComparisonTable() {
                   {section.category}
                 </td>
               </tr>
-              {section.items.map((item, index) => (
+              {section.items.map((item) => (
                 <tr
                   key={item.name}
                   className="border-b last:border-0 hover:bg-muted/5 transition-colors"
