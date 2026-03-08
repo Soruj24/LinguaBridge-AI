@@ -50,30 +50,71 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       trigger,
       session,
     }: {
-      token: Record<string, unknown>;
-      user: Record<string, unknown>;
-      trigger?: string;
-      session?: Record<string, unknown>;
+      token: import("next-auth/jwt").JWT;
+      user: import("next-auth").User | import("next-auth/adapters").AdapterUser;
+      trigger?: "signIn" | "signUp" | "update";
+      session?: {
+        preferredLanguage?: string;
+        avatar?: string;
+        user?: {
+          preferences?: {
+            lowBandwidth: boolean;
+            reduceMotion: boolean;
+            highContrast: boolean;
+            autoPlayAudio: boolean;
+          };
+        };
+      };
     }) {
       if (user) {
-        token.id = (user._id as string).toString();
-        token.role = (user.role as string) || "user";
-        token.preferredLanguage = user.preferredLanguage as string;
-        token.avatar = user.avatar as string;
-        token.preferences = user.preferences as Record<string, unknown>;
+        const typedUser = user as {
+          _id: string | { toString(): string };
+          role?: "user" | "admin";
+          preferredLanguage?: string;
+          avatar?: string;
+          preferences?: {
+            lowBandwidth: boolean;
+            reduceMotion: boolean;
+            highContrast: boolean;
+            autoPlayAudio: boolean;
+          };
+        };
+        token.id = (typedUser._id as string)?.toString();
+        token.role = ((typedUser.role as "user" | "admin") ?? "user") as
+          | "user"
+          | "admin";
+        token.preferredLanguage = typedUser.preferredLanguage as string;
+        token.avatar = typedUser.avatar as string;
+        token.preferences = typedUser.preferences as {
+          lowBandwidth: boolean;
+          reduceMotion: boolean;
+          highContrast: boolean;
+          autoPlayAudio: boolean;
+        };
       }
 
       // Handle session updates (e.g. from update())
       if (trigger === "update" && session) {
         token.preferredLanguage = session.preferredLanguage;
         token.avatar = session.avatar;
-        if (
-          (session as { user?: { preferences?: Record<string, unknown> } }).user
-            ?.preferences
-        ) {
+        if (session.user?.preferences) {
           token.preferences = (
-            session as { user?: { preferences?: Record<string, unknown> } }
-          ).user?.preferences as Record<string, unknown>;
+            session as {
+              user?: {
+                preferences?: {
+                  lowBandwidth: boolean;
+                  reduceMotion: boolean;
+                  highContrast: boolean;
+                  autoPlayAudio: boolean;
+                };
+              };
+            }
+          ).user?.preferences as {
+            lowBandwidth: boolean;
+            reduceMotion: boolean;
+            highContrast: boolean;
+            autoPlayAudio: boolean;
+          };
         }
       }
       return token;
@@ -87,7 +128,8 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     }) {
       if (token && session.user) {
         session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        session.user.role =
+          (token.role as "user" | "admin" | undefined) ?? "user";
         session.user.preferredLanguage = token.preferredLanguage;
         session.user.avatar = token.avatar;
         session.user.image = token.avatar || session.user.image;
