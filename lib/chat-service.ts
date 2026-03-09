@@ -3,10 +3,6 @@ import Message from "@/models/Message";
 import Chat from "@/models/Chat";
 import User from "@/models/User";
 import { processTranslationPipeline } from "@/lib/ai";
-import fs from "fs";
-import path from "path";
-import { pipeline } from "stream/promises";
-import { Readable } from "stream";
 
 export async function processMessage({
   senderId,
