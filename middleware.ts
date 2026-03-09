@@ -24,7 +24,8 @@ export default auth(async function middleware(request: AuthedRequest) {
   // Step 2: Auth check
   const session = request.auth;
   const isLoggedIn = !!session?.user;
-  const userLocale = (session?.user as { preferredLanguage?: string })?.preferredLanguage;
+  const userLocale = (session?.user as { preferredLanguage?: string })
+    ?.preferredLanguage;
 
   const { pathname } = request.nextUrl;
 
@@ -75,17 +76,24 @@ export default auth(async function middleware(request: AuthedRequest) {
 
   // Admin-only guard
   if (normalizedPath.startsWith("/admin")) {
-    const isAdmin = (session?.user as { role?: "user" | "admin" })?.role === "admin";
+    const isAdmin =
+      (session?.user as { role?: "user" | "admin" })?.role === "admin";
     if (!isAdmin) {
       const locale = userLocale || (isLocaleInPath ? firstSegment : "en");
-      const dashboardUrl = new URL(`/${locale}/dashboard`, request.nextUrl.origin);
+      const dashboardUrl = new URL(
+        `/${locale}/dashboard`,
+        request.nextUrl.origin,
+      );
       return NextResponse.redirect(dashboardUrl);
     }
   }
 
   if (isAuthPage && isLoggedIn) {
     const locale = userLocale || (isLocaleInPath ? firstSegment : "en");
-    const dashboardUrl = new URL(`/${locale}/dashboard`, request.nextUrl.origin);
+    const dashboardUrl = new URL(
+      `/${locale}/dashboard`,
+      request.nextUrl.origin,
+    );
     return NextResponse.redirect(dashboardUrl);
   }
 
