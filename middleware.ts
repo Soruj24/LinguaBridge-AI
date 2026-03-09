@@ -101,6 +101,6 @@ export default auth(async function middleware(request: AuthedRequest) {
 });
 
 export const config = {
-  // Match only internationalized pathnames
+  // Match only internationalized pathnames (excluding API routes, Next.js internals, static files)
   matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 };
