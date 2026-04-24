@@ -22,10 +22,22 @@
     "settings": "设置",
     "languageRegion": "语言和区域",
     "noChats": "未找到对话",
-    "startConversation": "开始对话"
+    "noChatsDesc": "开始新对话以与人联系",
+    "noResults": "未找到结果",
+    "startConversation": "开始对话",
+    "startNewChat": "开始新对话"
   },
   "Chat": {
     "typeMessage": "输入消息...",
+    "tapToTranslate": "AI将自动翻译",
+    "noMessages": "暂无消息",
+    "noMessagesDesc": "发送消息开始对话",
+    "aiWillHelp": "AI翻译帮助跨越语言障碍",
+    "formal": "正式",
+    "casual": "随意",
+    "professional": "专业",
+    "friendly": "友好",
+    "concise": "简洁",
     "original": "原文",
     "originalShort": "原",
     "translated": "译文",
@@ -66,12 +78,13 @@
     "confirm": "确认语言",
     "saving": "保存中..."
   },
-  "NewChat": {
+"NewChat": {
     "title": "新聊天",
-    "searchPlaceholder": "通过姓名或电子邮件搜索用户...",
+    "searchPlaceholder": "按姓名或邮箱搜索用户...",
     "noUsersFound": "未找到用户。",
     "searchFailed": "搜索用户失败",
-    "startFailed": "启动聊天失败"
+    "startFailed": "开始聊天失败",
+    "searchHelp": "搜索用户以开始聊天"
   },
   "MobileNav": {
     "dashboard": "仪表板",

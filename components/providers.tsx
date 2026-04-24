@@ -11,7 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <DirectionProvider>
         <NextThemesProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >

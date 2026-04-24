@@ -22,10 +22,22 @@
     "settings": "Paramètres",
     "languageRegion": "Langue et région",
     "noChats": "Aucune discussion trouvée",
-    "startConversation": "Démarrer une conversation"
+    "noChatsDesc": "Démarrez une nouvelle conversation pour entrer en contact",
+    "noResults": "Aucun résultat trouvé",
+    "startConversation": "Démarrer une conversation",
+    "startNewChat": "Nouvelle discussion"
   },
   "Chat": {
     "typeMessage": "Écrivez un message...",
+    "tapToTranslate": "L'IA traduira automatiquement",
+    "noMessages": "Pas encore de messages",
+    "noMessagesDesc": "Envoyez un message pour démarrer la conversation",
+    "aiWillHelp": "La traduction par IA aide à combler le fossé",
+    "formal": "Formel",
+    "casual": "Décontracté",
+    "professional": "Professionnel",
+    "friendly": "Amical",
+    "concise": "Concis",
     "original": "Original",
     "originalShort": "Orig",
     "translated": "Traduit",
@@ -66,12 +78,13 @@
     "confirm": "Confirmer la langue",
     "saving": "Enregistrement..."
   },
-  "NewChat": {
-    "title": "Nouvelle discussion",
-    "searchPlaceholder": "Rechercher des utilisateurs par nom ou e-mail...",
+"NewChat": {
+    "title": "Nouveau chat",
+    "searchPlaceholder": "Rechercher des utilisateurs par nom ou email...",
     "noUsersFound": "Aucun utilisateur trouvé.",
-    "searchFailed": "Échec de la recherche d'utilisateurs",
-    "startFailed": "Échec du démarrage de la discussion"
+    "searchFailed": "Échec de la recherche",
+    "startFailed": "Échec du démarrage du chat",
+    "searchHelp": "Recherchez un utilisateur pour commencer à discuter"
   },
   "MobileNav": {
     "dashboard": "Tableau de bord",

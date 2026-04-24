@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import TextareaAutosize from "react-textarea-autosize";
-import { Send, Sparkles, Wand2, ArrowLeft } from "lucide-react";
+import { Send, Sparkles, Wand2, ArrowLeft, MessageCircle, Image } from "lucide-react";
 import { useRouter } from "@/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -19,9 +19,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { TypingIndicator } from "@/components/typing-indicator";
 import { TrustBanner } from "@/components/trust-banner";
+import { ChatBackground } from "@/components/ui/chat-background";
 import { useTranslations } from "next-intl";
 
 interface Message {
@@ -359,13 +360,14 @@ export function ChatWindow({ chatId }: { chatId: string }) {
 
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-zinc-950 relative">
+      <ChatBackground />
       {/* Header - Fixed/Absolute on top */}
-      <div className="absolute top-0 left-0 right-0 p-3 md:p-4 pt-[calc(0.75rem+env(safe-area-inset-top))] md:pt-[calc(1rem+env(safe-area-inset-top))] border-b bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md flex justify-between items-center shadow-sm z-50">
-        <div className="flex items-center gap-2 md:gap-3">
+      <div className="absolute top-0 left-0 right-0 p-3 md:p-4 pt-[calc(0.75rem+env(safe-area-inset-top))] md:pt-[calc(1rem+env(safe-area-inset-top))] border-b bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md flex justify-between items-center shadow-sm z-50">
+        <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden -ml-2"
+            className="md:hidden -ml-1 h-10 w-10 shrink-0"
             onClick={() => router.push("/dashboard")}
           >
             <ArrowLeft className="h-5 w-5" />
@@ -373,17 +375,21 @@ export function ChatWindow({ chatId }: { chatId: string }) {
           {chat?.participants
             .filter((p) => p.email !== session?.user?.email)
             .map((p) => (
-              <div key={p._id} className="flex items-center gap-3">
-                <Avatar className="h-10 w-10 border-2 border-primary/10">
-                  <AvatarImage src={p.avatar} />
-                  <AvatarFallback>{p.name[0]}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h2 className="font-semibold text-sm">{p.name}</h2>
-                  <p className="text-xs text-muted-foreground capitalize">
-                    {p.preferredLanguage === "en"
-                      ? "English"
-                      : p.preferredLanguage}{" "}
+              <div key={p._id} className="flex items-center gap-3 min-w-0">
+                <div className="relative">
+                  <Avatar className="h-11 w-11 border-2 border-primary/20 shrink-0">
+                    <AvatarImage src={p.avatar} />
+                    <AvatarFallback className="bg-primary/20 text-primary font-semibold">
+                      {p.name[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-zinc-900" />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="font-semibold text-base md:text-lg truncate">{p.name}</h2>
+                  <p className="text-xs text-muted-foreground capitalize flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                    {p.preferredLanguage === "en" ? "English" : p.preferredLanguage}{" "}
                     Speaker
                   </p>
                 </div>
@@ -391,7 +397,18 @@ export function ChatWindow({ chatId }: { chatId: string }) {
             ))}
         </div>
 
-        <div className="flex items-center gap-2" />
+        <div className="flex items-center gap-1 shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 rounded-full hover:bg-muted"
+            title="More options"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+            </svg>
+          </Button>
+        </div>
       </div>
 
       {/* Scrollable Content */}
@@ -424,7 +441,29 @@ export function ChatWindow({ chatId }: { chatId: string }) {
             </div>
           ) : (
             <AnimatePresence mode="popLayout" initial={false}>
-              {messages.map((msg, index) => {
+              {messages.length === 0 && !isLoading ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex flex-col items-center justify-center py-16 px-4 text-center"
+                >
+                  <div className="h-20 w-20 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4 shadow-inner">
+                    <MessageCircle className="h-10 w-10 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-lg text-foreground mb-2">
+                    {t('noMessages')}
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-xs mb-4">
+                    {t('noMessagesDesc')}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+                    <span className="text-xs text-primary font-medium">
+                      {t('aiWillHelp')}
+                    </span>
+                  </div>
+                </motion.div>
+              ) : messages.map((msg, index) => {
                 // Check if previous message is from same sender
                 const isSameSender =
                   index > 0 &&
@@ -450,7 +489,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
               <Avatar className="h-8 w-8">
                 <AvatarFallback>{typingUser[0]}</AvatarFallback>
               </Avatar>
-              <TypingIndicator />
+              <TypingIndicator userName={typingUser} />
             </div>
           )}
           <div ref={scrollRef} />
@@ -475,63 +514,97 @@ export function ChatWindow({ chatId }: { chatId: string }) {
       )}
 
       {/* Input Area */}
-      <div className="p-3 md:p-4 border-t flex items-end gap-2 bg-background/80 backdrop-blur-md sticky bottom-0 z-50 shadow-lg pb-[env(safe-area-inset-bottom)]">
-        <div className="flex-1 min-h-[48px] rounded-[24px] bg-muted/50 focus-within:ring-1 focus-within:ring-primary/20 flex flex-col justify-center">
-          <ScrollArea className="w-full max-h-[150px] rounded-[24px]">
-            <TextareaAutosize
-              className="w-full bg-transparent border-0 px-4 py-3 text-base resize-none focus:outline-none placeholder:text-muted-foreground block overflow-hidden"
-              placeholder={t("typeMessage")}
-              value={newMessage}
-              onChange={handleInputChange}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
-              minRows={1}
-            />
-          </ScrollArea>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-muted"
-              disabled={!newMessage.trim() || isRewriting}
-              title="Rewrite Message"
-            >
-              <Wand2
-                className={`h-5 w-5 ${isRewriting ? "animate-spin" : ""}`}
+      <div className="p-3 md:p-4 border-t bg-background/95 backdrop-blur-md sticky bottom-0 z-50 shadow-lg pb-[env(safe-area-inset-bottom)]">
+        {/* Smart Suggestions */}
+        {suggestions.length > 0 && (
+          <div className="mb-3 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {suggestions.map((suggestion, i) => (
+              <motion.button
+                key={i}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.05 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 text-sm font-medium text-foreground hover:from-primary/20 hover:to-primary/10 transition-all cursor-pointer shadow-sm shrink-0"
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                {suggestion}
+              </motion.button>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-end gap-2">
+          <div className="flex-1 min-h-[48px] rounded-2xl bg-muted/60 focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-muted flex flex-col justify-center transition-all">
+            <ScrollArea className="w-full max-h-[150px] rounded-2xl">
+              <TextareaAutosize
+                className="w-full bg-transparent border-0 px-4 py-3 text-base resize-none focus:outline-none placeholder:text-muted-foreground block overflow-hidden"
+                placeholder={t("typeMessage")}
+                value={newMessage}
+                onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                  }
+                }}
+                minRows={1}
               />
+            </ScrollArea>
+            <div className="flex items-center justify-between px-3 pb-2">
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] text-muted-foreground">
+                  {t('tapToTranslate')}
+                </span>
+              </div>
+              <span className="text-[10px] text-muted-foreground">
+                {newMessage.length > 0 && `${newMessage.length}`}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 rounded-full hover:bg-muted"
+                  disabled={!newMessage.trim() || isRewriting}
+                  title="Rewrite Message"
+                >
+                  <Wand2
+                    className={`h-4 w-4 ${isRewriting ? "animate-spin text-primary" : "text-muted-foreground"}`}
+                  />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 p-1">
+                <DropdownMenuItem onClick={() => handleRewrite("Formal")} className="cursor-pointer">
+                  <span className="mr-2">👔</span> {t('formal')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleRewrite("Casual")} className="cursor-pointer">
+                  <span className="mr-2">😎</span> {t('casual')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleRewrite("Professional")} className="cursor-pointer">
+                  <span className="mr-2">💼</span> {t('professional')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleRewrite("Friendly")} className="cursor-pointer">
+                  <span className="mr-2">😊</span> {t('friendly')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleRewrite("Concise")} className="cursor-pointer">
+                  <span className="mr-2">✂️</span> {t('concise')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button
+              size="icon"
+              onClick={sendMessage}
+              disabled={!newMessage.trim()}
+              className="h-11 w-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary/80 shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Send className="h-5 w-5" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => handleRewrite("Formal")}>
-              👔 Formal
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleRewrite("Casual")}>
-              😎 Casual
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleRewrite("Professional")}>
-              💼 Professional
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleRewrite("Friendly")}>
-              😊 Friendly
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleRewrite("Concise")}>
-              ✂️ Concise
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Button
-          size="icon"
-          onClick={sendMessage}
-          className="h-12 w-12 rounded-xl bg-white text-slate-900 hover:bg-slate-100 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300 shadow-sm transition-all"
-        >
-          <Send className="h-5 w-5" />
-        </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

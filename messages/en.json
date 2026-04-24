@@ -22,11 +22,22 @@
     "settings": "Settings",
     "languageRegion": "Language & Region",
     "noChats": "No chats found",
-    "startConversation": "Start a conversation"
+    "noChatsDesc": "Start a new conversation to connect with someone",
+    "noResults": "No results found",
+    "startConversation": "Start a conversation",
+    "startNewChat": "Start New Chat"
   },
   "Chat": {
     "typeMessage": "Type a message...",
-    "original": "Original",
+    "tapToTranslate": "AI will auto-translate",
+    "noMessages": "No messages yet",
+    "noMessagesDesc": "Send a message to start the conversation",
+    "aiWillHelp": "AI translation helps bridge the gap",
+    "formal": "Formal",
+    "casual": "Casual",
+    "professional": "Professional",
+    "friendly": "Friendly",
+    "concise": "Concise",
     "originalShort": "Orig",
     "translated": "Translated",
     "translatedShort": "Trans",
@@ -71,7 +82,8 @@
     "searchPlaceholder": "Search users by name or email...",
     "noUsersFound": "No users found.",
     "searchFailed": "Failed to search users",
-    "startFailed": "Failed to start chat"
+    "startFailed": "Failed to start chat",
+    "searchHelp": "Search for a user to start chatting"
   },
   "MobileNav": {
     "dashboard": "Dashboard",

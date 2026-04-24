@@ -22,10 +22,22 @@
     "settings": "الإعدادات",
     "languageRegion": "اللغة والمنطقة",
     "noChats": "لا توجد محادثات",
-    "startConversation": "ابدأ محادثة"
+    "noChatsDesc": "ابدأ محادثة جديدة للتواصل مع شخص ما",
+    "noResults": "لم يتم العثور على نتائج",
+    "startConversation": "ابدأ محادثة",
+    "startNewChat": "محادثة جديدة"
   },
   "Chat": {
     "typeMessage": "اكتب رسالة...",
+    "tapToTranslate": "الذكاء الاصطناعي يترجم تلقائيًا",
+    "noMessages": "لا توجد رسائل بعد",
+    "noMessagesDesc": "أرسل رسالة لبدء المحادثة",
+    "aiWillHelp": "الترجمة بالذكاء الاصطناعي تساعد في سد الفجوة",
+    "formal": "رسمي",
+    "casual": "غير رسمي",
+    "professional": "مهني",
+    "friendly": "ودود",
+    "concise": "مختصر",
     "original": "أصلي",
     "originalShort": "أصل",
     "translated": "مترجم",
@@ -71,7 +83,8 @@
     "searchPlaceholder": "البحث عن المستخدمين بالاسم أو البريد الإلكتروني...",
     "noUsersFound": "لم يتم العثور على مستخدمين.",
     "searchFailed": "فشل البحث عن المستخدمين",
-    "startFailed": "فشل بدء المحادثة"
+    "startFailed": "فشل بدء المحادثة",
+    "searchHelp": "ابحث عن مستخدم لبدء الدردشة"
   },
   "MobileNav": {
     "dashboard": "لوحة القيادة",

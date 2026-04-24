@@ -217,17 +217,17 @@ export function MessageBubble({
           isMe && "items-end",
         )}
       >
-        <div
-          className={cn(
-            "relative px-4 py-2 shadow-sm text-sm break-words transition-all",
-            isMe
-              ? "bg-primary text-primary-foreground rounded-2xl rounded-br-sm"
-              : "bg-muted/50 dark:bg-muted/30 text-foreground border rounded-2xl rounded-bl-sm",
-            isSameSender && isMe && "rounded-tr-md",
-            isSameSender && !isMe && "rounded-tl-md",
-            (message.voiceUrl || message.translatedVoiceUrl) && "min-w-[200px]",
-          )}
-        >
+<div
+        className={cn(
+          "relative px-4 py-2 shadow-sm text-sm break-words transition-all",
+          isMe
+            ? "bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground rounded-2xl rounded-br-sm shadow-lg shadow-primary/25"
+            : "bg-gradient-to-br from-muted/80 via-muted/60 to-muted/40 dark:from-muted/60 dark:via-muted/40 dark:to-muted/20 text-foreground border border-border/50 rounded-2xl rounded-bl-sm backdrop-blur-md",
+          isSameSender && isMe && "rounded-tr-md",
+          isSameSender && !isMe && "rounded-tl-md",
+          (message.voiceUrl || message.translatedVoiceUrl) && "min-w-[200px]",
+        )}
+      >
           {/* Voice Message Players */}
           {(message.voiceUrl || message.translatedVoiceUrl) &&
             !lowBandwidth && (

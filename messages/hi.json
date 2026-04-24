@@ -22,10 +22,22 @@
     "settings": "सेटिंग्स",
     "languageRegion": "भाषा और क्षेत्र",
     "noChats": "कोई चैट नहीं मिली",
-    "startConversation": "बातचीत शुरू करें"
+    "noChatsDesc": "किसी से जुड़ने के लिए नई बातचीत शुरू करें",
+    "noResults": "कोई परिणाम नहीं मिला",
+    "startConversation": "बातचीत शुरू करें",
+    "startNewChat": "नई चैट शुरू करें"
   },
-  "Chat": {
+"Chat": {
     "typeMessage": "एक संदेश लिखें...",
+    "tapToTranslate": "AI स्वचालित अनुवाद करेगा",
+    "noMessages": "अभी तक कोई संदेश नहीं",
+    "noMessagesDesc": "बातचीत शुरू करने के लिए संदेश भेजें",
+    "aiWillHelp": "AI अनुवाद मदद करता है",
+    "formal": "औपचारिक",
+    "casual": "आकस्मिक",
+    "professional": "व्यावसायिक",
+    "friendly": "मित्रवत",
+    "concise": "संक्षिप्त",
     "original": "मूल",
     "originalShort": "मूल",
     "translated": "अनुवादित",
@@ -66,12 +78,13 @@
     "confirm": "भाषा की पुष्टि करें",
     "saving": "सहेज रहा है..."
   },
-  "NewChat": {
-    "title": "नई चैट",
-    "searchPlaceholder": "नाम या ईमेल द्वारा उपयोगकर्ताओं को खोजें...",
+"NewChat": {
+    "title": "नया चैट",
+    "searchPlaceholder": "नाम या ईमेल से उपयोगकर्ताओं को खोजें...",
     "noUsersFound": "कोई उपयोगकर्ता नहीं मिला।",
-    "searchFailed": "उपयोगकर्ताओं को खोजने में विफल",
-    "startFailed": "चैट शुरू करने में विफल"
+    "searchFailed": "उपयोगकर्ता खोजने में विफल",
+    "startFailed": "चैट शुरू करने में विफल",
+    "searchHelp": "चैट शुरू करने के लिए उपयोगकर्ता खोजें"
   },
   "MobileNav": {
     "dashboard": "डैशबोर्ड",

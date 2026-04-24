@@ -22,10 +22,22 @@
     "settings": "Ajustes",
     "languageRegion": "Idioma y región",
     "noChats": "No se encontraron chats",
-    "startConversation": "Iniciar una conversación"
+    "noChatsDesc": "Inicia una nueva conversación para conectar con alguien",
+    "noResults": "No se encontraron resultados",
+    "startConversation": "Iniciar una conversación",
+    "startNewChat": "Iniciar nuevo chat"
   },
   "Chat": {
     "typeMessage": "Escribe un mensaje...",
+    "tapToTranslate": "IA traducía automáticamente",
+    "noMessages": "Sin mensajes aún",
+    "noMessagesDesc": "Envía un mensaje para iniciar la conversación",
+    "aiWillHelp": "La IA de traducción ayuda a cerrar la brecha",
+    "formal": "Formal",
+    "casual": "Informal",
+    "professional": "Profesional",
+    "friendly": "Amigable",
+    "concise": "Conciso",
     "original": "Original",
     "originalShort": "Orig",
     "translated": "Traducido",
@@ -71,7 +83,8 @@
     "searchPlaceholder": "Buscar usuarios por nombre o correo...",
     "noUsersFound": "No se encontraron usuarios.",
     "searchFailed": "Error al buscar usuarios",
-    "startFailed": "Error al iniciar chat"
+    "startFailed": "Error al iniciar chat",
+    "searchHelp": "Busca un usuario para empezar a chatear"
   },
   "MobileNav": {
     "dashboard": "Panel",

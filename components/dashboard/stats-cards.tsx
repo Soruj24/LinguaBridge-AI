@@ -1,19 +1,51 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare, Languages, Mic } from "lucide-react";
+import { MessageSquare, Languages, Mic, TrendingUp, ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+interface Stats {
+  messages: { total: number; delta: number };
+  translations: { total: number; deltaPercent: number };
+  voiceTranslations: { total: number; delta: number };
+}
+
+const cardData = [
+  { key: "messages", icon: MessageSquare, color: "from-blue-500 to-cyan-500", bgColor: "bg-blue-500", labelKey: "messagesSent" },
+  { key: "translations", icon: Languages, color: "from-violet-500 to-purple-500", bgColor: "bg-violet-500", labelKey: "translationsDone" },
+  { key: "voiceTranslations", icon: Mic, color: "from-rose-500 to-orange-500", bgColor: "bg-rose-500", labelKey: "voiceTranslations" },
+];
+
+function AnimatedNumber({ value, duration = 1500 }: { value: number; duration?: number }) {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const end = value;
+    const increment = end / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        setDisplayValue(end);
+        clearInterval(timer);
+      } else {
+        setDisplayValue(Math.floor(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [value, duration]);
+
+  return <span>{displayValue.toLocaleString()}</span>;
+}
 
 export function StatsCards() {
   const t = useTranslations("Dashboard");
-  const tCommon = useTranslations("Common");
-  const [stats, setStats] = useState<{
-    messages: { total: number; delta: number };
-    translations: { total: number; deltaPercent: number };
-    voiceTranslations: { total: number; delta: number };
-  } | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchStats() {
@@ -22,74 +54,78 @@ export function StatsCards() {
         setStats(res.data?.data || null);
       } catch (error) {
         console.error("Failed to load stats", error);
-        setStats(null);
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchStats();
   }, []);
 
+  const getStatValue = (key: keyof Stats) => {
+    const statObj = stats?.[key];
+    if (!statObj) return { total: 0, delta: 0 };
+    if (key === "translations") return { total: statObj.total, delta: (statObj as { deltaPercent?: number }).deltaPercent ?? 0 };
+    return { total: statObj.total, delta: (statObj as { delta?: number }).delta ?? 0 };
+  };
+
   return (
     <div className="grid gap-4 md:grid-cols-3">
-      <Card className="hover:shadow-lg transition-shadow border-l-4 border-l-blue-500 bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-slate-900/50">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            {t("messagesSent")}
-          </CardTitle>
-          <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
-            <MessageSquare className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {stats ? stats.messages.total.toLocaleString() : "—"}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {stats
-              ? `${stats.messages.delta >= 0 ? "+" : ""}${stats.messages.delta} ${t("fromLastWeek")}`
-              : tCommon("loading")}
-          </p>
-        </CardContent>
-      </Card>
-      <Card className="hover:shadow-lg transition-shadow border-l-4 border-l-purple-500 bg-gradient-to-br from-white to-purple-50 dark:from-slate-800 dark:to-slate-900/50">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            {t("translationsDone")}
-          </CardTitle>
-          <div className="h-8 w-8 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
-            <Languages className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {stats ? stats.translations.total.toLocaleString() : "—"}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {stats
-              ? `${stats.translations.deltaPercent >= 0 ? "+" : ""}${stats.translations.deltaPercent}% ${t("increase")}`
-              : tCommon("loading")}
-          </p>
-        </CardContent>
-      </Card>
-      <Card className="hover:shadow-lg transition-shadow border-l-4 border-l-rose-500 bg-gradient-to-br from-white to-rose-50 dark:from-slate-800 dark:to-slate-900/50">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            {t("voiceTranslations")}
-          </CardTitle>
-          <div className="h-8 w-8 rounded-full bg-rose-100 dark:bg-rose-900/20 flex items-center justify-center">
-            <Mic className="h-4 w-4 text-rose-600 dark:text-rose-400" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {stats ? stats.voiceTranslations.total.toLocaleString() : "—"}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {stats
-              ? `${stats.voiceTranslations.delta >= 0 ? "+" : ""}${stats.voiceTranslations.delta} ${t("thisWeek")}`
-              : tCommon("loading")}
-          </p>
-        </CardContent>
-      </Card>
+      {cardData.map((card, index) => {
+        const statKey = card.key as keyof Stats;
+        const stat = getStatValue(statKey);
+        const Icon = card.icon;
+
+        return (
+          <motion.div
+            key={card.key}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Card className="relative overflow-hidden border-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
+              {/* Gradient orb background */}
+              <div className={cn(
+                "absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-20 blur-2xl transition-transform group-hover:scale-150 group-hover:opacity-30",
+                card.color.replace("from-", "bg-").replace(" to-", " ")
+              )} />
+              
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {t(card.labelKey)}
+                </CardTitle>
+                <div className={cn(
+                  "h-10 w-10 rounded-xl flex items-center justify-center shadow-lg",
+                  `bg-gradient-to-br ${card.color} text-white`
+                )}>
+                  <Icon className="h-5 w-5" />
+                </div>
+              </CardHeader>
+              <CardContent className="relative">
+                <div className="text-3xl font-bold tracking-tight">
+                  {isLoading ? (
+                    <div className="h-8 w-20 bg-muted animate-pulse rounded" />
+                  ) : (
+                    <AnimatedNumber value={stat.total} />
+                  )}
+                </div>
+                <div className="flex items-center gap-1 mt-1 text-xs">
+                  {stat.delta >= 0 ? (
+                    <ArrowUpRight className="h-3 w-3 text-green-500" />
+                  ) : (
+                    <ArrowDownRight className="h-3 w-3 text-red-500" />
+                  )}
+                  <span className={stat.delta >= 0 ? "text-green-500 font-medium" : "text-red-500 font-medium"}>
+                    {stat.delta >= 0 ? "+" : ""}{stat.delta}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {card.key === "translations" ? "%" : ""} {t("thisWeek")}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }

@@ -22,10 +22,22 @@
     "settings": "সেটিংস",
     "languageRegion": "ভাষা ও অঞ্চল",
     "noChats": "কোন চ্যাট পাওয়া যায়নি",
-    "startConversation": "কথপোকথন শুরু করুন"
+    "noChatsDesc": "কারো সাথে যোগাযোগ করতে নতুন কথপোকথন শুরু করুন",
+    "noResults": "কোন ফলাফল পাওয়া যায়নি",
+    "startConversation": "কথপোকথন শুরু করুন",
+    "startNewChat": "নতুন চ্যাট শুরু করুন"
   },
-  "Chat": {
+"Chat": {
     "typeMessage": "একটি বার্তা টাইপ করুন...",
+    "tapToTranslate": "AI স্বয়ংক্রিয়ভাবে অনুবাদ করবে",
+    "noMessages": "এখনও কোন বার্তা নেই",
+    "noMessagesDesc": "কথোপকথন শুরু করতে বার্তা পাঠান",
+    "aiWillHelp": "AI অনুবাদ সাহায্য করে",
+    "formal": "আনুষ্ঠানিক",
+    "casual": "অনানুষ্ঠানিক",
+    "professional": "পেশাদার",
+    "friendly": "বন্ধুত্বপূর্ণ",
+    "concise": "সংক্ষিপ্ত",
     "original": "মূল",
     "originalShort": "মূল",
     "translated": "অনূদিত",
@@ -71,7 +83,8 @@
     "searchPlaceholder": "নাম বা ইমেল দ্বারা ব্যবহারকারীদের অনুসন্ধান করুন...",
     "noUsersFound": "কোন ব্যবহারকারী পাওয়া যায়নি।",
     "searchFailed": "ব্যবহারকারী অনুসন্ধান করতে ব্যর্থ",
-    "startFailed": "চ্যাট শুরু করতে ব্যর্থ"
+    "startFailed": "চ্যাট শুরু করতে ব্যর্থ",
+    "searchHelp": "চ্যাট শুরু করতে ব্যবহারকারী খুঁজুন"
   },
   "MobileNav": {
     "dashboard": "ড্যাশবোর্ড",

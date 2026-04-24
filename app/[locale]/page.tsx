@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FeedbackDialog } from "@/components/feedback-dialog";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const t = useTranslations('Landing');
@@ -37,19 +38,35 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 px-4 md:px-6">
-          <div className="container mx-auto flex flex-col items-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
+        <section className="relative w-full py-12 md:py-24 lg:py-32 xl:py-48 px-4 md:px-6 overflow-hidden">
+          {/* Animated gradient background */}
+          <div className="absolute inset-0 -z-10 overflow-hidden">
+            <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/10 via-violet-500/10 to-blue-500/10 rounded-full blur-3xl animate-spin" style={{ animationDuration: "20s" }} />
+          </div>
+          <div className="container mx-auto flex flex-col items-center space-y-4 text-center relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-2"
+            >
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary to-blue-600">
                 {t('hero.title')}
               </h1>
               <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
                 {t('hero.subtitle')}
               </p>
-            </div>
-            <div className="space-x-4 pt-4">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="space-x-4 pt-4"
+            >
               <Link href="/register">
-                <Button size="lg" className="h-11 px-8">
+                <Button size="lg" className="h-11 px-8 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/25">
                   {t('hero.getStarted')}
                 </Button>
               </Link>
@@ -58,7 +75,7 @@ export default function Home() {
                   {t('hero.signIn')}
                 </Button>
               </Link>
-            </div>
+            </motion.div>
           </div>
         </section>
 
@@ -83,31 +100,37 @@ export default function Home() {
                 icon={<MessageSquare className="h-10 w-10 text-primary" />}
                 title={t('features.cards.chat.title')}
                 description={t('features.cards.chat.description')}
+                index={0}
               />
               <FeatureCard 
                 icon={<Mic className="h-10 w-10 text-primary" />}
                 title={t('features.cards.voice.title')}
                 description={t('features.cards.voice.description')}
+                index={1}
               />
               <FeatureCard 
                 icon={<Globe className="h-10 w-10 text-primary" />}
                 title={t('features.cards.autoDetect.title')}
                 description={t('features.cards.autoDetect.description')}
+                index={2}
               />
               <FeatureCard 
                 icon={<Users className="h-10 w-10 text-primary" />}
                 title={t('features.cards.globalConnect.title')}
                 description={t('features.cards.globalConnect.description')}
+                index={3}
               />
               <FeatureCard 
                 icon={<Zap className="h-10 w-10 text-primary" />}
                 title={t('features.cards.lightningFast.title')}
                 description={t('features.cards.lightningFast.description')}
+                index={4}
               />
               <FeatureCard 
                 icon={<ShieldCheck className="h-10 w-10 text-primary" />}
                 title={t('features.cards.secure.title')}
                 description={t('features.cards.secure.description')}
+                index={5}
               />
             </div>
           </div>
@@ -217,16 +240,23 @@ export default function Home() {
   );
 }
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
+function FeatureCard({ icon, title, description, index }: { icon: React.ReactNode, title: string, description: string, index: number }) {
   return (
-    <div className="flex flex-col items-center space-y-2 border p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-      <div className="p-2 bg-primary/10 rounded-full mb-2">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      whileHover={{ y: -5 }}
+      className="flex flex-col items-center space-y-2 border p-6 rounded-xl shadow-sm hover:shadow-xl hover:shadow-primary/10 transition-all cursor-pointer group bg-gradient-to-br from-card to-card/50"
+    >
+      <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl mb-2 group-hover:from-primary/30 group-hover:to-primary/10 transition-all">
         {icon}
       </div>
-      <h3 className="text-xl font-bold">{title}</h3>
+      <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{title}</h3>
       <p className="text-sm text-muted-foreground text-center">
         {description}
       </p>
-    </div>
+    </motion.div>
   );
 }

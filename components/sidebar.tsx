@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ModeToggle } from "@/components/mode-toggle";
-import { LogOut, Plus, MessageSquare, Settings, Search, Globe } from "lucide-react";
+import { LogOut, Plus, MessageSquare, Settings, Search, Globe, Circle } from "lucide-react";
 import { useSocket } from "@/components/socket-provider";
 import { NewChatDialog } from "@/components/new-chat-dialog";
 import { LanguageModal } from "@/components/language-modal";
@@ -32,6 +32,7 @@ interface Chat {
     createdAt: string;
     senderId: string;
   };
+  unreadCount?: number;
   updatedAt: string;
 }
 
@@ -95,6 +96,22 @@ export function Sidebar({ className, onClose }: SidebarProps) {
     return message.originalText || tChat('voiceMessage');
   };
 
+  const formatTimestamp = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return "now";
+    if (minutes < 60) return `${minutes}m`;
+    if (hours < 24) return `${hours}h`;
+    if (days === 1) return "yesterday";
+    if (days < 7) return `${days}d`;
+    return date.toLocaleDateString(session?.user?.preferredLanguage || [], { month: 'short', day: 'numeric' });
+  };
+
   const filteredChats = chats.filter((chat) => {
     const other = getOtherParticipant(chat);
     return other?.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -142,55 +159,92 @@ export function Sidebar({ className, onClose }: SidebarProps) {
             if (!other) return null;
             const isActive = pathname === `/chat/${chat._id}`;
 
-            return (
+return (
               <Link
                 key={chat._id}
                 href={`/chat/${chat._id}`}
                 onClick={onClose}
                 className={cn(
-                  "flex items-start gap-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02]",
+                  "flex items-center gap-3 p-3 rounded-xl transition-all duration-200 hover:bg-muted/70 active:scale-[0.98]",
                   isActive ? "bg-primary/10 shadow-sm border-l-4 border-primary pl-2" : "hover:bg-muted/50"
                 )}
               >
-                <Avatar className="mt-1">
-                  <AvatarImage src={other.avatar || undefined} />
-                  <AvatarFallback>{other.name[0]}</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="h-12 w-12 border-2 border-transparent">
+                    <AvatarImage src={other.avatar || undefined} />
+                    <AvatarFallback className="bg-primary/20 text-primary font-semibold">
+                      {other.name[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {(chat as Chat & { online?: boolean }).online && (
+                    <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
+                  )}
+                </div>
                 <div className="flex-1 overflow-hidden min-w-0">
-                  <div className="flex justify-between items-baseline">
+                  <div className="flex justify-between items-center">
                     <p
-                      className={`font-medium truncate ${isActive ? "text-primary" : ""}`}
+                      className={cn(
+                        "font-semibold truncate",
+                        isActive ? "text-primary" : "",
+                        ((chat as Chat & { unreadCount?: number }).unreadCount ?? 0) > 0 ? "text-foreground" : "text-muted-foreground"
+                      )}
                     >
                       {other.name}
                     </p>
                     {chat.lastMessage && (
-                      <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2">
-                        {new Date(
-                          chat.lastMessage.createdAt,
-                        ).toLocaleTimeString(session?.user?.preferredLanguage || [], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                      <span className="text-xs text-muted-foreground whitespace-nowrap ml-2 font-medium">
+                        {formatTimestamp(chat.lastMessage.createdAt)}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">
-                    {chat.lastMessage ? (
-                      getLastMessageText(chat.lastMessage)
+                  <div className="flex items-center gap-2 mt-0.5">
+                    {((chat as Chat & { unreadCount?: number }).unreadCount ?? 0) > 0 ? (
+                      <span className="flex-1 text-sm font-medium text-foreground truncate">
+                        {getLastMessageText(chat.lastMessage)}
+                      </span>
                     ) : (
-                      <span className="italic opacity-70">
-                        {t('startConversation')}
+                      <p className="text-sm text-muted-foreground truncate">
+                        {chat.lastMessage ? (
+                          getLastMessageText(chat.lastMessage)
+                        ) : (
+                          <span className="italic opacity-70">
+                            {t('startConversation')}
+                          </span>
+                        )}
+                      </p>
+                    )}
+                    {((chat as Chat & { unreadCount?: number }).unreadCount ?? 0) > 0 && (
+                      <span className="shrink-0 min-w-[1.25rem] h-5 px-1.5 flex items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                        {(chat as Chat & { unreadCount?: number }).unreadCount}
                       </span>
                     )}
-                  </p>
+                  </div>
                 </div>
               </Link>
             );
           })
           }
           {!isLoading && filteredChats.length === 0 && (
-            <div className="text-center text-muted-foreground p-4 text-sm">
-              {t('noChats')}
+            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+              <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+                <MessageSquare className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <p className="font-medium text-foreground mb-1">
+                {searchQuery ? t('noResults') : t('noChats')}
+              </p>
+              <p className="text-sm text-muted-foreground mb-4">
+                {searchQuery 
+                  ? `"${searchQuery}"` 
+                  : t('noChatsDesc')}
+              </p>
+              {!searchQuery && (
+                <NewChatDialog onChatCreated={fetchChats}>
+                  <Button size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    {t('startNewChat')}
+                  </Button>
+                </NewChatDialog>
+              )}
             </div>
           )}
         </div>
