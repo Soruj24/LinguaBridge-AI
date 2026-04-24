@@ -35,6 +35,8 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 
 import { Switch } from "@/components/ui/switch";
+import { ThemeSelector } from "@/components/theme-selector";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -178,24 +180,31 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col items-center justify-center h-full p-4 pb-20 md:pb-6 [padding-bottom:env(safe-area-inset-bottom)]">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Settings</CardTitle>
-          <CardDescription>
-            Update your profile information and preferences.
+      <Card className="w-full max-w-md border-none shadow-none bg-transparent">
+        <CardHeader className="text-center space-y-2">
+          <CardTitle className="text-2xl font-bold">Settings</CardTitle>
+          <CardDescription className="text-sm">
+            Customize your experience and preferences.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+          <div className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-card to-card/50 border">
+            <ThemeSelector variant="full" />
+            <div className="border-t pt-4">
+              <h3 className="font-medium mb-3 text-sm text-muted-foreground">Interface Language</h3>
+              <LanguageSwitcher />
+            </div>
+          </div>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel className="text-sm">Display Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <Input placeholder="Your name" {...field} className="h-11 rounded-xl" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -206,14 +215,14 @@ export default function SettingsPage() {
                 name="preferredLanguage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Preferred Language</FormLabel>
+                    <FormLabel className="text-sm">Preferred Language</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       value={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="h-11 rounded-xl">
                           <SelectValue placeholder="Select a language" />
                         </SelectTrigger>
                       </FormControl>
@@ -225,7 +234,7 @@ export default function SettingsPage() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>
+                    <FormDescription className="text-xs">
                       Messages will be translated to this language.
                     </FormDescription>
                     <FormMessage />
@@ -237,27 +246,24 @@ export default function SettingsPage() {
                 name="avatar"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Profile Image URL</FormLabel>
+                    <FormLabel className="text-sm">Profile Image URL</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://example.com/avatar.jpg" {...field} />
+                      <Input placeholder="https://example.com/avatar.jpg" {...field} className="h-11 rounded-xl" />
                     </FormControl>
-                    <FormDescription>
-                      Optional: Provide a URL for your profile picture.
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <div className="pt-4 border-t mt-4">
-                <h3 className="text-sm font-semibold mb-3">Accessibility & Data</h3>
+              <div className="pt-2 border-t">
+                <h3 className="text-sm font-semibold mb-4">Accessibility & Data</h3>
                 <div className="space-y-3">
                   <FormField
                     control={form.control}
                     name="preferences.lowBandwidth"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-sm">Low Bandwidth Mode</FormLabel>
+                      <FormItem className="flex flex-row items-center justify-between rounded-xl border p-4 bg-card/50">
+                        <div className="space-y-1">
+                          <FormLabel className="text-sm font-medium">Low Bandwidth Mode</FormLabel>
                           <FormDescription className="text-xs">
                             Disable animations and high-res media.
                           </FormDescription>
@@ -275,9 +281,9 @@ export default function SettingsPage() {
                     control={form.control}
                     name="preferences.reduceMotion"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-sm">Reduce Motion</FormLabel>
+                      <FormItem className="flex flex-row items-center justify-between rounded-xl border p-4 bg-card/50">
+                        <div className="space-y-1">
+                          <FormLabel className="text-sm font-medium">Reduce Motion</FormLabel>
                           <FormDescription className="text-xs">
                             Minimize UI animations.
                           </FormDescription>
@@ -295,9 +301,9 @@ export default function SettingsPage() {
                     control={form.control}
                     name="preferences.autoPlayAudio"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-sm">Auto-play Audio</FormLabel>
+                      <FormItem className="flex flex-row items-center justify-between rounded-xl border p-4 bg-card/50">
+                        <div className="space-y-1">
+                          <FormLabel className="text-sm font-medium">Auto-play Audio</FormLabel>
                           <FormDescription className="text-xs">
                             Automatically play voice messages.
                           </FormDescription>
@@ -313,7 +319,7 @@ export default function SettingsPage() {
                   />
                 </div>
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Changes
               </Button>

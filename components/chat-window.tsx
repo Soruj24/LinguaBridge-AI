@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import TextareaAutosize from "react-textarea-autosize";
-import { Send, Sparkles, Wand2, ArrowLeft, MessageCircle, Image } from "lucide-react";
+import { Send, Sparkles, Wand2, ArrowLeft, MessageCircle, Image, Paperclip, X, Search, Smile } from "lucide-react";
 import { useRouter } from "@/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -24,6 +24,8 @@ import { TypingIndicator } from "@/components/typing-indicator";
 import { TrustBanner } from "@/components/trust-banner";
 import { ChatBackground } from "@/components/ui/chat-background";
 import { useTranslations } from "next-intl";
+import { FilePreview } from "@/components/ui/file-preview";
+import { StickerPicker } from "@/components/sticker-picker";
 
 interface Message {
   _id: string;
@@ -66,6 +68,8 @@ export function ChatWindow({ chatId }: { chatId: string }) {
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [isRewriting, setIsRewriting] = useState(false);
   const [isRestoringScroll, setIsRestoringScroll] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -358,16 +362,50 @@ export function ChatWindow({ chatId }: { chatId: string }) {
     }
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const sendFileMessage = async () => {
+    if (!selectedFile) return;
+    const receiverId = getReceiverId();
+    if (!receiverId) return;
+
+    try {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("chatId", chatId);
+      formData.append("receiverId", receiverId);
+
+      const res = await axios.post("/api/chat/file", formData);
+
+      socket?.emit("send_message", res.data);
+      setMessages((prev) => [...prev, res.data]);
+      setSelectedFile(null);
+      scrollToBottom();
+      toast.success("File sent");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to send file");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-zinc-950 relative">
+    <div className="flex flex-col h-full bg-gradient-to-b from-background to-muted/20 relative">
       <ChatBackground />
       {/* Header - Fixed/Absolute on top */}
-      <div className="absolute top-0 left-0 right-0 p-3 md:p-4 pt-[calc(0.75rem+env(safe-area-inset-top))] md:pt-[calc(1rem+env(safe-area-inset-top))] border-b bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md flex justify-between items-center shadow-sm z-50">
+      <div className="absolute top-0 left-0 right-0 p-3 md:p-4 pt-[calc(0.75rem+env(safe-area-inset-top))] md:pt-[calc(1rem+env(safe-area-inset-top))] border-b bg-background/80 backdrop-blur-xl flex justify-between items-center shadow-sm z-50">
         <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden -ml-1 h-10 w-10 shrink-0"
+            className="md:hidden -ml-1 h-10 w-10 shrink-0 hover:bg-muted"
             onClick={() => router.push("/dashboard")}
           >
             <ArrowLeft className="h-5 w-5" />
@@ -377,13 +415,13 @@ export function ChatWindow({ chatId }: { chatId: string }) {
             .map((p) => (
               <div key={p._id} className="flex items-center gap-3 min-w-0">
                 <div className="relative">
-                  <Avatar className="h-11 w-11 border-2 border-primary/20 shrink-0">
+                  <Avatar className="h-11 w-11 border-2 border-primary/20 shrink-0 shadow-md">
                     <AvatarImage src={p.avatar} />
-                    <AvatarFallback className="bg-primary/20 text-primary font-semibold">
+                    <AvatarFallback className="bg-gradient-to-br from-primary to-primary/70 text-primary-foreground font-semibold">
                       {p.name[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-zinc-900" />
+                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
                 </div>
                 <div className="min-w-0">
                   <h2 className="font-semibold text-base md:text-lg truncate">{p.name}</h2>
@@ -401,7 +439,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-full hover:bg-muted"
+            className="h-10 w-10 rounded-xl hover:bg-muted transition-colors"
             title="More options"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -514,7 +552,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
       )}
 
       {/* Input Area */}
-      <div className="p-3 md:p-4 border-t bg-background/95 backdrop-blur-md sticky bottom-0 z-50 shadow-lg pb-[env(safe-area-inset-bottom)]">
+      <div className="p-3 md:p-4 border-t bg-background/80 backdrop-blur-xl sticky bottom-0 z-50 shadow-lg pb-[env(safe-area-inset-bottom)]">
         {/* Smart Suggestions */}
         {suggestions.length > 0 && (
           <div className="mb-3 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -535,7 +573,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
         )}
 
         <div className="flex items-end gap-2">
-          <div className="flex-1 min-h-[48px] rounded-2xl bg-muted/60 focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-muted flex flex-col justify-center transition-all">
+          <div className="flex-1 min-h-[48px] rounded-2xl bg-muted/60 focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-muted flex flex-col justify-center transition-all border border-muted/40">
             <ScrollArea className="w-full max-h-[150px] rounded-2xl">
               <TextareaAutosize
                 className="w-full bg-transparent border-0 px-4 py-3 text-base resize-none focus:outline-none placeholder:text-muted-foreground block overflow-hidden"
@@ -558,17 +596,51 @@ export function ChatWindow({ chatId }: { chatId: string }) {
                 </span>
               </div>
               <span className="text-[10px] text-muted-foreground">
-                {newMessage.length > 0 && `${newMessage.length}`}
+                {(newMessage.length || selectedFile?.size) && `${newMessage.length || selectedFile?.size}`}
               </span>
             </div>
           </div>
+          {/* Selected File Preview */}
+          {selectedFile && (
+            <div className="px-2 py-2">
+              <FilePreview
+                file={selectedFile}
+                onRemove={() => setSelectedFile(null)}
+              />
+            </div>
+          )}
           <div className="flex items-center gap-1">
+            {/* File Upload Button */}
+            <input
+              type="file"
+              id="file-upload"
+              className="hidden"
+              onChange={handleFileSelect}
+              accept="image/*,.pdf,.doc,.docx,.txt"
+            />
+            <label htmlFor="file-upload">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-xl hover:bg-muted transition-colors"
+                asChild
+              >
+                <span>
+                  <Paperclip className="h-4 w-4 text-muted-foreground" />
+                </span>
+              </Button>
+            </label>
+            <span className="flex">
+              <StickerPicker onSelect={(emoji: string) => {
+                setNewMessage((prev: string) => prev + emoji);
+              }} />
+            </span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 rounded-full hover:bg-muted"
+                  className="h-10 w-10 rounded-xl hover:bg-muted transition-colors"
                   disabled={!newMessage.trim() || isRewriting}
                   title="Rewrite Message"
                 >
@@ -599,7 +671,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
               size="icon"
               onClick={sendMessage}
               disabled={!newMessage.trim()}
-              className="h-11 w-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary/80 shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-11 w-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send className="h-5 w-5" />
             </Button>

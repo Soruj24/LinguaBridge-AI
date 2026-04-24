@@ -22,14 +22,21 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: false, // Optional for OAuth
+      required: false,
     },
     avatar: {
       type: String,
     },
+    bio: {
+      type: String,
+    },
     preferredLanguage: {
       type: String,
-      default: "en", // Default language
+      default: "en",
+    },
+    theme: {
+      type: String,
+      default: "default",
     },
     preferences: {
       lowBandwidth: { type: Boolean, default: false },

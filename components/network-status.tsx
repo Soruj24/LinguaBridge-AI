@@ -37,7 +37,7 @@ export function NetworkStatus() {
   if (!isOffline) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-destructive text-destructive-foreground text-xs font-medium text-center py-1 z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-destructive text-destructive-foreground text-xs font-medium text-center py-2 z-50 shadow-lg">
       You are currently offline. Check your internet connection.
     </div>
   );

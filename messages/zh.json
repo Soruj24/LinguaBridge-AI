@@ -54,7 +54,10 @@
     "rewrittenAs": "已重写为 {tone}",
     "rewriteFailed": "重写文本失败",
     "sendFailed": "发送消息失败",
-    "trustBanner": "消息经过端到端加密。您的隐私是我们的首要任务。"
+    "trustBanner": "消息经过端到端加密。您的隐私是我们的首要任务。",
+    "voiceTranslated": "语音翻译成功",
+    "voiceTranslationFailed": "语音翻译失败",
+    "translateVoice": "翻译语音"
   },
   "Settings": {
     "title": "设置",
@@ -85,6 +88,21 @@
     "searchFailed": "搜索用户失败",
     "startFailed": "开始聊天失败",
     "searchHelp": "搜索用户以开始聊天"
+  },
+  "GroupChat": {
+    "createGroup": "创建群组",
+    "groupNamePlaceholder": "群组名称",
+    "groupDescriptionPlaceholder": "群组描述",
+    "addMembers": "添加成员",
+    "searchPlaceholder": "搜索用户...",
+    "createButton": "创建群组",
+    "groupCreated": "群组已创建!",
+    "groupSettings": "群组设置",
+    "addMember": "添加成员",
+    "removeMember": "移除成员",
+    "leaveGroup": "离开群组",
+    "admin": "管理员",
+    "members": "成员"
   },
   "MobileNav": {
     "dashboard": "仪表板",

@@ -3,10 +3,16 @@ dotenv.config();
 
 import { createServer } from "node:http";
 import next from "next";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
 import Redis from "ioredis";
 import { processMessage } from "@/lib/chat-service";
+import connectDB from "@/lib/db";
+import UserStatus from "@/models/UserStatus";
+
+interface ExtendedSocket extends Socket {
+  userId?: string;
+}
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -62,12 +68,27 @@ app.prepare().then(async () => {
     }
   }
 
-  io.on("connection", (socket) => {
+  io.on("connection", (socket: ExtendedSocket) => {
     console.log("Client connected:", socket.id);
+
+    socket.on("set_online", async (userId) => {
+      socket.userId = userId;
+      try {
+        await connectDB();
+        await UserStatus.findOneAndUpdate(
+          { userId },
+          { isOnline: true, lastSeen: new Date() },
+          { upsert: true }
+        );
+        io.emit("user_online", { userId, isOnline: true });
+      } catch (error) {
+        console.error("Error setting online status:", error);
+      }
+    });
 
     socket.on("join_chat", (chatId) => {
       socket.join(chatId);
-      console.log(`User ${socket.id} joined chat ${chatId}`);
+      io.to(chatId).emit("user_typing", { userId: socket.userId, chatId, isTyping: true });
     });
 
     socket.on("join_user", (userId) => {
@@ -124,8 +145,20 @@ app.prepare().then(async () => {
       io.to(chatId).emit("message_deleted", { messageId, chatId });
     });
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       console.log("Client disconnected:", socket.id);
+      if (socket.userId) {
+        try {
+          await connectDB();
+          await UserStatus.findOneAndUpdate(
+            { userId: socket.userId },
+            { isOnline: false, lastSeen: new Date() }
+          );
+          io.emit("user_online", { userId: socket.userId, isOnline: false });
+        } catch (error) {
+          console.error("Error updating offline status:", error);
+        }
+      }
     });
   });
 

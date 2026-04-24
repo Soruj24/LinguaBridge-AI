@@ -129,14 +129,16 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full border-none shadow-none">
       <CardHeader className="space-y-1">
-        <div className="flex items-center gap-2 mb-2">
-          <Globe className="h-6 w-6 text-primary" />
-          <span className="font-bold text-xl">LinguaBridge AI</span>
+        <div className="hidden lg:flex items-center gap-2 mb-2">
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
+            <Globe className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <span className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">LinguaBridge AI</span>
         </div>
-        <CardTitle className="text-2xl">Register</CardTitle>
-        <CardDescription>Create an account to start chatting</CardDescription>
+        <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
+        <CardDescription>Enter your details to get started</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         <Form {...form}>
@@ -148,7 +150,7 @@ export default function RegisterPage() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input placeholder="John Doe" {...field} className="h-11 rounded-xl" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -161,7 +163,7 @@ export default function RegisterPage() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="m@example.com" {...field} />
+                    <Input placeholder="m@example.com" {...field} className="h-11 rounded-xl" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -174,7 +176,7 @@ export default function RegisterPage() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" {...field} className="h-11 rounded-xl" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -191,7 +193,7 @@ export default function RegisterPage() {
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-11 rounded-xl">
                         <SelectValue placeholder="Select a language" />
                       </SelectTrigger>
                     </FormControl>
@@ -207,8 +209,8 @@ export default function RegisterPage() {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Register"}
+            <Button className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20" type="submit" disabled={isLoading}>
+              {isLoading ? "Creating account..." : "Create Account"}
             </Button>
           </form>
         </Form>
@@ -216,7 +218,7 @@ export default function RegisterPage() {
       <CardFooter>
         <p className="text-sm text-muted-foreground text-center w-full">
           Already have an account?{" "}
-          <Link href="/login" className="underline hover:text-primary">
+          <Link href="/login" className="font-medium text-primary hover:text-primary/80 transition-colors">
             Login
           </Link>
         </p>

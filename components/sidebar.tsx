@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ModeToggle } from "@/components/mode-toggle";
-import { LogOut, Plus, MessageSquare, Settings, Search, Globe, Circle } from "lucide-react";
+import { LogOut, Plus, MessageSquare, Settings, Search, Globe, Circle, Users } from "lucide-react";
 import { useSocket } from "@/components/socket-provider";
 import { NewChatDialog } from "@/components/new-chat-dialog";
 import { LanguageModal } from "@/components/language-modal";
+import { GroupChatDialog } from "@/components/group-chat-dialog";
 import axios from "axios";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -118,24 +119,33 @@ export function Sidebar({ className, onClose }: SidebarProps) {
   });
 
   return (
-    <div className={cn("flex flex-col h-screen w-80 border-r bg-background/95 backdrop-blur-xl shadow-lg z-50", className)}>
-      <div className="p-4 border-b space-y-4">
+    <div className={cn("flex flex-col h-screen w-80 border-r bg-gradient-to-b from-background to-background/80 backdrop-blur-xl shadow-xl z-50", className)}>
+      <div className="p-4 border-b space-y-4 bg-gradient-to-r from-primary/5 via-transparent to-transparent">
         <div className="flex justify-between items-center">
           <h1 className="font-bold text-xl flex items-center gap-2">
-            <MessageSquare className="h-6 w-6 text-primary" />
-            LinguaBridge
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/25">
+              <MessageSquare className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">LinguaBridge</span>
           </h1>
-          <NewChatDialog onChatCreated={fetchChats}>
-            <Button size="icon" className="rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-all hover:scale-105">
-              <Plus className="h-5 w-5" />
-            </Button>
-          </NewChatDialog>
+          <div className="flex items-center gap-2">
+            <NewChatDialog onChatCreated={fetchChats}>
+              <Button size="icon" className="rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </NewChatDialog>
+            <GroupChatDialog onChatCreated={fetchChats}>
+              <Button size="icon" variant="outline" className="rounded-xl hover:bg-primary/10 hover:border-primary/30 transition-all">
+                <Users className="h-4 w-4" />
+              </Button>
+            </GroupChatDialog>
+          </div>
         </div>
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <div className="relative group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder={t('search')}
-            className="pl-9 bg-background"
+            className="pl-10 bg-muted/50 border-muted-foreground/10 focus:border-primary/30 focus:ring-primary/20 rounded-xl transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

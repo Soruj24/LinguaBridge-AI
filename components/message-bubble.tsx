@@ -24,6 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { FileBubble } from "@/components/ui/file-preview";
 
 interface Reaction {
   emoji: string;
@@ -37,6 +38,10 @@ interface MessageBubbleProps {
     translatedText?: string;
     voiceUrl?: string;
     translatedVoiceUrl?: string;
+    fileUrl?: string;
+    fileType?: string;
+    fileSize?: number;
+    isImage?: boolean;
     createdAt: string;
     senderId: {
       name: string;
@@ -219,10 +224,10 @@ export function MessageBubble({
       >
 <div
         className={cn(
-          "relative px-4 py-2 shadow-sm text-sm break-words transition-all",
+          "relative px-4 py-2.5 shadow-sm text-sm break-words transition-all",
           isMe
-            ? "bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground rounded-2xl rounded-br-sm shadow-lg shadow-primary/25"
-            : "bg-gradient-to-br from-muted/80 via-muted/60 to-muted/40 dark:from-muted/60 dark:via-muted/40 dark:to-muted/20 text-foreground border border-border/50 rounded-2xl rounded-bl-sm backdrop-blur-md",
+            ? "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl rounded-br-sm shadow-lg shadow-primary/25"
+            : "bg-gradient-to-br from-muted/90 via-muted/70 to-muted/50 text-foreground border border-border/30 rounded-2xl rounded-bl-sm",
           isSameSender && isMe && "rounded-tr-md",
           isSameSender && !isMe && "rounded-tl-md",
           (message.voiceUrl || message.translatedVoiceUrl) && "min-w-[200px]",
@@ -264,6 +269,19 @@ export function MessageBubble({
             <div className="mb-2 p-2 bg-background/20 rounded border border-current/10 text-xs italic opacity-80 flex items-center gap-2">
               <Volume2 className="h-3 w-3" />
               <span>{t("audioHidden")}</span>
+            </div>
+          )}
+
+          {/* File Attachment */}
+          {message.fileUrl && (
+            <div className="mb-2">
+              <FileBubble
+                fileUrl={message.fileUrl}
+                fileType={message.fileType}
+                fileSize={message.fileSize}
+                isImage={message.isImage}
+                fileName={message.originalText}
+              />
             </div>
           )}
 

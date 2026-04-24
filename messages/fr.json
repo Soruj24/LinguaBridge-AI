@@ -54,7 +54,10 @@
     "rewrittenAs": "Réécrit en {tone}",
     "rewriteFailed": "Échec de la réécriture du texte",
     "sendFailed": "Échec de l'envoi du message",
-    "trustBanner": "Les messages sont chiffrés de bout en bout. Votre confidentialité est notre priorité."
+    "trustBanner": "Les messages sont chiffrés de bout en bout. Votre confidentialité est notre priorité.",
+    "voiceTranslated": "Voix traduite avec succès",
+    "voiceTranslationFailed": "Échec de la traduction vocale",
+    "translateVoice": "Traduire la voix"
   },
   "Settings": {
     "title": "Paramètres",
@@ -85,6 +88,21 @@
     "searchFailed": "Échec de la recherche",
     "startFailed": "Échec du démarrage du chat",
     "searchHelp": "Recherchez un utilisateur pour commencer à discuter"
+  },
+  "GroupChat": {
+    "createGroup": "Créer un groupe",
+    "groupNamePlaceholder": "Nom du groupe",
+    "groupDescriptionPlaceholder": "Description du groupe",
+    "addMembers": "Ajouter des membres",
+    "searchPlaceholder": "Rechercher des utilisateurs...",
+    "createButton": "Créer le groupe",
+    "groupCreated": "Groupe créé!",
+    "groupSettings": "Paramètres du groupe",
+    "addMember": "Ajouter un membre",
+    "removeMember": "Retirer un membre",
+    "leaveGroup": "Quitter le groupe",
+    "admin": "Admin",
+    "members": "Membres"
   },
   "MobileNav": {
     "dashboard": "Tableau de bord",

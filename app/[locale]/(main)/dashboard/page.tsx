@@ -7,9 +7,9 @@ import { PremiumCard } from "@/components/dashboard/premium-card";
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col h-full w-full bg-muted/20">
+    <div className="flex flex-col h-full w-full bg-gradient-to-b from-background to-muted/20">
       <DashboardNavbar />
-      <div className="flex-1 space-y-6 p-8 pt-6 pb-20 md:pb-6 overflow-y-auto">
+      <div className="flex-1 space-y-6 p-6 md:p-8 pt-6 pb-20 md:pb-6 overflow-y-auto">
         <StatsCards />
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">

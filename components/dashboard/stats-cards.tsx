@@ -15,9 +15,9 @@ interface Stats {
 }
 
 const cardData = [
-  { key: "messages", icon: MessageSquare, color: "from-blue-500 to-cyan-500", bgColor: "bg-blue-500", labelKey: "messagesSent" },
-  { key: "translations", icon: Languages, color: "from-violet-500 to-purple-500", bgColor: "bg-violet-500", labelKey: "translationsDone" },
-  { key: "voiceTranslations", icon: Mic, color: "from-rose-500 to-orange-500", bgColor: "bg-rose-500", labelKey: "voiceTranslations" },
+  { key: "messages", icon: MessageSquare, color: "from-blue-500 to-blue-600", bgColor: "bg-blue-500", labelKey: "messagesSent" },
+  { key: "translations", icon: Languages, color: "from-primary/80 to-primary", bgColor: "bg-primary", labelKey: "translationsDone" },
+  { key: "voiceTranslations", icon: Mic, color: "from-amber-500 to-orange-500", bgColor: "bg-amber-500", labelKey: "voiceTranslations" },
 ];
 
 function AnimatedNumber({ value, duration = 1500 }: { value: number; duration?: number }) {
@@ -82,10 +82,10 @@ export function StatsCards() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <Card className="relative overflow-hidden border-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
+            <Card className="relative overflow-hidden border bg-background/80 dark:bg-background/80 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
               {/* Gradient orb background */}
               <div className={cn(
-                "absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-20 blur-2xl transition-transform group-hover:scale-150 group-hover:opacity-30",
+                "absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-15 blur-2xl transition-transform group-hover:scale-150 group-hover:opacity-25",
                 card.color.replace("from-", "bg-").replace(" to-", " ")
               )} />
               
@@ -94,7 +94,7 @@ export function StatsCards() {
                   {t(card.labelKey)}
                 </CardTitle>
                 <div className={cn(
-                  "h-10 w-10 rounded-xl flex items-center justify-center shadow-lg",
+                  "h-10 w-10 rounded-lg flex items-center justify-center shadow-lg shadow-primary/20",
                   `bg-gradient-to-br ${card.color} text-white`
                 )}>
                   <Icon className="h-5 w-5" />

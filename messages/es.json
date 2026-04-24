@@ -54,7 +54,10 @@
     "rewrittenAs": "Reescrito como {tone}",
     "rewriteFailed": "Error al reescribir el texto",
     "sendFailed": "Error al enviar mensaje",
-    "trustBanner": "Los mensajes están cifrados de extremo a extremo. Tu privacidad es nuestra prioridad."
+    "trustBanner": "Los mensajes están cifrados de extremo a extremo. Tu privacidad es nuestra prioridad.",
+    "voiceTranslated": "Voz traducida con éxito",
+    "voiceTranslationFailed": "Error al traducir voz",
+    "translateVoice": "Traducir voz"
   },
   "Settings": {
     "title": "Ajustes",
@@ -85,6 +88,21 @@
     "searchFailed": "Error al buscar usuarios",
     "startFailed": "Error al iniciar chat",
     "searchHelp": "Busca un usuario para empezar a chatear"
+  },
+  "GroupChat": {
+    "createGroup": "Crear grupo",
+    "groupNamePlaceholder": "Nombre del grupo",
+    "groupDescriptionPlaceholder": "Descripción del grupo",
+    "addMembers": "Añadir miembros",
+    "searchPlaceholder": "Buscar usuarios...",
+    "createButton": "Crear grupo",
+    "groupCreated": "¡Grupo creado!",
+    "groupSettings": "Ajustes del grupo",
+    "addMember": "Añadir miembro",
+    "removeMember": "Eliminar miembro",
+    "leaveGroup": "Salir del grupo",
+    "admin": "Admin",
+    "members": "Miembros"
   },
   "MobileNav": {
     "dashboard": "Panel",

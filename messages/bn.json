@@ -54,7 +54,10 @@
     "rewrittenAs": "{tone} হিসেবে পুনর্লিখন করা হয়েছে",
     "rewriteFailed": "টেক্সট পুনর্লিখন করতে ব্যর্থ",
     "sendFailed": "বার্তা পাঠাতে ব্যর্থ",
-    "trustBanner": "বার্তাগুলি এন্ড-টু-এন্ড এনক্রিপ্ট করা। আপনার গোপনীয়তা আমাদের অগ্রাধিকার।"
+    "trustBanner": "বার্তাগুলি এন্ড-টু-এন্ড এনক্রিপ্ট করা। আপনার গোপনীয়তা আমাদের অগ্রাধিকার।",
+    "voiceTranslated": "ভয়েস সফলভাবে অনুবাদিত হয়েছে",
+    "voiceTranslationFailed": "ভয়েস অনুবাদ ব্যর্থ হয়েছে",
+    "translateVoice": "ভয়েস অনুবাদ"
   },
   "Settings": {
     "title": "সেটিংস",
@@ -85,6 +88,21 @@
     "searchFailed": "ব্যবহারকারী অনুসন্ধান করতে ব্যর্থ",
     "startFailed": "চ্যাট শুরু করতে ব্যর্থ",
     "searchHelp": "চ্যাট শুরু করতে ব্যবহারকারী খুঁজুন"
+  },
+  "GroupChat": {
+    "createGroup": "গ্রুপ তৈরি",
+    "groupNamePlaceholder": "গ্রুপের নাম",
+    "groupDescriptionPlaceholder": "গ্রুপ বিবরণ",
+    "addMembers": "সদস্য যোগ করুন",
+    "searchPlaceholder": "ব্যবহারকারী খুঁজুন...",
+    "createButton": "গ্রুপ তৈরি",
+    "groupCreated": "গ্রুপ তৈরি হয়েছে!",
+    "groupSettings": "গ্রুপ সেটিংস",
+    "addMember": "সদস্য যোগ করুন",
+    "removeMember": "সদস্য সরান",
+    "leaveGroup": "গ্রুপ ছেড়ে দিন",
+    "admin": "অ্যাডমিন",
+    "members": "সদস্য"
   },
   "MobileNav": {
     "dashboard": "ড্যাশবোর্ড",

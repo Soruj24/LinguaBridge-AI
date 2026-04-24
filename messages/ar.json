@@ -54,7 +54,10 @@
     "rewrittenAs": "أعيدت كتابتها بصيغة {tone}",
     "rewriteFailed": "فشل في إعادة كتابة النص",
     "sendFailed": "فشل إرسال الرسالة",
-    "trustBanner": "الرسائل مشفرة من طرف إلى طرف. خصوصيتك هي أولويتنا."
+    "trustBanner": "الرسائل مشفرة من طرف إلى طرف. خصوصيتك هي أولويتنا.",
+    "voiceTranslated": "تم ترجمة الصوت بنجاح",
+    "voiceTranslationFailed": "فشل ترجمة الصوت",
+    "translateVoice": "ترجمة الصوت"
   },
   "Settings": {
     "title": "الإعدادات",
@@ -85,6 +88,21 @@
     "searchFailed": "فشل البحث عن المستخدمين",
     "startFailed": "فشل بدء المحادثة",
     "searchHelp": "ابحث عن مستخدم لبدء الدردشة"
+  },
+  "GroupChat": {
+    "createGroup": "إنشاء مجموعة",
+    "groupNamePlaceholder": "اسم المجموعة",
+    "groupDescriptionPlaceholder": "وصف المجموعة",
+    "addMembers": "إضافة أعضاء",
+    "searchPlaceholder": "البحث عن مستخدمين...",
+    "createButton": "إنشاء مجموعة",
+    "groupCreated": "تم إنشاء المجموعة!",
+    "groupSettings": "إعدادات المجموعة",
+    "addMember": "إضافة عضو",
+    "removeMember": "إزالة عضو",
+    "leaveGroup": "مغادرة المجموعة",
+    "admin": "مسؤول",
+    "members": "أعضاء"
   },
   "MobileNav": {
     "dashboard": "لوحة القيادة",

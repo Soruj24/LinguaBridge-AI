@@ -97,8 +97,8 @@ export function AudioPlayer({ src, variant = "receiver" }: AudioPlayerProps) {
 
   return (
     <div className={cn(
-      "flex items-center gap-3 p-3 rounded-xl min-w-[240px] select-none",
-      variant === "sender" ? "bg-white/10" : "bg-black/5"
+      "flex items-center gap-3 p-3 rounded-xl min-w-[240px] select-none shadow-sm",
+      variant === "sender" ? "bg-white/5" : "bg-muted/30"
     )}>
       <audio ref={audioRef} src={src} preload="metadata" />
       
@@ -106,8 +106,8 @@ export function AudioPlayer({ src, variant = "receiver" }: AudioPlayerProps) {
         variant="ghost"
         size="icon"
         className={cn(
-            "h-10 w-10 rounded-full shrink-0 transition-transform active:scale-95", 
-            variant === "sender" ? "bg-white text-primary hover:bg-white/90" : "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
+            "h-10 w-10 rounded-xl shrink-0 transition-transform active:scale-95 shadow-md", 
+            variant === "sender" ? "bg-white/20 text-white hover:bg-white/30" : "bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
         )}
         onClick={togglePlay}
         disabled={isLoading}
@@ -129,7 +129,7 @@ export function AudioPlayer({ src, variant = "receiver" }: AudioPlayerProps) {
                     key={i} 
                     className={cn(
                         "w-1.5 rounded-full transition-all duration-100 ease-in-out",
-                        variant === "sender" ? "bg-white" : "bg-primary",
+                        variant === "sender" ? "bg-white/80" : "bg-primary/80",
                     )}
                     style={{
                         height: `${isPlaying ? (randomHeights[i] || height) : height}%`,
@@ -147,7 +147,7 @@ export function AudioPlayer({ src, variant = "receiver" }: AudioPlayerProps) {
                 max={duration || 100}
                 step={0.1}
                 onValueChange={handleSeek}
-                className="flex-1 h-1.5"
+                className="flex-1 h-1.5 rounded-full"
             />
             <span className={cn(variant === "sender" ? "text-white/70" : "text-muted-foreground")}>{formatTime(duration)}</span>
         </div>

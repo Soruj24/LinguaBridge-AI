@@ -80,7 +80,7 @@ export function FeedbackDialog() {
           </Button>
         </motion.button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] overflow-hidden">
+      <DialogContent className="sm:max-w-[425px] overflow-hidden p-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={open ? "content" : "empty"}
@@ -88,9 +88,11 @@ export function FeedbackDialog() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <DialogHeader>
+            <DialogHeader className="px-6 pt-6 pb-2">
               <DialogTitle className="flex items-center gap-2">
-                <MessageSquarePlus className="h-5 w-5 text-primary" />
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
+                  <MessageSquarePlus className="h-4 w-4 text-primary-foreground" />
+                </div>
                 {t('title')}
               </DialogTitle>
               <DialogDescription>
@@ -98,7 +100,7 @@ export function FeedbackDialog() {
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-6 pb-6">
                 <FormField
                   control={form.control}
                   name="email"
@@ -109,7 +111,7 @@ export function FeedbackDialog() {
                         <Input 
                           placeholder={t('emailPlaceholder')} 
                           {...field}
-                          className="bg-gradient-to-r from-muted/50 to-muted/30" 
+                          className="h-11 rounded-xl bg-muted/50" 
                         />
                       </FormControl>
                       <FormMessage />
@@ -125,7 +127,7 @@ export function FeedbackDialog() {
                       <FormControl>
                         <Textarea
                           placeholder={t('messagePlaceholder')}
-                          className="min-h-[100px] bg-gradient-to-r from-muted/50 to-muted/30 resize-none"
+                          className="min-h-[100px] rounded-xl bg-muted/50 resize-none"
                           {...field}
                         />
                       </FormControl>
@@ -137,7 +139,7 @@ export function FeedbackDialog() {
                   <Button 
                     type="submit" 
                     disabled={isSubmitting}
-                    className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20"
+                    className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20"
                   >
                     {isSubmitting ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

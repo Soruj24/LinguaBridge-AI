@@ -15,7 +15,6 @@ const MessageSchema = new mongoose.Schema(
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     originalText: {
       type: String,
@@ -33,13 +32,26 @@ const MessageSchema = new mongoose.Schema(
       required: true,
     },
     voiceUrl: {
-      type: String, // Path to original voice file if any
+      type: String,
     },
     translatedVoiceUrl: {
-      type: String, // Path to translated voice file if any
+      type: String,
+    },
+    fileUrl: {
+      type: String,
+    },
+    fileType: {
+      type: String,
+    },
+    fileSize: {
+      type: Number,
+    },
+    isImage: {
+      type: Boolean,
+      default: false,
     },
     phoneticText: {
-      type: String, // IPA or transliteration
+      type: String,
     },
     reactions: [
       {
@@ -47,6 +59,16 @@ const MessageSchema = new mongoose.Schema(
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
       },
     ],
+    readBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

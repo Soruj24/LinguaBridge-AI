@@ -91,7 +91,7 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
                     initial={{ opacity: 0, x: 20, width: 0 }}
                     animate={{ opacity: 1, x: 0, width: "auto" }}
                     exit={{ opacity: 0, x: 20, width: 0 }}
-                    className="absolute right-0 flex items-center bg-background/80 backdrop-blur-md border shadow-lg rounded-full pr-14 pl-4 py-1 h-12 w-[300px] z-10 overflow-hidden"
+                    className="absolute right-0 flex items-center bg-background/80 backdrop-blur-xl border shadow-lg rounded-full pr-14 pl-4 py-1 h-12 w-[300px] z-10 overflow-hidden"
                 >
                     <div className="flex items-center gap-2 text-red-500 mr-4 shrink-0">
                         <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
@@ -127,10 +127,10 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
             <Button
                 size="icon"
                 className={cn(
-                    "rounded-full h-16 w-16 transition-all duration-200 shadow-lg border-0",
+                    "rounded-full h-14 w-14 transition-all duration-200 shadow-xl border-0",
                     isRecording 
-                        ? "bg-red-500 hover:bg-red-600 shadow-red-500/30 text-white" 
-                        : "bg-white text-slate-900 hover:bg-slate-100 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300"
+                        ? "bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-red-500/20 text-white" 
+                        : "bg-gradient-to-br from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-primary/20 text-primary-foreground"
                 )}
                 onClick={() => {
                     if (isRecording) {
@@ -142,10 +142,10 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
                 disabled={isSending}
                 aria-label={isRecording ? "Stop & send voice" : "Start recording"}
             >
-                <Mic className={cn("h-7 w-7 transition-transform", isRecording ? "scale-110 text-white" : "text-slate-900")} />
+                <Mic className={cn("h-6 w-6 transition-transform", isRecording ? "scale-110 text-white" : "text-primary-foreground")} />
             </Button>
             {isSending && (
-              <div className="absolute -right-2 -top-2 text-[10px] px-2 py-1 rounded bg-background border shadow-sm">
+              <div className="absolute -right-2 -top-2 text-[10px] px-2 py-1 rounded-full bg-background border shadow-sm">
                 Sending...
               </div>
             )}

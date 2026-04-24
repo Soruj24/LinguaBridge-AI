@@ -19,15 +19,15 @@ export function MobileNav() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t bg-background/80 backdrop-blur-lg z-50 md:hidden pb-[env(safe-area-inset-bottom)]">
-      <div className="flex items-center justify-around h-16 px-4">
+    <div className="fixed bottom-0 left-0 right-0 border-t bg-background/80 backdrop-blur-xl z-50 md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+      <div className="flex items-center justify-around h-16 px-2">
         <Link
           href="/dashboard"
           className={cn(
-            "flex flex-col items-center gap-1 text-xs font-medium transition-colors p-2 rounded-lg",
+            "flex flex-col items-center gap-1 text-xs font-medium transition-all p-2 rounded-xl",
             pathname === "/dashboard"
               ? "text-primary bg-primary/10"
-              : "text-muted-foreground hover:text-primary"
+              : "text-muted-foreground hover:text-primary hover:bg-muted/50"
           )}
         >
           <LayoutDashboard className="h-5 w-5" />
@@ -38,10 +38,10 @@ export function MobileNav() {
           <SheetTrigger asChild>
             <button
               className={cn(
-                "flex flex-col items-center gap-1 text-xs font-medium transition-colors p-2 rounded-lg",
+                "flex flex-col items-center gap-1 text-xs font-medium transition-all p-2 rounded-xl",
                 pathname === "/chat" || pathname?.startsWith("/chat")
                   ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-primary"
+                  : "text-muted-foreground hover:text-primary hover:bg-muted/50"
               )}
             >
               <MessageSquare className="h-5 w-5" />
@@ -56,10 +56,10 @@ export function MobileNav() {
         <Link
           href="/settings"
           className={cn(
-            "flex flex-col items-center gap-1 text-xs font-medium transition-colors p-2 rounded-lg",
+            "flex flex-col items-center gap-1 text-xs font-medium transition-all p-2 rounded-xl",
             pathname === "/settings"
               ? "text-primary bg-primary/10"
-              : "text-muted-foreground hover:text-primary"
+              : "text-muted-foreground hover:text-primary hover:bg-muted/50"
           )}
         >
           <Settings className="h-5 w-5" />

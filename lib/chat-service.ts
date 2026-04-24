@@ -12,6 +12,10 @@ export async function processMessage({
   voiceUrl,
   translatedText: providedTranslatedText,
   translatedVoiceUrl: providedTranslatedVoiceUrl,
+  fileUrl,
+  fileType,
+  fileSize,
+  isImage,
 }: {
   senderId: string;
   receiverId: string;
@@ -20,6 +24,10 @@ export async function processMessage({
   voiceUrl?: string;
   translatedText?: string;
   translatedVoiceUrl?: string;
+  fileUrl?: string;
+  fileType?: string;
+  fileSize?: number;
+  isImage?: boolean;
 }) {
   await connectDB();
 
@@ -30,15 +38,18 @@ export async function processMessage({
   if (!sender) throw new Error("Sender not found");
   if (sender.isActive === false) throw new Error("Sender is inactive");
 
-  // Use the translation pipeline for detection and translation in one go
-  console.log(`Processing message: "${text}" for receiver ${receiver.name} (${receiver.preferredLanguage})`);
-  const { detectedLanguage: detectedLang, translated, phonetic } =
-    await processTranslationPipeline(text, receiver.preferredLanguage);
-  console.log(`Translation result: ${translated} (detected: ${detectedLang})`);
+  let translatedText = providedTranslatedText;
+  let detectedLang = "en";
+  let phonetic = "";
 
-  // Use provided translation if available, otherwise use pipeline result
-  const translatedText = providedTranslatedText || translated;
-  const translatedVoiceUrl = providedTranslatedVoiceUrl;
+  if (voiceUrl || fileUrl) {
+    translatedText = providedTranslatedText;
+  } else {
+    const result = await processTranslationPipeline(text, receiver.preferredLanguage);
+    detectedLang = result.detectedLanguage;
+    translatedText = providedTranslatedText || result.translated;
+    phonetic = result.phonetic;
+  }
 
   const message = await Message.create({
     chatId,
@@ -50,7 +61,11 @@ export async function processMessage({
     languageFrom: detectedLang,
     languageTo: receiver.preferredLanguage,
     voiceUrl,
-    translatedVoiceUrl,
+    translatedVoiceUrl: providedTranslatedVoiceUrl,
+    fileUrl,
+    fileType,
+    fileSize,
+    isImage,
   });
 
   await Chat.findByIdAndUpdate(chatId, {
@@ -58,7 +73,6 @@ export async function processMessage({
     updatedAt: new Date(),
   });
 
-  // Return populated message
   return await Message.findById(message._id)
     .populate("senderId", "name email avatar")
     .populate("receiverId", "name email avatar");

@@ -77,18 +77,20 @@ export function NewChatDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] overflow-hidden">
+      <DialogContent className="sm:max-w-[425px] overflow-hidden p-0">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <DialogHeader>
+          <DialogHeader className="px-6 pt-6 pb-2">
             <DialogTitle className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5 text-primary" />
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
+                <MessageCircle className="h-4 w-4 text-primary-foreground" />
+              </div>
               {t("title")}
             </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 px-6 pb-6">
             <motion.form
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -96,18 +98,18 @@ export function NewChatDialog({
               onSubmit={handleSearch}
               className="relative"
             >
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder={t("searchPlaceholder")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="pl-10 pr-20 bg-gradient-to-r from-muted/50 to-muted/30 focus:from-muted focus:to-muted/50 transition-all"
+                className="pl-10 pr-20 h-11 rounded-xl bg-muted/50 focus:bg-muted transition-all"
               />
               <Button
                 type="submit"
                 disabled={isLoading}
                 size="sm"
-                className="absolute right-1 top-1 h-8"
+                className="absolute right-1.5 top-1.5 h-8 rounded-lg"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -125,7 +127,7 @@ export function NewChatDialog({
                     exit={{ opacity: 0 }}
                     className="flex flex-col items-center justify-center py-12 text-center"
                   >
-                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4 shadow-inner">
+                    <div className="h-16 w-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4 shadow-inner">
                       <Search className="h-8 w-8 text-muted-foreground" />
                     </div>
                     <p className="text-muted-foreground">
@@ -146,9 +148,9 @@ export function NewChatDialog({
                       onClick={() => startChat(user._id)}
                     >
                       <div className="relative">
-                        <Avatar className="h-12 w-12 border-2 border-transparent group-hover:border-primary/30 transition-all">
+                        <Avatar className="h-11 w-11 border-2 border-transparent group-hover:border-primary/30 transition-all shadow-sm">
                           <AvatarImage src={user.avatar} />
-                          <AvatarFallback className="bg-primary/20 text-primary font-semibold">
+                          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/5 text-primary font-semibold">
                             {user.name?.[0]}
                           </AvatarFallback>
                         </Avatar>

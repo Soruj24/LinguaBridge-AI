@@ -33,8 +33,8 @@ export function LanguageChart() {
   }, []);
 
   const colors = [
-    "#8b5cf6", "#06b6d4", "#f59e0b", "#ef4444", "#10b981", 
-    "#ec4899", "#6366f1", "#84cc16"
+    "oklch(0.55 0.18 250)", "oklch(0.6 0.15 200)", "oklch(0.7 0.15 160)", "oklch(0.5 0.12 180)",
+    "oklch(0.65 0.18 180)", "oklch(0.75 0.14 140)", "oklch(0.6 0.12 160)", "oklch(0.5 0.15 200)"
   ];
 
   const data = items.map((item, index) => {
@@ -51,10 +51,10 @@ export function LanguageChart() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
-      <Card className="h-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-0 shadow-lg">
+      <Card className="h-full bg-background/80 dark:bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg hover:shadow-xl transition-shadow">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            <Globe2 className="h-5 w-5 text-violet-500" />
+            <Globe2 className="h-5 w-5 text-primary" />
             {t("languageUsage")}
           </CardTitle>
         </CardHeader>

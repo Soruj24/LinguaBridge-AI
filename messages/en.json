@@ -53,7 +53,10 @@
     "rewrittenAs": "Rewritten as {tone}",
     "rewriteFailed": "Failed to rewrite text",
     "sendFailed": "Failed to send message",
-    "trustBanner": "Messages are end-to-end encrypted. Your privacy is our priority."
+    "trustBanner": "Messages are end-to-end encrypted. Your privacy is our priority.",
+    "voiceTranslated": "Voice translated successfully",
+    "voiceTranslationFailed": "Failed to translate voice",
+    "translateVoice": "Translate Voice"
   },
   "Settings": {
     "title": "Settings",
@@ -61,6 +64,8 @@
     "accessibility": "Accessibility",
     "language": "Language",
     "theme": "Theme",
+    "themeModal": "Select Theme",
+    "selectTheme": "Select a theme",
     "dark": "Dark",
     "light": "Light",
     "system": "System",
@@ -84,6 +89,38 @@
     "searchFailed": "Failed to search users",
     "startFailed": "Failed to start chat",
     "searchHelp": "Search for a user to start chatting"
+  },
+  "GroupChat": {
+    "createGroup": "Create Group",
+    "groupNamePlaceholder": "Group name (e.g., Language Learners)",
+    "groupDescriptionPlaceholder": "Group description (optional)",
+    "addMembers": "Add members",
+    "searchPlaceholder": "Search users...",
+    "createButton": "Create Group",
+    "groupCreated": "Group created!",
+    "groupSettings": "Group Settings",
+    "addMember": "Add Member",
+    "removeMember": "Remove Member",
+    "leaveGroup": "Leave Group",
+    "admin": "Admin",
+    "members": "Members"
+  },
+  "Notifications": {
+    "enable": "Enable Notifications",
+    "disable": "Disable Notifications",
+    "blocked": "Blocked",
+    "enabled": "Notifications enabled",
+    "disabled": "Notifications disabled",
+    "failed": "Failed to enable notifications"
+  },
+  "Settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "accessibility": "Accessibility",
+    "language": "Language",
+    "themeModal": "Select Theme",
+    "selectTheme": "Select a theme"
   },
   "MobileNav": {
     "dashboard": "Dashboard",

@@ -13,7 +13,7 @@ export function TypingIndicator({ userName }: { userName?: string }) {
     >
       <div className="flex items-center space-x-1.5 p-3 bg-gradient-to-br from-muted/70 to-muted/40 rounded-2xl w-fit shadow-lg border border-border/30 backdrop-blur-md">
         <motion.div
-          className="w-2.5 h-2.5 bg-primary rounded-full"
+          className="w-2 h-2 bg-primary rounded-full"
           animate={{
             scale: [1, 1.3, 1],
             opacity: [0.6, 1, 0.6],
@@ -26,7 +26,7 @@ export function TypingIndicator({ userName }: { userName?: string }) {
           }}
         />
         <motion.div
-          className="w-2.5 h-2.5 bg-primary rounded-full"
+          className="w-2 h-2 bg-primary rounded-full"
           animate={{
             scale: [1, 1.3, 1],
             opacity: [0.6, 1, 0.6],
@@ -39,7 +39,7 @@ export function TypingIndicator({ userName }: { userName?: string }) {
           }}
         />
         <motion.div
-          className="w-2.5 h-2.5 bg-primary rounded-full"
+          className="w-2 h-2 bg-primary rounded-full"
           animate={{
             scale: [1, 1.3, 1],
             opacity: [0.6, 1, 0.6],
@@ -53,7 +53,7 @@ export function TypingIndicator({ userName }: { userName?: string }) {
         />
       </div>
       {userName && (
-        <span className="text-xs text-muted-foreground animate-pulse">
+        <span className="text-xs text-muted-foreground animate-pulse font-medium">
           {userName}
         </span>
       )}

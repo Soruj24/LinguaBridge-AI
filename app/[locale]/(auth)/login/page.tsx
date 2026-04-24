@@ -84,15 +84,17 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full border-none shadow-none">
       <CardHeader className="space-y-1">
-        <div className="flex items-center gap-2 mb-2">
-            <Globe className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl">LinguaBridge AI</span>
+        <div className="hidden lg:flex items-center gap-2 mb-2">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
+              <Globe className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">LinguaBridge AI</span>
         </div>
-        <CardTitle className="text-2xl">Login</CardTitle>
+        <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
         <CardDescription>
-          Enter your email below to login to your account
+          Enter your credentials to access your account
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
@@ -105,7 +107,7 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="m@example.com" {...field} />
+                    <Input placeholder="m@example.com" {...field} className="h-11 rounded-xl" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -118,13 +120,13 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" {...field} className="h-11 rounded-xl" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit" disabled={isLoading}>
+            <Button className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20" type="submit" disabled={isLoading}>
               {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
@@ -133,7 +135,7 @@ export default function LoginPage() {
       <CardFooter>
         <p className="text-sm text-muted-foreground text-center w-full">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="underline hover:text-primary">
+          <Link href="/register" className="font-medium text-primary hover:text-primary/80 transition-colors">
             Sign up
           </Link>
         </p>

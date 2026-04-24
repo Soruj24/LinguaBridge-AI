@@ -133,6 +133,25 @@ export async function textToSpeech(text: string): Promise<Buffer> {
   }
 }
 
+export async function translateVoice(
+  text: string,
+  targetLanguageCode: string,
+  targetVoice: string = "alloy",
+): Promise<Buffer> {
+  try {
+    const response = await getOpenAI().audio.speech.create({
+      model: "tts-1",
+      voice: targetVoice,
+      input: text,
+    });
+    const buffer = Buffer.from(await response.arrayBuffer());
+    return buffer;
+  } catch (error) {
+    console.error("Voice translation error:", error);
+    throw error;
+  }
+}
+
 // languageMap imported from ./languages
 
 export async function processTranslationPipeline(
