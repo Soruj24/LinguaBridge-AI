@@ -33,10 +33,6 @@ export function AudioPlayer({ src, variant = "receiver" }: AudioPlayerProps) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    setIsLoading(true);
-    setDuration(0);
-    setCurrentTime(0);
-    setIsPlaying(false);
 
     const onLoaded = () => {
       setDuration(audio.duration || 0);
@@ -53,7 +49,6 @@ export function AudioPlayer({ src, variant = "receiver" }: AudioPlayerProps) {
     };
 
     const onError = () => {
-      // Allow user to interact even if metadata didn't load
       setIsLoading(false);
     };
 
@@ -63,7 +58,6 @@ export function AudioPlayer({ src, variant = "receiver" }: AudioPlayerProps) {
     audio.addEventListener("ended", onEnded);
     audio.addEventListener("error", onError);
 
-    // Explicitly trigger load for some browsers
     try { audio.load(); } catch {}
 
     return () => {

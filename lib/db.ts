@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import dns from "dns";
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -20,7 +22,7 @@ async function connectDB() {
 
   if (!MONGODB_URI) {
     throw new Error(
-      "Please define the MONGODB_URI environment variable inside .env.local"
+      "Please define the MONGODB_URI environment variable inside .env.local",
     );
   }
 

@@ -1,44 +1,51 @@
- import { NextResponse } from "next/server";
- import connectDB from "@/lib/db";
- import Message from "@/models/Message";
- 
- export async function GET() {
-   try {
-     await connectDB();
- 
-     const now = new Date();
-     const startOfThisWeek = new Date(now);
-     startOfThisWeek.setDate(now.getDate() - 7);
-     const startOfPrevWeek = new Date(now);
-     startOfPrevWeek.setDate(now.getDate() - 14);
- 
-     const [messagesTotal, translationsTotal, voiceTranslationsTotal] = await Promise.all([
-       (Message as any).countDocuments({}),
-       (Message as any).countDocuments({ translatedText: { $exists: true, $ne: "" } }),
-       (Message as any).countDocuments({ translatedVoiceUrl: { $exists: true, $ne: "" } }),
-     ]);
- 
-     const [messagesThisWeek, messagesPrevWeek, translationsThisWeek, translationsPrevWeek, voiceThisWeek, voicePrevWeek] =
-       await Promise.all([
-         (Message as any).countDocuments({ createdAt: { $gte: startOfThisWeek } }),
-         (Message as any).countDocuments({ createdAt: { $gte: startOfPrevWeek, $lt: startOfThisWeek } }),
-         (Message as any).countDocuments({
-           translatedText: { $exists: true, $ne: "" },
-           updatedAt: { $gte: startOfThisWeek },
-         }),
-         (Message as any).countDocuments({
-           translatedText: { $exists: true, $ne: "" },
-           updatedAt: { $gte: startOfPrevWeek, $lt: startOfThisWeek },
-         }),
-         (Message as any).countDocuments({
-           translatedVoiceUrl: { $exists: true, $ne: "" },
-           updatedAt: { $gte: startOfThisWeek },
-         }),
-         (Message as any).countDocuments({
-           translatedVoiceUrl: { $exists: true, $ne: "" },
-           updatedAt: { $gte: startOfPrevWeek, $lt: startOfThisWeek },
-         }),
-       ]);
+import { NextResponse } from "next/server";
+import connectDB from "@/lib/db";
+import Message from "@/models/Message";
+import mongoose from "mongoose";
+
+type MessageModel = mongoose.Model<unknown, unknown, unknown, unknown> & {
+  countDocuments: (query?: object) => Promise<number>;
+};
+
+export async function GET() {
+  try {
+    await connectDB();
+
+    const now = new Date();
+    const startOfThisWeek = new Date(now);
+    startOfThisWeek.setDate(now.getDate() - 7);
+    const startOfPrevWeek = new Date(now);
+    startOfPrevWeek.setDate(now.getDate() - 14);
+
+    const messageModel = Message as MessageModel;
+
+    const [messagesTotal, translationsTotal, voiceTranslationsTotal] = await Promise.all([
+      messageModel.countDocuments({}),
+      messageModel.countDocuments({ translatedText: { $exists: true, $ne: "" } }),
+      messageModel.countDocuments({ translatedVoiceUrl: { $exists: true, $ne: "" } }),
+    ]);
+
+    const [messagesThisWeek, messagesPrevWeek, translationsThisWeek, translationsPrevWeek, voiceThisWeek, voicePrevWeek] =
+      await Promise.all([
+        messageModel.countDocuments({ createdAt: { $gte: startOfThisWeek } }),
+        messageModel.countDocuments({ createdAt: { $gte: startOfPrevWeek, $lt: startOfThisWeek } }),
+        messageModel.countDocuments({
+          translatedText: { $exists: true, $ne: "" },
+          updatedAt: { $gte: startOfThisWeek },
+        }),
+        messageModel.countDocuments({
+          translatedText: { $exists: true, $ne: "" },
+          updatedAt: { $gte: startOfPrevWeek, $lt: startOfThisWeek },
+        }),
+        messageModel.countDocuments({
+          translatedVoiceUrl: { $exists: true, $ne: "" },
+          updatedAt: { $gte: startOfThisWeek },
+        }),
+        messageModel.countDocuments({
+          translatedVoiceUrl: { $exists: true, $ne: "" },
+          updatedAt: { $gte: startOfPrevWeek, $lt: startOfThisWeek },
+        }),
+      ]);
  
      return NextResponse.json({
        data: {
