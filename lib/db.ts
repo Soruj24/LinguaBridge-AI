@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import dns from "dns";
+import dns from "node:dns/promises";
+
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 interface MongooseCache {
@@ -8,46 +9,42 @@ interface MongooseCache {
 }
 
 declare global {
-  var mongoose: MongooseCache;
+  var mongooseCache: MongooseCache;
 }
 
-let cached = global.mongoose;
+let cached = global.mongooseCache;
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = global.mongooseCache = { conn: null, promise: null };
 }
 
-async function connectDB() {
+const connectDB = async () => {
   const MONGODB_URI = process.env.MONGODB_URI;
 
   if (!MONGODB_URI) {
-    throw new Error(
-      "Please define the MONGODB_URI environment variable inside .env.local",
-    );
+    throw new Error("MONGODB_URI is not defined in environment variables");
   }
 
+  // ✅ If already connected
   if (cached.conn) {
     return cached.conn;
   }
 
+  // ✅ If no promise, create one
   if (!cached.promise) {
-    const opts = {
+    cached.promise = mongoose.connect(MONGODB_URI, {
       bufferCommands: false,
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
     });
   }
 
   try {
     cached.conn = await cached.promise;
-  } catch (e) {
+  } catch (error) {
     cached.promise = null;
-    throw e;
+    throw error;
   }
 
   return cached.conn;
-}
+};
 
 export default connectDB;
