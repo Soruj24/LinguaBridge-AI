@@ -31,14 +31,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Globe } from "lucide-react";
-import axios from "axios";
+import { Globe, Mail, Lock, User, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { useLocale } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
+import { PasswordStrength, PasswordRequirements } from "@/components/password-strength";
+import { SocialLogin } from "@/components/social-login";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email(),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string()
+    .min(6, "Password must be at least 6 characters")
+    .refine((password) => /[A-Z]/.test(password), {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .refine((password) => /[a-z]/.test(password), {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .refine((password) => /\d/.test(password), {
+      message: "Password must contain at least one number",
+    }),
   preferredLanguage: z.string().min(2, "Language is required"),
 });
 
@@ -100,6 +112,9 @@ export default function RegisterPage() {
   const router = useRouter();
   const locale = useLocale();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showRequirements, setShowRequirements] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -111,18 +126,26 @@ export default function RegisterPage() {
     },
   });
 
+  const passwordValue = form.watch("password");
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      await axios.post("/api/register", values);
-      toast.success("Account created successfully. Please login.");
-      router.push("/login");
+      await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      }).then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Registration failed");
+        return data;
+      });
+      
+      setShowSuccess(true);
+      toast.success("Account created! Please check your email to verify your account.");
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.error || "Something went wrong");
-      } else {
-        toast.error("An unknown error occurred");
-      }
+      const errorMessage = error instanceof Error ? error.message : "Something went wrong";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -141,79 +164,156 @@ export default function RegisterPage() {
         <CardDescription>Enter your details to get started</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} className="h-11 rounded-xl" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="m@example.com" {...field} className="h-11 rounded-xl" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} className="h-11 rounded-xl" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="preferredLanguage"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Preferred Language</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+        <SocialLogin />
+        
+        <AnimatePresence mode="wait">
+          {showSuccess ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="flex flex-col items-center justify-center py-8 text-center"
+            >
+              <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Check your email!</h3>
+              <p className="text-muted-foreground text-sm max-w-[300px] mb-4">
+                We&apos;ve sent a verification link to {form.getValues("email")}. Click the link to activate your account.
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Didn&apos;t receive the email?{" "}
+                <Link href="/login" className="text-primary hover:underline">
+                  Try logging in
+                </Link>{" "}
+                or check your spam folder.
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="form"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="John Doe" {...field} className="h-11 rounded-xl pl-10" />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="m@example.com" {...field} className="h-11 rounded-xl pl-10" />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input 
+                              type={showPassword ? "text" : "password"} 
+                              {...field} 
+                              className="h-11 rounded-xl pl-10 pr-10" 
+                              onFocus={() => setShowRequirements(true)}
+                              onBlur={() => {
+                                setTimeout(() => setShowRequirements(false), 200);
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                        <PasswordStrength password={field.value || ""} />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {showRequirements && passwordValue && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="p-3 rounded-lg bg-muted/30 border"
+                    >
+                      <PasswordRequirements password={passwordValue || ""} />
+                    </motion.div>
+                  )}
+                  
+                  <FormField
+                    control={form.control}
+                    name="preferredLanguage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preferred Language</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="h-11 rounded-xl">
+                              <SelectValue placeholder="Select a language" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {languages.map((lang) => (
+                              <SelectItem key={lang.code} value={lang.code}>
+                                {lang.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button 
+                    className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20" 
+                    type="submit" 
+                    disabled={isLoading}
                   >
-                    <FormControl>
-                      <SelectTrigger className="h-11 rounded-xl">
-                        <SelectValue placeholder="Select a language" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {languages.map((lang) => (
-                        <SelectItem key={lang.code} value={lang.code}>
-                          {lang.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20" type="submit" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Create Account"}
-            </Button>
-          </form>
-        </Form>
+                    {isLoading ? "Creating account..." : "Create Account"}
+                  </Button>
+                </form>
+              </Form>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </CardContent>
       <CardFooter>
         <p className="text-sm text-muted-foreground text-center w-full">

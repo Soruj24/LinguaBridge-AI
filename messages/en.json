@@ -9,8 +9,43 @@
     "success": "Success"
   },
   "Auth": {
-    "login": "Login",
-    "register": "Register",
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Enter your credentials to access your account",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Login",
+      "loggingIn": "Logging in...",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "register": {
+      "title": "Create an account",
+      "subtitle": "Enter your details to get started"
+    },
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "generic": "Something went wrong. Please try again.",
+      "emailExists": "An account with this email already exists",
+      "rateLimit": "Too many attempts. Please try again later."
+    },
+    "success": {
+      "login": "Logged in successfully",
+      "registration": "Account created! Check your email to verify."
+    },
+    "verification": {
+      "notVerified": "Your email is not verified. Didn't receive the email?",
+      "resend": "Resend",
+      "sent": "Verification email sent! Check your inbox.",
+      "verified": "Email verified successfully!",
+      "expired": "Verification link expired. Request a new one."
+    },
+    "passwordReset": {
+      "sent": "If an account exists, a reset link has been sent.",
+      "success": "Password reset successful!",
+      "invalid": "Invalid or expired reset link"
+    },
     "logout": "Log out",
     "email": "Email",
     "password": "Password",

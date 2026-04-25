@@ -4,6 +4,8 @@ import { translateVoice } from "@/lib/ai";
 import connectDB from "@/lib/db";
 import Message from "@/models/Message";
 import Chat from "@/models/Chat";
+import fs from "fs";
+import path from "path";
 
 export async function POST(req: Request) {
   try {
@@ -39,14 +41,13 @@ export async function POST(req: Request) {
     const voiceBuffer = await translateVoice(translatedText, targetLanguage, voice || "alloy");
 
     const fileName = `voice-translated-${messageId}-${targetLanguage}.mp3`;
-    const uploadDir = "./public/uploads";
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
 
-    const fs = require("fs");
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
 
-    const filePath = `${uploadDir}/${fileName}`;
+    const filePath = path.join(uploadDir, fileName);
     fs.writeFileSync(filePath, voiceBuffer);
 
     const voiceUrl = `/uploads/${fileName}`;

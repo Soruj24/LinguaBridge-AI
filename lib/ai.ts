@@ -1,52 +1,15 @@
-import { ChatOpenAI } from "@langchain/openai";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
-import { PromptTemplate } from "@langchain/core/prompts";
-import { StructuredOutputParser } from "@langchain/core/output_parsers";
-import { z } from "zod";
 import OpenAI from "openai";
 import fs from "fs";
+import path from "path";
 import { languageMap } from "./languages";
 
-const openRouterApiKey =
-  process.env.OPENROUTER_API_KEY || process.env.OPEN_ROUTER_API_KEY;
-
-let chatModel: ChatOpenAI | null = null;
 let openai: OpenAI | null = null;
-
-function getChatModel() {
-  if (chatModel) return chatModel;
-
-  const openaiKey = process.env.OPENAI_API_KEY;
-  const routerKey =
-    process.env.OPENROUTER_API_KEY || process.env.OPEN_ROUTER_API_KEY;
-
-  if (openaiKey) {
-    chatModel = new ChatOpenAI({
-      modelName: "gpt-4o-mini",
-      temperature: 0,
-      apiKey: openaiKey,
-      configuration: { baseURL: "https://api.openai.com/v1" },
-    });
-  } else {
-    if (!routerKey) {
-      console.warn("WARNING: Neither OPENAI_API_KEY nor OPENROUTER_API_KEY is set.");
-    }
-    chatModel = new ChatOpenAI({
-      modelName: "openai/gpt-4o-mini", // OpenRouter model ID
-      temperature: 0,
-      apiKey: routerKey || "sk-placeholder",
-      configuration: { baseURL: "https://openrouter.ai/api/v1" },
-    });
-  }
-  return chatModel;
-}
 
 function getOpenAI() {
   if (openai) return openai;
 
   const openaiKey = process.env.OPENAI_API_KEY;
-  const routerKey =
-    process.env.OPENROUTER_API_KEY || process.env.OPEN_ROUTER_API_KEY;
+  const routerKey = process.env.OPENROUTER_API_KEY || process.env.OPEN_ROUTER_API_KEY;
 
   if (openaiKey) {
     openai = new OpenAI({
@@ -74,15 +37,19 @@ export async function translateText(
     Do not add any explanations or extra text. Just provide the translation.
     If the text is already in the target language, return it as is.`;
 
-    const response = await getChatModel().invoke([
-      new SystemMessage(systemPrompt),
-      new HumanMessage(text),
-    ]);
+    const response = await getOpenAI().chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: text },
+      ],
+      temperature: 0,
+    });
 
-    return typeof response.content === "string" ? response.content : "";
+    return response.choices[0]?.message?.content || text;
   } catch (error) {
     console.error("Translation error:", error);
-    return text; // Fallback to original text
+    return text;
   }
 }
 
@@ -91,14 +58,17 @@ export async function detectLanguage(text: string): Promise<string> {
     const systemPrompt = `You are a language detector. Detect the language of the following text. 
     Return only the ISO 639-1 language code (e.g., 'en', 'es', 'fr', 'zh').`;
 
-    const response = await getChatModel().invoke([
-      new SystemMessage(systemPrompt),
-      new HumanMessage(text),
-    ]);
+    const response = await getOpenAI().chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: text },
+      ],
+      temperature: 0,
+    });
 
-    return typeof response.content === "string"
-      ? response.content.trim().toLowerCase()
-      : "en";
+    const result = response.choices[0]?.message?.content;
+    return result?.trim().toLowerCase() || "en";
   } catch (error) {
     console.error("Language detection error:", error);
     return "en";
@@ -152,8 +122,6 @@ export async function translateVoice(
   }
 }
 
-// languageMap imported from ./languages
-
 export async function processTranslationPipeline(
   text: string,
   targetLanguageCode: string,
@@ -167,70 +135,49 @@ export async function processTranslationPipeline(
     const targetLanguage =
       languageMap[targetLanguageCode] || targetLanguageCode;
 
-    const parser = StructuredOutputParser.fromZodSchema(
-      z.object({
-        original: z.string().describe("The original input text"),
-        detectedLanguage: z
-          .string()
-          .describe("ISO 639-1 language code of the original text"),
-        translated: z
-          .string()
-          .describe(`The translated text in ${targetLanguage}`),
-        phonetic: z
-          .string()
-          .describe(
-            "IPA pronunciation or standard transliteration (e.g. Pinyin) of the ORIGINAL text. Empty if not applicable/needed.",
-          ),
-      }),
-    );
+    const systemPrompt = `You are a sophisticated translation engine.
+Analyze the input text, detect its language, and translate it into ${targetLanguage}.
+Also provide the phonetic pronunciation (IPA or standard transliteration) of the ORIGINAL text.
+If the text is already in ${targetLanguage}, the translated text should be the same as the original.
+Return your response as a JSON object with the following structure:
+{
+  "original": "the original input text",
+  "detectedLanguage": "ISO 639-1 language code of the original text",
+  "translated": "the translated text in ${targetLanguage}",
+  "phonetic": "IPA pronunciation or standard transliteration of the ORIGINAL text"
+}`;
 
-    const formatInstructions = parser.getFormatInstructions();
-
-    const prompt = new PromptTemplate({
-      template: `You are a sophisticated translation engine.
-Analyze the input text, detect its language, and translate it into {targetLanguage}.
-Also provide the phonetic pronunciation (IPA or standard transliteration) of the ORIGINAL text to help the receiver pronounce it.
-If the text is already in {targetLanguage}, the translated text should be the same as the original.
-
-{format_instructions}
-
-Input Text:
-{text}`,
-      inputVariables: ["targetLanguage", "text"],
-      partialVariables: { format_instructions: formatInstructions },
+    const response = await getOpenAI().chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `Translate this text: ${text}` },
+      ],
+      temperature: 0,
+      response_format: { type: "json_object" },
     });
 
-    const chain = prompt.pipe(getChatModel()).pipe(parser);
-
-    const result = await chain.invoke({
-      targetLanguage,
-      text,
-    });
-
-    return result;
-  } catch (error) {
-    console.error("Pipeline structured output error:", error);
-
-    // Fallback: Try simple translation if structured output fails
-    try {
-      console.log("Attempting fallback translation...");
-      const fallbackTranslation = await translateText(text, targetLanguageCode);
+    const content = response.choices[0]?.message?.content;
+    if (content) {
+      const result = JSON.parse(content);
       return {
-        original: text,
-        detectedLanguage: "unknown",
-        translated: fallbackTranslation,
-        phonetic: "",
-      };
-    } catch (fallbackError) {
-      console.error("Fallback translation also failed:", fallbackError);
-      return {
-        original: text,
-        detectedLanguage: "unknown",
-        translated: text,
-        phonetic: "",
+        original: result.original || text,
+        detectedLanguage: result.detectedLanguage || "unknown",
+        translated: result.translated || text,
+        phonetic: result.phonetic || "",
       };
     }
+  } catch (error) {
+    console.error("Pipeline structured output error:", error);
   }
+
+  const fallbackTranslation = await translateText(text, targetLanguageCode);
+  return {
+    original: text,
+    detectedLanguage: "unknown",
+    translated: fallbackTranslation,
+    phonetic: "",
+  };
 }
 
 export async function generateSmartReplies(
@@ -240,45 +187,46 @@ export async function generateSmartReplies(
   try {
     const userLanguage = languageMap[userLanguageCode] || userLanguageCode;
 
-    // Format the last few messages for context (max 5)
     const context = messages
       .slice(-5)
       .map((m) => `${m.sender}: ${m.text}`)
       .join("\n");
 
-    const parser = StructuredOutputParser.fromZodSchema(
-      z
-        .array(z.string())
-        .describe("Array of 3 short, relevant reply suggestions"),
-    );
-
-    const formatInstructions = parser.getFormatInstructions();
-
     const systemPrompt = `You are a helpful AI assistant for a chat application.
-Based on the conversation history below, generate 3 short, natural, and relevant reply suggestions for the user ("me").
+Based on the conversation history below, generate exactly 3 short, natural, and relevant reply suggestions for the user ("me").
 The replies MUST be in the user's language: ${userLanguage}.
 Keep replies concise (1-5 words).
 Do not generate questions unless appropriate.
 Do not repeat suggestions.
-
-{format_instructions}
+Return your response as a JSON array of strings: ["reply1", "reply2", "reply3"]
 
 Conversation History:
 ${context}`;
 
-    const prompt = new PromptTemplate({
-      template: systemPrompt,
-      inputVariables: [],
-      partialVariables: { format_instructions: formatInstructions },
+    const response = await getOpenAI().chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: "Generate reply suggestions" },
+      ],
+      temperature: 0.7,
+      response_format: { type: "json_object" },
     });
 
-    const chain = prompt.pipe(getChatModel()).pipe(parser);
-    const result = await chain.invoke({});
-    return result;
+    const content = response.choices[0]?.message?.content;
+    if (content) {
+      const result = JSON.parse(content);
+      if (Array.isArray(result.replies)) {
+        return result.replies.slice(0, 3);
+      }
+      if (Array.isArray(result)) {
+        return result.slice(0, 3);
+      }
+    }
   } catch (error) {
     console.error("Smart reply error:", error);
-    return [];
   }
+  return [];
 }
 
 export async function summarizeChat(
@@ -288,7 +236,6 @@ export async function summarizeChat(
   try {
     const userLanguage = languageMap[userLanguageCode] || userLanguageCode;
 
-    // Format messages (max last 50 for summary)
     const context = messages
       .slice(-50)
       .map((m) => `${m.sender}: ${m.text}`)
@@ -302,13 +249,15 @@ Focus on the main topics and decisions.
 Conversation:
 ${context}`;
 
-    const response = await getChatModel().invoke([
-      new SystemMessage(systemPrompt),
-    ]);
+    const response = await getOpenAI().chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+      ],
+      temperature: 0,
+    });
 
-    return typeof response.content === "string"
-      ? response.content
-      : "Unable to generate summary.";
+    return response.choices[0]?.message?.content || "Unable to generate summary.";
   } catch (error) {
     console.error("Summary error:", error);
     return "Failed to generate summary.";
@@ -327,12 +276,16 @@ export async function rewriteText(
     The rewritten text MUST be in ${targetLanguage}.
     Do not add any explanations or extra text. Just provide the rewritten text.`;
 
-    const response = await getChatModel().invoke([
-      new SystemMessage(systemPrompt),
-      new HumanMessage(text),
-    ]);
+    const response = await getOpenAI().chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: text },
+      ],
+      temperature: 0.5,
+    });
 
-    return typeof response.content === "string" ? response.content : text;
+    return response.choices[0]?.message?.content || text;
   } catch (error) {
     console.error("Rewrite error:", error);
     return text;

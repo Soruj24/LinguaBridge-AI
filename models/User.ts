@@ -15,6 +15,10 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -38,6 +42,22 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "default",
     },
+    emailVerificationToken: String,
+    emailVerificationExpires: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+    loginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    lockUntil: Date,
+    lastLogin: Date,
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    twoFactorSecret: String,
+    twoFactorRecoveryCodes: [String],
     preferences: {
       lowBandwidth: { type: Boolean, default: false },
       reduceMotion: { type: Boolean, default: false },

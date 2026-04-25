@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
@@ -26,6 +26,10 @@ export function VoiceWaveform({
   const prevRecordingRef = useRef(isRecording);
   const prevPlayingRef = useRef(isPlaying);
 
+  const resetBars = useCallback(() => {
+    setBars(getInitialBars());
+  }, []);
+
   useEffect(() => {
     const hasChanged = prevRecordingRef.current !== isRecording || prevPlayingRef.current !== isPlaying;
     prevRecordingRef.current = isRecording;
@@ -33,7 +37,7 @@ export function VoiceWaveform({
 
     if (!isRecording && !isPlaying) {
       if (hasChanged) {
-        setBars(getInitialBars());
+        requestAnimationFrame(resetBars);
       }
       return;
     }
@@ -57,7 +61,7 @@ export function VoiceWaveform({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isRecording, isPlaying, audioLevel]);
+  }, [isRecording, isPlaying, audioLevel, resetBars]);
 
   return (
     <div

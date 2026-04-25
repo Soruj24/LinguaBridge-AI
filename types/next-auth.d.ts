@@ -2,17 +2,11 @@ import NextAuth, { DefaultSession } from "next-auth"
 import { JWT } from "next-auth/jwt"
 
 declare module "next-auth" {
-  /**
-   * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-   */
   interface Session {
     user: {
-      /** The user's unique identifier */
       id: string
-      /** The user's role */
       role?: "user" | "admin"
-      /** The user's preferred language */
-      preferredLanguage: string
+      preferredLanguage?: string
       avatar?: string
       preferences?: {
         lowBandwidth: boolean
@@ -20,6 +14,7 @@ declare module "next-auth" {
         highContrast: boolean
         autoPlayAudio: boolean
       }
+      isEmailVerified?: boolean
     } & DefaultSession["user"]
   }
 
@@ -34,18 +29,15 @@ declare module "next-auth" {
       highContrast: boolean
       autoPlayAudio: boolean
     }
+    isEmailVerified?: boolean
   }
 }
 
 declare module "next-auth/jwt" {
-  /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
-    /** The user's unique identifier */
     id: string
-    /** The user's role */
     role?: "user" | "admin"
-    /** The user's preferred language */
-    preferredLanguage: string
+    preferredLanguage?: string
     avatar?: string
     preferences?: {
       lowBandwidth: boolean
@@ -53,5 +45,6 @@ declare module "next-auth/jwt" {
       highContrast: boolean
       autoPlayAudio: boolean
     }
+    isEmailVerified?: boolean
   }
 }

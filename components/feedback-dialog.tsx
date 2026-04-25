@@ -66,19 +66,19 @@ export function FeedbackDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <motion.button
+        <motion.div
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="fixed bottom-4 right-4 z-50"
         >
           <Button
             variant="outline"
-            className="fixed bottom-4 right-4 z-50 rounded-full shadow-xl gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white border-0"
+            className="rounded-full shadow-xl gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white border-0"
           >
             <Sparkles className="h-4 w-4" />
             {t('trigger')}
           </Button>
-        </motion.button>
+        </motion.div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] overflow-hidden p-0">
         <AnimatePresence mode="wait">

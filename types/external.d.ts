@@ -1,0 +1,9 @@
+declare module 'speakeasy';
+declare module 'qrcode';
+declare module '@langchain/core/messages';
+declare module '@langchain/core/prompts';
+declare module '@langchain/core/output_parsers';
+declare module '@langchain/core/language_models/profile';
+declare module '@langchain/core/utils/types';
+declare module '@langchain/core/utils/format';
+declare module '@langchain/core/tools';
