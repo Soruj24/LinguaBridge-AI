@@ -33,8 +33,14 @@ export function LanguageChart() {
   }, []);
 
   const colors = [
-    "oklch(0.55 0.18 250)", "oklch(0.6 0.15 200)", "oklch(0.7 0.15 160)", "oklch(0.5 0.12 180)",
-    "oklch(0.65 0.18 180)", "oklch(0.75 0.14 140)", "oklch(0.6 0.12 160)", "oklch(0.5 0.15 200)"
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
   ];
 
   const data = items.map((item, index) => {
@@ -51,8 +57,8 @@ export function LanguageChart() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
-      <Card className="h-full bg-background/80 dark:bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg hover:shadow-xl transition-shadow">
-        <CardHeader className="pb-2">
+      <Card className="h-full bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg hover:shadow-xl transition-shadow">
+        <CardHeader className="pb-3">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
             <Globe2 className="h-5 w-5 text-primary" />
             {t("languageUsage")}
@@ -61,60 +67,61 @@ export function LanguageChart() {
         <CardContent>
           {isLoading ? (
             <div className="h-[280px] flex items-center justify-center">
-              <div className="w-32 h-32 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
+              <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
           ) : data.length === 0 ? (
             <div className="h-[280px] flex items-center justify-center text-muted-foreground text-sm">
               No language data yet
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={280}>
-              <PieChart>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={90}
-                  paddingAngle={3}
-                  dataKey="value"
-                  strokeWidth={0}
-                >
-                  {data.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={entry.color}
-                      style={{
-                        filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))",
-                        cursor: "pointer",
-                      }}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "rgba(255, 255, 255, 0.95)",
-                    backdropFilter: "blur(8px)",
-                    border: "none",
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-          {!isLoading && data.length > 0 && (
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              {data.slice(0, 6).map((item) => (
-                <div key={item.name} className="flex items-center gap-2 text-xs">
-                  <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{ backgroundColor: item.color }}
+            <>
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart>
+                  <Pie
+                    data={data}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={55}
+                    outerRadius={90}
+                    paddingAngle={3}
+                    dataKey="value"
+                    strokeWidth={0}
+                  >
+                    {data.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.color}
+                        style={{
+                          filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))",
+                          cursor: "pointer",
+                        }}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "var(--card)",
+                      backdropFilter: "blur(8px)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "12px",
+                      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+                    }}
+                    formatter={(value) => [`${value} (${((Number(value) / total) * 100).toFixed(1)}%)`]}
                   />
-                  <span className="truncate text-muted-foreground">{item.name}</span>
-                </div>
-              ))}
-            </div>
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="grid grid-cols-2 gap-2 mt-3">
+                {data.slice(0, 6).map((item) => (
+                  <div key={item.name} className="flex items-center gap-2 text-xs">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="truncate text-muted-foreground">{item.name}</span>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
