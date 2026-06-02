@@ -57,7 +57,11 @@
     "trustBanner": "संदेश एंड-टू-एंड एन्क्रिप्टेड हैं। आपकी गोपनीयता हमारी प्राथमिकता है।",
     "voiceTranslated": "आवाज़ सफलतः अनुवादित",
     "voiceTranslationFailed": "आवाज़ अनुवाद विफल",
-    "translateVoice": "आवाज़ अनुवाद करें"
+    "translateVoice": "आवाज़ अनुवाद करें",
+    "moreOptions": "और विकल्प",
+    "viewProfile": "प्रोफ़ाइल देखें",
+    "searchChat": "चैट में खोजें",
+    "clearChat": "चैट साफ़ करें"
   },
   "Settings": {
     "title": "सेटिंग्स",
@@ -208,7 +212,16 @@
       "Uzbek": "उज़्बेक",
       "Kazakh": "कज़ाख",
       "Malay": "मलय"
-    }
+    },
+    "welcomeSubtitle": "अपनी गतिविधि पर नज़र रखें, बातचीत को पकड़ें और भाषाओं के पार जुड़ें।",
+    "greeting": {
+      "morning": "शुभ प्रभात! 🌅",
+      "afternoon": "शुभ दोपहर! ☀️",
+      "evening": "शुभ संध्या! 🌙"
+    },
+    "newChat": "नया चैट",
+    "viewFriends": "मित्र",
+    "openSettings": "सेटिंग्स"
   },
   "Landing": {
     "header": {

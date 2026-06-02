@@ -58,6 +58,11 @@ export default function ForgotPasswordPage() {
   }
 
   return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
     <Card className="w-full border-none shadow-none">
       <CardHeader className="space-y-1">
         <div className="hidden lg:flex items-center gap-2 mb-2">
@@ -141,5 +146,6 @@ export default function ForgotPasswordPage() {
         </Link>
       </CardFooter>
     </Card>
+    </motion.div>
   );
 }

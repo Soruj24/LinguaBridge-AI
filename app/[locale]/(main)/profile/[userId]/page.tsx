@@ -7,7 +7,8 @@ import connectDB from "@/lib/db";
 import User from "@/models/User";
 import Chat from "@/models/Chat";
 import Message from "@/models/Message";
-import { Globe, MessageSquare, Languages, Settings } from "lucide-react";
+import { Globe, MessageSquare, Languages, Settings, ArrowLeft, Home, CalendarDays, Activity } from "lucide-react";
+import { notFound } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ locale: string; userId: string }>;
@@ -19,11 +20,7 @@ export default async function ProfilePage({ params }: PageProps) {
 
   const user = await User.findById(userId).select("-password");
   if (!user) {
-    return (
-      <div className="container mx-auto py-8 text-center">
-        <p>User not found</p>
-      </div>
-    );
+    notFound();
   }
 
   const chatCount = await Chat.countDocuments({ participants: userId });
@@ -32,79 +29,128 @@ export default async function ProfilePage({ params }: PageProps) {
   });
 
   return (
-    <div className="container mx-auto max-w-2xl py-8">
-      <Card>
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <Avatar className="h-24 w-24 border-4 border-primary/20">
-              <AvatarImage src={user.avatar} />
-              <AvatarFallback className="text-2xl">{user.name?.[0]}</AvatarFallback>
-            </Avatar>
-          </div>
-          <CardTitle className="text-2xl">{user.name}</CardTitle>
-          <p className="text-muted-foreground">{user.email}</p>
-          <div className="flex justify-center gap-2 mt-2">
-            <Badge variant="outline" className="gap-1">
-              <Globe className="h-3 w-3" />
-              {user.preferredLanguage || "en"}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-muted/30 rounded-lg">
-              <MessageSquare className="h-5 w-5 mx-auto mb-1 text-primary" />
-              <p className="text-2xl font-bold">{chatCount}</p>
-              <p className="text-xs text-muted-foreground">Conversations</p>
-            </div>
-            <div className="text-center p-4 bg-muted/30 rounded-lg">
-              <Languages className="h-5 w-5 mx-auto mb-1 text-primary" />
-              <p className="text-2xl font-bold">{messageCount}</p>
-              <p className="text-xs text-muted-foreground">Messages</p>
-            </div>
+    <div className="min-h-full flex items-center justify-center p-4 pb-20 md:pb-6">
+      <div className="w-full max-w-lg space-y-4">
+        {/* Back link */}
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Dashboard
+        </Link>
+
+        <Card className="border shadow-lg overflow-hidden">
+          {/* Header gradient */}
+          <div className="h-24 bg-gradient-to-br from-primary/20 via-primary/10 to-background relative overflow-hidden">
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl" />
+            <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-blue-500/15 rounded-full blur-3xl" />
           </div>
 
-          <div className="space-y-2">
-            <h3 className="font-medium">About</h3>
-            <p className="text-sm text-muted-foreground">
-              {user.bio || "No bio yet"}
-            </p>
-          </div>
+          <CardHeader className="text-center -mt-12 relative z-10 pb-0">
+            <div className="flex justify-center mb-3">
+              <Avatar className="h-24 w-24 border-4 border-background shadow-xl">
+                <AvatarImage src={user.avatar} />
+                <AvatarFallback className="text-2xl bg-gradient-to-br from-primary to-primary/70 text-primary-foreground font-bold">
+                  {user.name?.[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+            <CardTitle className="text-2xl">{user.name}</CardTitle>
+            <p className="text-muted-foreground text-sm">{user.email}</p>
+            <div className="flex justify-center gap-2 mt-2 flex-wrap">
+              <Badge variant="outline" className="gap-1.5 rounded-full px-3 py-1">
+                <Globe className="h-3 w-3 text-primary" />
+                {user.preferredLanguage || "English"}
+              </Badge>
+              {user.isOnline && (
+                <Badge variant="outline" className="gap-1.5 rounded-full px-3 py-1 text-green-600 border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-900">
+                  <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                  Online
+                </Badge>
+              )}
+            </div>
+          </CardHeader>
 
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div>
-              <p className="text-muted-foreground">Member since</p>
-              <p className="font-medium">
-                {user.createdAt
-                  ? new Date(user.createdAt).toLocaleDateString()
-                  : "Unknown"}
+          <CardContent className="space-y-5 pt-6">
+            {/* Stats grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="text-center p-4 rounded-xl bg-gradient-to-br from-primary/5 to-transparent border border-primary/10">
+                <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-2">
+                  <MessageSquare className="h-4 w-4 text-primary" />
+                </div>
+                <p className="text-xl font-bold">{chatCount}</p>
+                <p className="text-xs text-muted-foreground">Conversations</p>
+              </div>
+              <div className="text-center p-4 rounded-xl bg-gradient-to-br from-blue-500/5 to-transparent border border-blue-500/10">
+                <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center mx-auto mb-2">
+                  <Languages className="h-4 w-4 text-blue-500" />
+                </div>
+                <p className="text-xl font-bold">{messageCount}</p>
+                <p className="text-xs text-muted-foreground">Messages</p>
+              </div>
+            </div>
+
+            {/* About section */}
+            <div className="space-y-2 p-4 rounded-xl bg-muted/30">
+              <h3 className="font-semibold text-sm flex items-center gap-2">
+                <Activity className="h-4 w-4 text-primary" />
+                About
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {user.bio || "This user hasn't added a bio yet."}
               </p>
             </div>
-            <div>
-              <p className="text-muted-foreground">Last active</p>
-              <p className="font-medium">
-                {user.updatedAt
-                  ? new Date(user.updatedAt).toLocaleDateString()
-                  : "Unknown"}
-              </p>
-            </div>
-          </div>
 
-          <div className="flex gap-2 pt-4">
-            <Link href={`/chat/new?user=${userId}`} className="flex-1">
-              <Button className="w-full gap-2">
-                <MessageSquare className="h-4 w-4" />
-                Message
+            {/* Dates */}
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="p-3 rounded-xl bg-muted/20">
+                <p className="text-muted-foreground text-xs flex items-center gap-1 mb-1">
+                  <CalendarDays className="h-3 w-3" />
+                  Member since
+                </p>
+                <p className="font-medium">
+                  {user.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString(undefined, {
+                        month: "long",
+                        year: "numeric",
+                      })
+                    : "Unknown"}
+                </p>
+              </div>
+              <div className="p-3 rounded-xl bg-muted/20">
+                <p className="text-muted-foreground text-xs flex items-center gap-1 mb-1">
+                  <Activity className="h-3 w-3" />
+                  Last active
+                </p>
+                <p className="font-medium">
+                  {user.updatedAt
+                    ? new Date(user.updatedAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                      })
+                    : "Unknown"}
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 pt-2">
+              <Button className="flex-1 gap-2 rounded-xl h-11 bg-gradient-to-r from-primary to-primary/90 shadow-lg shadow-primary/20" asChild>
+                <Link href={`/chat/new?user=${userId}`}>
+                  <MessageSquare className="h-4 w-4" />
+                  Send Message
+                </Link>
               </Button>
-            </Link>
-            <Link href="/settings">
-              <Button variant="outline" size="icon">
-                <Settings className="h-4 w-4" />
+              <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl" asChild>
+                <Link href="/settings">
+                  <Settings className="h-4 w-4" />
+                </Link>
               </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

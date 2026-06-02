@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Link, usePathname, useRouter } from "@/navigation";
+import { useLocale } from "next-intl";
 import { useSession, signOut } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -9,11 +10,12 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ModeToggle } from "@/components/mode-toggle";
-import { LogOut, Plus, MessageSquare, Settings, Search, Globe, Circle, Users } from "lucide-react";
+import { LogOut, Plus, MessageSquare, Settings, Search, Globe, Shield, UserCog, Users } from "lucide-react";
 import { useSocket } from "@/components/socket-provider";
 import { NewChatDialog } from "@/components/new-chat-dialog";
 import { LanguageModal } from "@/components/language-modal";
 import { GroupChatDialog } from "@/components/group-chat-dialog";
+import { NotificationBell } from "@/components/notification-bell";
 import axios from "axios";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -49,6 +51,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
   const { data: session } = useSession();
   const pathname = usePathname();
   const router = useRouter();
+  const locale = useLocale();
   const socket = useSocket();
   const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,6 +72,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
   }, []);
 
   const userEmail = session?.user?.email;
+  const userRole = (session?.user as { role?: "user" | "admin" })?.role;
 
   useEffect(() => {
     if (userEmail) {
@@ -129,6 +133,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
             <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">LinguaBridge</span>
           </h1>
           <div className="flex items-center gap-2">
+            <NotificationBell />
             <NewChatDialog onChatCreated={fetchChats}>
               <Button size="icon" className="rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all">
                 <Plus className="h-4 w-4" />
@@ -304,6 +309,46 @@ return (
             {tAuth('logout')}
           </Button>
         </div>
+
+        {userRole === "admin" && (
+          <div className="mt-4 pt-4 border-t">
+            <p className="text-xs font-medium text-muted-foreground mb-2 px-2">
+              Admin
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => router.push(`/${locale}/admin`)}
+            >
+              <UserCog className="h-4 w-4" />
+              Admin Panel
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              onClick={() => router.push(`/${locale}/security`)}
+            >
+              <Shield className="h-4 w-4" />
+              Security
+            </Button>
+          </div>
+        )}
+
+        {userRole !== "admin" && (
+          <div className="mt-4 pt-4 border-t">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              onClick={() => router.push(`/${locale}/security`)}
+            >
+              <Shield className="h-4 w-4" />
+              Security
+            </Button>
+          </div>
+        )}
       </div>
       
       <LanguageModal open={showLanguageModal} onOpenChange={setShowLanguageModal} />

@@ -91,7 +91,11 @@
     "trustBanner": "Messages are end-to-end encrypted. Your privacy is our priority.",
     "voiceTranslated": "Voice translated successfully",
     "voiceTranslationFailed": "Failed to translate voice",
-    "translateVoice": "Translate Voice"
+    "translateVoice": "Translate Voice",
+    "moreOptions": "More options",
+    "viewProfile": "View Profile",
+    "searchChat": "Search in Chat",
+    "clearChat": "Clear Chat"
   },
   "Settings": {
     "title": "Settings",
@@ -176,10 +180,19 @@
   },
   "Dashboard": {
     "welcomeBack": "Welcome back, {name}",
+    "welcomeSubtitle": "Track your activity, catch up on conversations, and connect across languages.",
     "defaultUser": "User",
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Log out",
+    "greeting": {
+      "morning": "Good morning! 🌅",
+      "afternoon": "Good afternoon! ☀️",
+      "evening": "Good evening! 🌙"
+    },
+    "newChat": "New Chat",
+    "viewFriends": "Friends",
+    "openSettings": "Settings",
     "recentConversations": "Recent Conversations",
     "noMessages": "No messages yet",
     "noConversations": "No conversations yet. Start chatting!",

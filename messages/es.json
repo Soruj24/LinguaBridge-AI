@@ -57,7 +57,11 @@
     "trustBanner": "Los mensajes están cifrados de extremo a extremo. Tu privacidad es nuestra prioridad.",
     "voiceTranslated": "Voz traducida con éxito",
     "voiceTranslationFailed": "Error al traducir voz",
-    "translateVoice": "Traducir voz"
+    "translateVoice": "Traducir voz",
+    "moreOptions": "Más opciones",
+    "viewProfile": "Ver perfil",
+    "searchChat": "Buscar en el chat",
+    "clearChat": "Vaciar chat"
   },
   "Settings": {
     "title": "Ajustes",
@@ -208,7 +212,16 @@
       "Uzbek": "Uzbeko",
       "Kazakh": "Kazajo",
       "Malay": "Malayo"
-    }
+    },
+    "welcomeSubtitle": "Sigue tu actividad, ponte al día con las conversaciones y conéctate a través de idiomas.",
+    "greeting": {
+      "morning": "¡Buenos días! 🌅",
+      "afternoon": "¡Buenas tardes! ☀️",
+      "evening": "¡Buenas noches! 🌙"
+    },
+    "newChat": "Nuevo Chat",
+    "viewFriends": "Amigos",
+    "openSettings": "Ajustes"
   },
   "Landing": {
     "header": {

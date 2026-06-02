@@ -1,15 +1,17 @@
-import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
+import { DashboardNavbarWrapper } from "@/components/dashboard/dashboard-navbar-wrapper";
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { AnalyticsChart } from "@/components/dashboard/analytics-chart";
 import { LanguageChart } from "@/components/dashboard/language-chart";
 import { RecentConversations } from "@/components/dashboard/recent-conversations";
 import { PremiumCard } from "@/components/dashboard/premium-card";
+import { WelcomeBanner } from "@/components/dashboard/welcome-banner";
 
 export default function DashboardPage() {
   return (
     <div className="flex flex-col h-full w-full bg-gradient-to-b from-background to-muted/20">
-      <DashboardNavbar />
+      <DashboardNavbarWrapper />
       <div className="flex-1 space-y-6 p-6 md:p-8 pt-6 pb-20 md:pb-6 overflow-y-auto">
+        <WelcomeBanner />
         <StatsCards />
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">

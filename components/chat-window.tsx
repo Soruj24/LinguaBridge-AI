@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import TextareaAutosize from "react-textarea-autosize";
-import { Send, Sparkles, Wand2, ArrowLeft, MessageCircle, Image, Paperclip, X, Search, Smile } from "lucide-react";
+import { Send, Sparkles, Wand2, ArrowLeft, MessageCircle, Image, Paperclip, X, Search, Smile, ChevronDown, User } from "lucide-react";
 import { useRouter } from "@/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
@@ -70,6 +71,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
   const [isRestoringScroll, setIsRestoringScroll] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -87,7 +89,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
       socket.emit("join_chat", chatId);
 
       socket.on("receive_message", (message: Message) => {
-        if (message.chatId === chatId) {
+        if (message.chatId === chatId && message.senderId) {
           setMessages((prev) => {
             if (prev.some((m) => m._id === message._id)) return prev;
 
@@ -96,7 +98,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
               (m) =>
                 m.isOptimistic &&
                 m.originalText === message.originalText &&
-                m.senderId._id === message.senderId._id,
+                m.senderId?._id === message.senderId?._id,
             );
 
             if (optimisticMatchIndex !== -1) {
@@ -111,7 +113,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
           setIsTyping(false); // Stop typing indicator when message received
 
           // Fetch new suggestions when receiving a message from other
-          if (message.senderId._id !== getSenderId()) {
+          if (message.senderId?._id !== getSenderId()) {
             fetchSuggestions();
           }
         }
@@ -237,6 +239,8 @@ export function ChatWindow({ chatId }: { chatId: string }) {
 
   const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
+    const threshold = 200;
+    setShowScrollButton(target.scrollHeight - target.scrollTop - target.clientHeight > threshold);
 
     if (
       target.scrollTop === 0 &&
@@ -436,16 +440,37 @@ export function ChatWindow({ chatId }: { chatId: string }) {
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10 rounded-xl hover:bg-muted transition-colors"
-            title="More options"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-            </svg>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-xl hover:bg-muted transition-colors"
+                title={t('moreOptions')}
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 p-1">
+              <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`/profile/${chat?.participants.find(p => p.email !== session?.user?.email)?._id}`)}>
+                <User className="mr-2 h-4 w-4" />
+                <span>{t('viewProfile')}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => {}}>
+                <Search className="mr-2 h-4 w-4" />
+                <span>{t('searchChat')}</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive" onClick={() => {}}>
+                <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span>{t('clearChat')}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -505,7 +530,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
                 // Check if previous message is from same sender
                 const isSameSender =
                   index > 0 &&
-                  messages[index - 1].senderId._id === msg.senderId._id;
+                  messages[index - 1].senderId?._id === msg.senderId?._id;
                 // Check if next message is from same sender (for grouping visuals if needed later)
                 // const isNextSameSender = index < messages.length - 1 && messages[index + 1].senderId._id === msg.senderId._id;
 
@@ -513,7 +538,7 @@ export function ChatWindow({ chatId }: { chatId: string }) {
                   <MessageBubble
                     key={msg._id}
                     message={msg}
-                    isMe={msg.senderId._id === session?.user?.id}
+                    isMe={msg.senderId?._id === session?.user?.id}
                     onDelete={handleDeleteMessage}
                     currentUserId={session?.user?.id}
                     isSameSender={isSameSender}
@@ -533,23 +558,20 @@ export function ChatWindow({ chatId }: { chatId: string }) {
           <div ref={scrollRef} />
         </div>
       </ScrollArea>
-      {/* Smart Suggestions */}
-      {suggestions.length > 0 && (
-        <div className="px-4 py-3 bg-background border-t flex gap-2 overflow-x-auto">
-          {suggestions.map((suggestion, i) => (
-            <Button
-              key={i}
-              variant="outline"
-              size="sm"
-              className="rounded-full bg-card hover:bg-accent text-card-foreground border-primary/20 hover:border-primary transition-all h-auto py-1.5 px-4 text-sm font-normal shrink-0 shadow-sm"
-              onClick={() => handleSuggestionClick(suggestion)}
-            >
-              <Sparkles className="h-3.5 w-3.5 mr-2 text-primary" />
-              {suggestion}
-            </Button>
-          ))}
-        </div>
-      )}
+      {/* Scroll to bottom button */}
+      <AnimatePresence>
+        {showScrollButton && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            onClick={() => scrollRef.current?.scrollIntoView({ behavior: "smooth" })}
+            className="absolute bottom-20 right-6 z-50 h-10 w-10 rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105"
+          >
+            <ChevronDown className="h-5 w-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* Input Area */}
       <div className="p-3 md:p-4 border-t bg-background/80 backdrop-blur-xl sticky bottom-0 z-50 shadow-lg pb-[env(safe-area-inset-bottom)]">

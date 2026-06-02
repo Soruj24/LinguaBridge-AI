@@ -26,8 +26,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Globe, Lock, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { Globe, Lock, ArrowLeft, CheckCircle, AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const formSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -42,7 +42,9 @@ export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [isLoading, setIsLoading] = useState(false);
-  const [isValid, setIsValid] = useState<boolean | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,33 +54,28 @@ export default function ResetPasswordPage() {
     },
   });
 
-  useEffect(() => {
-    if (token) {
-      setIsValid(null);
-    } else {
-      setIsValid(false);
-    }
-  }, [token]);
+  const isValid = !!token;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!token) return;
-    
+
     setIsLoading(true);
     try {
       await axios.post("/api/auth/reset-password", {
         token,
         password: values.password,
       });
-      toast.success("Password reset successful! Please login with your new password.");
-      router.push("/login");
-    } catch (error) {
+      setIsSuccess(true);
+      toast.success("Password reset successful!");
+      setTimeout(() => router.push("/login"), 3000);
+    } catch {
       toast.error("Failed to reset password. The link may have expired.");
     } finally {
       setIsLoading(false);
     }
   }
 
-  if (isValid === false) {
+  if (!isValid) {
     return (
       <Card className="w-full border-none shadow-none">
         <CardHeader className="space-y-1">
@@ -94,7 +91,7 @@ export default function ResetPasswordPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center py-8 text-center">
-          <div className="h-16 w-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
+          <div className="h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
             <AlertCircle className="h-8 w-8 text-red-600" />
           </div>
           <p className="text-muted-foreground text-sm max-w-[300px]">
@@ -102,10 +99,7 @@ export default function ResetPasswordPage() {
           </p>
         </CardContent>
         <CardFooter>
-          <Link 
-            href="/forgot-password" 
-            className="w-full"
-          >
+          <Link href="/forgot-password" className="w-full">
             <Button className="w-full h-11 rounded-xl">
               Request New Reset Link
             </Button>
@@ -124,69 +118,141 @@ export default function ResetPasswordPage() {
           </div>
           <span className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">LinguaBridge AI</span>
         </div>
-        <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
+        <CardTitle className="text-2xl font-bold">
+          <AnimatePresence mode="wait">
+            {isSuccess ? (
+              <motion.span
+                key="success"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                Password Reset! 🎉
+              </motion.span>
+            ) : (
+              <motion.span
+                key="form"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                Reset Password
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </CardTitle>
         <CardDescription>
-          Enter your new password below
+          {isSuccess
+            ? "Your password has been reset successfully."
+            : "Enter your new password below"}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                        type="password" 
-                        placeholder="Enter new password" 
-                        {...field} 
-                        className="h-11 rounded-xl pl-10" 
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                        type="password" 
-                        placeholder="Confirm new password" 
-                        {...field} 
-                        className="h-11 rounded-xl pl-10" 
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button 
-              className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20" 
-              type="submit" 
-              disabled={isLoading || !token}
+        <AnimatePresence mode="wait">
+          {isSuccess ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center justify-center py-6 text-center"
             >
-              {isLoading ? "Resetting..." : "Reset Password"}
-            </Button>
-          </form>
-        </Form>
+              <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Password changed!</h3>
+              <p className="text-muted-foreground text-sm max-w-[300px]">
+                Redirecting to login...
+              </p>
+              <div className="mt-3">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="form"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>New Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Enter new password"
+                              {...field}
+                              className="h-11 rounded-xl pl-10 pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="Confirm new password"
+                              {...field}
+                              className="h-11 rounded-xl pl-10 pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20"
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Resetting...
+                      </>
+                    ) : (
+                      "Reset Password"
+                    )}
+                  </Button>
+                </form>
+              </Form>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </CardContent>
       <CardFooter>
-        <Link 
-          href="/login" 
+        <Link
+          href="/login"
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full justify-center"
         >
           <ArrowLeft className="h-4 w-4" />

@@ -57,7 +57,11 @@
     "trustBanner": "Les messages sont chiffrés de bout en bout. Votre confidentialité est notre priorité.",
     "voiceTranslated": "Voix traduite avec succès",
     "voiceTranslationFailed": "Échec de la traduction vocale",
-    "translateVoice": "Traduire la voix"
+    "translateVoice": "Traduire la voix",
+    "moreOptions": "Plus d'options",
+    "viewProfile": "Voir le profil",
+    "searchChat": "Rechercher dans le chat",
+    "clearChat": "Effacer le chat"
   },
   "Settings": {
     "title": "Paramètres",
@@ -208,7 +212,16 @@
       "Uzbek": "Ouzbek",
       "Kazakh": "Kazakh",
       "Malay": "Malais"
-    }
+    },
+    "welcomeSubtitle": "Suivez votre activité, rattrapez vos conversations et connectez-vous au-delà des langues.",
+    "greeting": {
+      "morning": "Bonjour ! 🌅",
+      "afternoon": "Bon après-midi ! ☀️",
+      "evening": "Bonsoir ! 🌙"
+    },
+    "newChat": "Nouvelle Discussion",
+    "viewFriends": "Amis",
+    "openSettings": "Paramètres"
   },
   "Landing": {
     "header": {

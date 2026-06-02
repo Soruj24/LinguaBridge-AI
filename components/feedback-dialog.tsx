@@ -66,19 +66,14 @@ export function FeedbackDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="fixed bottom-4 right-4 z-50"
-        >
-          <Button
-            variant="outline"
-            className="rounded-full shadow-xl gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white border-0"
-          >
-            <Sparkles className="h-4 w-4" />
-            {t('trigger')}
-          </Button>
-        </motion.div>
+        <button className="group fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 p-0.5 shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all duration-300 hover:scale-110 active:scale-95">
+          <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-primary/0 via-white/30 to-primary/0 opacity-0 group-hover:opacity-100 animate-[shimmer_2s_ease-in-out_infinite] transition-opacity pointer-events-none" />
+          <span className="relative flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 px-5 py-2.5 text-sm font-medium text-white overflow-hidden">
+            <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <Sparkles className="h-4 w-4 relative animate-[float_2.5s_ease-in-out_infinite]" />
+            <span className="relative">{t('trigger')}</span>
+          </span>
+        </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] overflow-hidden p-0">
         <AnimatePresence mode="wait">

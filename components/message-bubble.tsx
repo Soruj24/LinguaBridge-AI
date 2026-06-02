@@ -198,9 +198,9 @@ export function MessageBubble({
         <div className="w-8 shrink-0 flex flex-col justify-end">
           {!isSameSender && (
             <Avatar className="h-8 w-8 mb-0.5">
-              <AvatarImage src={message.senderId.avatar} />
+              <AvatarImage src={message.senderId?.avatar} />
               <AvatarFallback className="bg-muted text-xs">
-                {message.senderId.name[0]}
+                {message.senderId?.name?.[0]}
               </AvatarFallback>
             </Avatar>
           )}
@@ -211,7 +211,7 @@ export function MessageBubble({
       {!isMe && lowBandwidth && !isSameSender && (
         <div className="w-8 shrink-0 flex items-center justify-center">
           <span className="text-xs font-bold text-muted-foreground w-8 h-8 flex items-center justify-center bg-muted rounded-full">
-            {message.senderId.name[0]}
+            {message.senderId?.name?.[0]}
           </span>
         </div>
       )}
@@ -468,8 +468,8 @@ export function MessageBubble({
         <Avatar className="h-8 w-8 mb-0.5 shrink-0 opacity-0 w-0 hidden sm:block">
           {" "}
           {/* Hide my avatar or keep it invisible for spacing if needed, usually apps don't show my avatar */}
-          <AvatarImage src={message.senderId.avatar} />
-          <AvatarFallback>{message.senderId.name[0]}</AvatarFallback>
+          <AvatarImage src={message.senderId?.avatar} />
+          <AvatarFallback>{message.senderId?.name?.[0]}</AvatarFallback>
         </Avatar>
       )}
     </motion.div>

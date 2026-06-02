@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Link } from "@/navigation";
 import { Button } from "@/components/ui/button";
 import { 
@@ -8,17 +9,46 @@ import {
   Mic, 
   ShieldCheck, 
   Zap, 
-  Users 
+  Users,
+  ArrowUp
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FeedbackDialog } from "@/components/feedback-dialog";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const t = useTranslations('Landing');
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-20 md:pb-0 [padding-bottom:env(safe-area-inset-bottom)]">
+      {/* Scroll to top button */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 z-50 h-12 w-12 rounded-full bg-primary shadow-xl shadow-primary/30 flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-all hover:scale-110"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
       <FeedbackDialog />
       <header className="px-4 lg:px-6 h-16 flex items-center border-b sticky top-0 bg-background/80 backdrop-blur-xl z-50">
         <Link className="flex items-center justify-center gap-2 group" href="/">

@@ -57,7 +57,11 @@
     "trustBanner": "الرسائل مشفرة من طرف إلى طرف. خصوصيتك هي أولويتنا.",
     "voiceTranslated": "تم ترجمة الصوت بنجاح",
     "voiceTranslationFailed": "فشل ترجمة الصوت",
-    "translateVoice": "ترجمة الصوت"
+    "translateVoice": "ترجمة الصوت",
+    "moreOptions": "المزيد من الخيارات",
+    "viewProfile": "عرض الملف الشخصي",
+    "searchChat": "البحث في الدردشة",
+    "clearChat": "مسح الدردشة"
   },
   "Settings": {
     "title": "الإعدادات",
@@ -162,7 +166,16 @@
       "Arabic": "العربية",
       "Chinese": "الصينية",
       "Bengali": "البنغالية"
-    }
+    },
+    "welcomeSubtitle": "تتبع نشاطك، ولحق بالمحادثات، وتواصل عبر اللغات.",
+    "greeting": {
+      "morning": "صباح الخير! 🌅",
+      "afternoon": "مساء الخير! ☀️",
+      "evening": "مساء الخير! 🌙"
+    },
+    "newChat": "دردشة جديدة",
+    "viewFriends": "الأصدقاء",
+    "openSettings": "الإعدادات"
   },
   "Landing": {
     "header": {

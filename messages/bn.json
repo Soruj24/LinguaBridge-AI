@@ -57,7 +57,11 @@
     "trustBanner": "বার্তাগুলি এন্ড-টু-এন্ড এনক্রিপ্ট করা। আপনার গোপনীয়তা আমাদের অগ্রাধিকার।",
     "voiceTranslated": "ভয়েস সফলভাবে অনুবাদিত হয়েছে",
     "voiceTranslationFailed": "ভয়েস অনুবাদ ব্যর্থ হয়েছে",
-    "translateVoice": "ভয়েস অনুবাদ"
+    "translateVoice": "ভয়েস অনুবাদ",
+    "moreOptions": "আরো বিকল্প",
+    "viewProfile": "প্রোফাইল দেখুন",
+    "searchChat": "চ্যাটে অনুসন্ধান করুন",
+    "clearChat": "চ্যাট পরিষ্কার করুন"
   },
   "Settings": {
     "title": "সেটিংস",
@@ -208,7 +212,16 @@
       "Uzbek": "উজবেক",
       "Kazakh": "কাজাখ",
       "Malay": "মালয়"
-    }
+    },
+    "welcomeSubtitle": "আপনার কার্যকলাপ ট্র্যাক করুন, কথোপকথন ধরুন এবং ভাষা জুড়ে সংযোগ করুন।",
+    "greeting": {
+      "morning": "শুভ সকাল! 🌅",
+      "afternoon": "শুভ অপরাহ্ন! ☀️",
+      "evening": "শুভ সন্ধ্যা! 🌙"
+    },
+    "newChat": "নতুন চ্যাট",
+    "viewFriends": "বন্ধুরা",
+    "openSettings": "সেটিংস"
   },
   "Landing": {
     "header": {

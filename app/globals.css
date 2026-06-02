@@ -36,6 +36,27 @@
   scroll-behavior: smooth;
 }
 
+/* Custom animations */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes gradient-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--primary); }
+  50% { box-shadow: 0 0 20px var(--primary), 0 0 40px color-mix(in srgb, var(--primary) 50%, transparent); }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

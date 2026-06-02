@@ -57,7 +57,11 @@
     "trustBanner": "消息经过端到端加密。您的隐私是我们的首要任务。",
     "voiceTranslated": "语音翻译成功",
     "voiceTranslationFailed": "语音翻译失败",
-    "translateVoice": "翻译语音"
+    "translateVoice": "翻译语音",
+    "moreOptions": "更多选项",
+    "viewProfile": "查看资料",
+    "searchChat": "搜索聊天记录",
+    "clearChat": "清空聊天"
   },
   "Settings": {
     "title": "设置",
@@ -208,7 +212,16 @@
       "Uzbek": "乌兹别克语",
       "Kazakh": "哈萨克语",
       "Malay": "马来语"
-    }
+    },
+    "welcomeSubtitle": "跟踪您的活动，跟进对话，跨语言连接。",
+    "greeting": {
+      "morning": "早上好！🌅",
+      "afternoon": "下午好！☀️",
+      "evening": "晚上好！🌙"
+    },
+    "newChat": "新聊天",
+    "viewFriends": "朋友",
+    "openSettings": "设置"
   },
   "Landing": {
     "header": {
