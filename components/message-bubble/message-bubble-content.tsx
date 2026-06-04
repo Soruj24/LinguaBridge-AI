@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Volume2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AudioPlayer } from "@/components/audio-player";
@@ -12,7 +13,6 @@ interface MessageBubbleContentProps {
   viewMode: "original" | "translated" | "both";
   showPhonetic: boolean;
   lowBandwidth: boolean;
-  t: (key: string) => string;
 }
 
 export function MessageBubbleContent({
@@ -21,8 +21,8 @@ export function MessageBubbleContent({
   viewMode,
   showPhonetic,
   lowBandwidth,
-  t,
 }: MessageBubbleContentProps) {
+  const t = useTranslations("Chat");
   return (
     <>
       {(message.voiceUrl || message.translatedVoiceUrl) && !lowBandwidth && (
