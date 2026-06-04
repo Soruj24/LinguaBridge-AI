@@ -1,0 +1,15 @@
+export { PageHeader } from "./page-header";
+export { HeroSection } from "./hero-section";
+export { FeatureDetailSection } from "./feature-detail-section";
+export { FeaturesGridSection } from "./features-grid-section";
+export { HowItWorksSection } from "./how-it-works-section";
+export { StatsSection } from "./stats-section";
+export { TestimonialsSection } from "./testimonials-section";
+export { LanguagesSection } from "./languages-section";
+export { FaqSection } from "./faq-section";
+export { CtaSection } from "./cta-section";
+export { FooterSection } from "./footer-section";
+export { Particles } from "./particles";
+export { ChatMockup } from "./chat-mockup";
+export { FaqItem } from "./faq-item";
+export { AnimatedCounter } from "./animated-counter";
