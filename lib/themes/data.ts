@@ -1,22 +1,4 @@
-export interface ThemePreset {
-  id: string;
-  name: string;
-  colors: {
-    primary: string;
-    primaryForeground: string;
-    secondary: string;
-    secondaryForeground: string;
-    muted: string;
-    mutedForeground: string;
-    accent: string;
-    accentForeground: string;
-    background: string;
-    foreground: string;
-    border: string;
-    ring: string;
-  };
-  radius: string;
-}
+import type { ThemePreset } from "./types";
 
 export const THEMES: ThemePreset[] = [
   {
@@ -172,22 +154,3 @@ export const THEMES: ThemePreset[] = [
     },
   },
 ];
-
-export function getCSSVariables(theme: ThemePreset): string {
-  const { colors, radius } = theme;
-  return `
-    --radius: ${radius};
-    --primary: ${colors.primary};
-    --primary-foreground: ${colors.primaryForeground};
-    --secondary: ${colors.secondary};
-    --secondary-foreground: ${colors.secondaryForeground};
-    --muted: ${colors.muted};
-    --muted-foreground: ${colors.mutedForeground};
-    --accent: ${colors.accent};
-    --accent-foreground: ${colors.accentForeground};
-    --background: ${colors.background};
-    --foreground: ${colors.foreground};
-    --border: ${colors.border};
-    --ring: ${colors.ring};
-  `.trim();
-}

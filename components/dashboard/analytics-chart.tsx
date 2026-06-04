@@ -1,6 +1,11 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   AreaChart,
   Area,
@@ -12,55 +17,12 @@ import {
 } from "recharts";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { TrendingUp } from "lucide-react";
-
-interface DayData {
-  name: string;
-  messages: number;
-}
+import { useAnalyticsChart } from "./analytics-chart/use-analytics-chart";
 
 export function AnalyticsChart() {
   const t = useTranslations("Dashboard");
-  const [data, setData] = useState<DayData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await axios.get("/api/analytics/stats");
-        const stats = res.data?.data;
-        if (stats?.dailyActivity) {
-          setData(stats.dailyActivity);
-        } else {
-          setData([
-            { name: t("days.Mon"), messages: 120 },
-            { name: t("days.Tue"), messages: 150 },
-            { name: t("days.Wed"), messages: 180 },
-            { name: t("days.Thu"), messages: 140 },
-            { name: t("days.Fri"), messages: 200 },
-            { name: t("days.Sat"), messages: 170 },
-            { name: t("days.Sun"), messages: 190 },
-          ]);
-        }
-      } catch (error) {
-        setData([
-          { name: t("days.Mon"), messages: 120 },
-          { name: t("days.Tue"), messages: 150 },
-          { name: t("days.Wed"), messages: 180 },
-          { name: t("days.Thu"), messages: 140 },
-          { name: t("days.Fri"), messages: 200 },
-          { name: t("days.Sat"), messages: 170 },
-          { name: t("days.Sun"), messages: 190 },
-        ]);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchData();
-  }, [t]);
-
+  const { data, isLoading } = useAnalyticsChart();
   const maxValue = Math.max(...data.map((d) => d.messages), 1);
 
   return (
@@ -87,16 +49,32 @@ export function AnalyticsChart() {
             <div className="h-[350px] flex items-center justify-center">
               <div className="flex flex-col items-center gap-2">
                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs text-muted-foreground">Loading...</span>
+                <span className="text-xs text-muted-foreground">
+                  Loading...
+                </span>
               </div>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={350}>
               <AreaChart data={data}>
                 <defs>
-                  <linearGradient id="colorMessages" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
+                  <linearGradient
+                    id="colorMessages"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor="var(--primary)"
+                      stopOpacity={0.3}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="var(--primary)"
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
                 <CartesianGrid
@@ -131,7 +109,10 @@ export function AnalyticsChart() {
                     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
                   }}
                   itemStyle={{ color: "var(--primary)" }}
-                  labelStyle={{ color: "var(--muted-foreground)", fontSize: "12px" }}
+                  labelStyle={{
+                    color: "var(--muted-foreground)",
+                    fontSize: "12px",
+                  }}
                   formatter={(value) => [`${value} messages`, "Messages"]}
                 />
                 <Area
