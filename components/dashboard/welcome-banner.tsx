@@ -1,13 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
-import { MessageSquare, Users, Settings, Sparkles, Sun, Moon, Sunset } from "lucide-react";
+import { MessageSquare, Users, Settings, Sun, Moon, Sunset } from "lucide-react";
 import { Link } from "@/navigation";
 import { Button } from "@/components/ui/button";
+import { AddFriendDialog } from "@/components/add-friend-dialog";
 
-const quickActions = [
+interface QuickAction {
+  labelKey: "newChat" | "viewFriends" | "openSettings";
+  icon: React.ComponentType<{ className?: string }>;
+  href?: string;
+  isDialog?: true;
+  gradient: string;
+}
+
+const quickActions: QuickAction[] = [
   {
     labelKey: "newChat",
     icon: MessageSquare,
@@ -17,7 +27,7 @@ const quickActions = [
   {
     labelKey: "viewFriends",
     icon: Users,
-    href: "/settings",
+    isDialog: true,
     gradient: "from-amber-500 to-orange-500",
   },
   {
@@ -37,6 +47,7 @@ function GreetingIcon({ hour }: { hour: number }) {
 export function WelcomeBanner() {
   const t = useTranslations("Dashboard");
   const { data: session } = useSession();
+  const [showAddFriend, setShowAddFriend] = useState(false);
   const firstName = session?.user?.name?.split(" ")[0] || t("defaultUser");
   const now = new Date();
   const hour = now.getHours();
@@ -86,23 +97,39 @@ export function WelcomeBanner() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * index }}
               >
-                <Link href={action.href}>
+                {action.isDialog ? (
                   <Button
                     variant="outline"
                     size="sm"
                     className="h-10 gap-2 bg-background/50 hover:bg-background/80 border-border/50 hover:border-primary/30 transition-all"
+                    onClick={() => setShowAddFriend(true)}
                   >
                     <div className={`h-6 w-6 rounded-lg bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-sm`}>
                       <Icon className="h-3 w-3 text-white" />
                     </div>
                     <span className="hidden sm:inline">{t(action.labelKey)}</span>
                   </Button>
-                </Link>
+                ) : (
+                  <Link href={action.href!}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-10 gap-2 bg-background/50 hover:bg-background/80 border-border/50 hover:border-primary/30 transition-all"
+                    >
+                      <div className={`h-6 w-6 rounded-lg bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-sm`}>
+                        <Icon className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="hidden sm:inline">{t(action.labelKey)}</span>
+                    </Button>
+                  </Link>
+                )}
               </motion.div>
             );
           })}
         </div>
       </div>
+
+      <AddFriendDialog open={showAddFriend} onOpenChange={setShowAddFriend} onAdded={() => {}} />
     </motion.div>
   );
 }

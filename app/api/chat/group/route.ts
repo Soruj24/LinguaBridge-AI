@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import connectDB from "@/lib/db";
 import Chat from "@/models/Chat";
 import User from "@/models/User";
+import Friendship from "@/models/Friendship";
 import mongoose from "mongoose";
 import Message from "@/models/Message";
 
@@ -30,6 +31,22 @@ export async function POST(req: Request) {
     const currentUser = await User.findById(session.user.id);
     if (!currentUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    for (const pid of participantIds) {
+      const areFriends = await Friendship.findOne({
+        $or: [
+          { requester: currentUser._id, recipient: pid, status: "accepted" },
+          { requester: pid, recipient: currentUser._id, status: "accepted" },
+        ],
+      });
+      if (!areFriends) {
+        const other = await User.findById(pid).select("name");
+        return NextResponse.json(
+          { error: `You must be friends with ${other?.name || "user"} to add them to a group` },
+          { status: 403 }
+        );
+      }
     }
 
     const allParticipants = [session.user.id, ...participantIds];

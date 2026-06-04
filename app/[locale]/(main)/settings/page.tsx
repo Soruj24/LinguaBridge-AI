@@ -154,7 +154,7 @@ export default function SettingsPage() {
     setIsLoading(true);
     try {
       const res = await axios.put("/api/user/update", values);
-      
+
       await update({
         ...session,
         user: {

@@ -4,6 +4,7 @@ import connectDB from "@/lib/db";
 import Chat from "@/models/Chat";
 import User from "@/models/User";
 import Message from "@/models/Message";
+import Friendship from "@/models/Friendship";
 
 export async function GET(req: Request) {
   try {
@@ -34,9 +35,27 @@ export async function GET(req: Request) {
       .skip((page - 1) * limit)
       .limit(limit);
 
+    const chatIds = chats.map((c) => c._id);
+    const unreadCounts = await Message.aggregate([
+      { $match: { chatId: { $in: chatIds }, senderId: { $ne: currentUser._id } } },
+      { $match: { readBy: { $not: { $elemMatch: { $eq: currentUser._id } } } } },
+      { $group: { _id: "$chatId", count: { $sum: 1 } } },
+    ]);
+
+    const unreadMap = new Map<string, number>();
+    for (const u of unreadCounts) {
+      unreadMap.set(u._id.toString(), u.count);
+    }
+
+    const chatsWithUnread = chats.map((chat) => {
+      const c = JSON.parse(JSON.stringify(chat));
+      c.unreadCount = unreadMap.get(c._id.toString()) ?? 0;
+      return c;
+    });
+
     if (paginate) {
       return NextResponse.json({
-        data: chats,
+        data: chatsWithUnread,
         meta: {
           page,
           limit,
@@ -45,7 +64,7 @@ export async function GET(req: Request) {
         },
       });
     }
-    return NextResponse.json(chats);
+    return NextResponse.json(chatsWithUnread);
   } catch (error) {
     console.error("Error fetching chats:", error);
     return NextResponse.json(
@@ -72,6 +91,19 @@ export async function POST(req: Request) {
 
     await connectDB();
     const currentUser = await User.findOne({ email: session.user.email });
+
+    const areFriends = await Friendship.findOne({
+      $or: [
+        { requester: currentUser._id, recipient: receiverId, status: "accepted" },
+        { requester: receiverId, recipient: currentUser._id, status: "accepted" },
+      ],
+    });
+    if (!areFriends) {
+      return NextResponse.json(
+        { error: "You must be friends to start a chat" },
+        { status: 403 }
+      );
+    }
 
     // Check if chat already exists
     const existingChat = await Chat.findOne({

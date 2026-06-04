@@ -75,76 +75,77 @@ export default function ResetPasswordPage() {
     }
   }
 
+  const cardClass = "w-full border border-border/50 bg-card/50 backdrop-blur-sm shadow-xl shadow-primary/5";
+
   if (!isValid) {
     return (
-      <Card className="w-full border-none shadow-none">
-        <CardHeader className="space-y-1">
-          <div className="hidden lg:flex items-center gap-2 mb-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
-              <Globe className="h-4 w-4 text-primary-foreground" />
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        <Card className={cardClass}>
+          <CardHeader className="space-y-1 pb-6">
+            <CardTitle className="text-2xl font-bold tracking-tight">Invalid Reset Link</CardTitle>
+            <CardDescription className="text-sm">
+              This password reset link has expired or is invalid
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
+              <AlertCircle className="h-8 w-8 text-red-600" />
             </div>
-            <span className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">LinguaBridge AI</span>
-          </div>
-          <CardTitle className="text-2xl font-bold">Invalid Reset Link</CardTitle>
-          <CardDescription>
-            This password reset link has expired or is invalid
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center py-8 text-center">
-          <div className="h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
-            <AlertCircle className="h-8 w-8 text-red-600" />
-          </div>
-          <p className="text-muted-foreground text-sm max-w-[300px]">
-            Please request a new password reset link.
-          </p>
-        </CardContent>
-        <CardFooter>
-          <Link href="/forgot-password" className="w-full">
-            <Button className="w-full h-11 rounded-xl">
-              Request New Reset Link
-            </Button>
-          </Link>
-        </CardFooter>
-      </Card>
+            <p className="text-muted-foreground text-sm max-w-[300px]">
+              Please request a new password reset link.
+            </p>
+          </CardContent>
+          <CardFooter className="pb-6">
+            <Link href="/forgot-password" className="w-full">
+              <Button className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20">
+                Request New Reset Link
+              </Button>
+            </Link>
+          </CardFooter>
+        </Card>
+      </motion.div>
     );
   }
 
   return (
-    <Card className="w-full border-none shadow-none">
-      <CardHeader className="space-y-1">
-        <div className="hidden lg:flex items-center gap-2 mb-2">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
-            <Globe className="h-4 w-4 text-primary-foreground" />
-          </div>
-          <span className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">LinguaBridge AI</span>
-        </div>
-        <CardTitle className="text-2xl font-bold">
-          <AnimatePresence mode="wait">
-            {isSuccess ? (
-              <motion.span
-                key="success"
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                Password Reset! 🎉
-              </motion.span>
-            ) : (
-              <motion.span
-                key="form"
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                Reset Password
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </CardTitle>
-        <CardDescription>
-          {isSuccess
-            ? "Your password has been reset successfully."
-            : "Enter your new password below"}
-        </CardDescription>
-      </CardHeader>
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
+      <Card className={cardClass}>
+        <CardHeader className="space-y-1 pb-6">
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            <AnimatePresence mode="wait">
+              {isSuccess ? (
+                <motion.span
+                  key="success"
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  Password Reset Successful
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="form"
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  Reset Password
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </CardTitle>
+          <CardDescription className="text-sm">
+            {isSuccess
+              ? "Your password has been reset successfully."
+              : "Enter your new password below"}
+          </CardDescription>
+        </CardHeader>
       <CardContent>
         <AnimatePresence mode="wait">
           {isSuccess ? (
@@ -250,15 +251,16 @@ export default function ResetPasswordPage() {
           )}
         </AnimatePresence>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="pb-6">
         <Link
           href="/login"
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full justify-center"
+          className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to login
         </Link>
       </CardFooter>
     </Card>
+    </motion.div>
   );
 }

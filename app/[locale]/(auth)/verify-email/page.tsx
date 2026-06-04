@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Globe, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function VerifyEmailPage() {
@@ -62,15 +62,14 @@ export default function VerifyEmailPage() {
   }, [status, router]);
 
   return (
-    <Card className="w-full border-none shadow-none">
-      <CardHeader className="space-y-1">
-        <div className="hidden lg:flex items-center gap-2 mb-2">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
-            <Globe className="h-4 w-4 text-primary-foreground" />
-          </div>
-          <span className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">LinguaBridge AI</span>
-        </div>
-        <CardTitle className="text-2xl font-bold">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
+    <Card className="w-full border border-border/50 bg-card/50 backdrop-blur-sm shadow-xl shadow-primary/5">
+      <CardHeader className="space-y-1 pb-6">
+        <CardTitle className="text-2xl font-bold tracking-tight">
           <AnimatePresence mode="wait">
             <motion.span
               key={status}
@@ -79,7 +78,7 @@ export default function VerifyEmailPage() {
               exit={{ opacity: 0, y: -5 }}
             >
               {status === "loading" && "Verifying your email..."}
-              {status === "success" && "Email Verified! 🎉"}
+              {status === "success" && "Email Verified"}
               {status === "error" && "Verification Failed"}
             </motion.span>
           </AnimatePresence>
@@ -162,7 +161,7 @@ export default function VerifyEmailPage() {
           )}
         </AnimatePresence>
       </CardContent>
-      <CardFooter className="flex flex-col gap-3">
+      <CardFooter className="flex flex-col gap-3 pb-6">
         {status === "success" && (
           <Link className="w-full" href="/login">
             <Button className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20">
@@ -173,7 +172,7 @@ export default function VerifyEmailPage() {
         {status === "error" && (
           <>
             <Link className="w-full" href="/register">
-              <Button className="w-full h-11 rounded-xl">
+              <Button className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20">
                 Sign Up Again
               </Button>
             </Link>
@@ -187,5 +186,6 @@ export default function VerifyEmailPage() {
         )}
       </CardFooter>
     </Card>
+    </motion.div>
   );
 }

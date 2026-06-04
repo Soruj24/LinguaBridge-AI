@@ -17,6 +17,7 @@
     "name": "الاسم"
   },
   "Sidebar": {
+    "dashboard": "لوحة القيادة",
     "newChat": "محادثة جديدة",
     "search": "بحث...",
     "settings": "الإعدادات",

@@ -62,6 +62,49 @@ export async function GET(
   }
 }
 
+export async function PATCH(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await context.params;
+    const body = await req.json();
+
+    await connectDB();
+
+    const chat = await Chat.findById(id);
+    if (!chat) {
+      return NextResponse.json({ error: "Chat not found" }, { status: 404 });
+    }
+
+    const isParticipant = chat.participants.some(
+      (p: { _id: { toString: () => string } }) =>
+        p._id.toString() === session.user?.id,
+    );
+    if (!isParticipant && session.user.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    if (body.action === "clear") {
+      await Message.deleteMany({ chatId: id });
+      return NextResponse.json({ success: true });
+    }
+
+    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+  } catch (error) {
+    console.error("Error clearing chat:", error);
+    return NextResponse.json(
+      { error: "Failed to clear chat" },
+      { status: 500 },
+    );
+  }
+}
+
 export async function DELETE(
   req: NextRequest,
   context: { params: Promise<{ id: string }> },

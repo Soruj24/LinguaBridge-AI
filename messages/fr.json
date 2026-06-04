@@ -17,6 +17,7 @@
     "name": "Nom"
   },
   "Sidebar": {
+    "dashboard": "Tableau de bord",
     "newChat": "Nouvelle discussion",
     "search": "Rechercher...",
     "settings": "Paramètres",

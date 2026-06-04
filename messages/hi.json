@@ -17,7 +17,8 @@
     "name": "नाम"
   },
   "Sidebar": {
-    "newChat": "नई चैट",
+    "dashboard": "डैशबोर्ड",
+    "newChat": "नई बात",
     "search": "चैट खोजें...",
     "settings": "सेटिंग्स",
     "languageRegion": "भाषा और क्षेत्र",

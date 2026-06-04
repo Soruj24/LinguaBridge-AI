@@ -7,8 +7,11 @@ import connectDB from "@/lib/db";
 import User from "@/models/User";
 import Chat from "@/models/Chat";
 import Message from "@/models/Message";
-import { Globe, MessageSquare, Languages, Settings, ArrowLeft, Home, CalendarDays, Activity } from "lucide-react";
+import Friendship from "@/models/Friendship";
+import { auth } from "@/auth";
+import { Globe, MessageSquare, Languages, ArrowLeft, CalendarDays, Activity } from "lucide-react";
 import { notFound } from "next/navigation";
+import { ProfileActions } from "@/components/profile-actions";
 
 interface PageProps {
   params: Promise<{ locale: string; userId: string }>;
@@ -16,11 +19,41 @@ interface PageProps {
 
 export default async function ProfilePage({ params }: PageProps) {
   const { userId } = await params;
+  const session = await auth();
+
   await connectDB();
 
   const user = await User.findById(userId).select("-password");
   if (!user) {
     notFound();
+  }
+
+  const currentUser = session?.user?.email
+    ? await User.findOne({ email: session.user.email })
+    : null;
+
+  const isOwnProfile = currentUser?._id.toString() === userId;
+
+  let friendStatus: "none" | "friends" | "request_sent" | "request_received" = "none";
+  let friendshipId: string | null = null;
+  if (currentUser && !isOwnProfile) {
+    const friendship = await Friendship.findOne({
+      $or: [
+        { requester: currentUser._id, recipient: userId },
+        { requester: userId, recipient: currentUser._id },
+      ],
+    });
+    if (friendship) {
+      friendshipId = friendship._id.toString();
+      if (friendship.status === "accepted") {
+        friendStatus = "friends";
+      } else if (friendship.status === "pending") {
+        friendStatus =
+          friendship.requester.toString() === currentUser._id.toString()
+            ? "request_sent"
+            : "request_received";
+      }
+    }
   }
 
   const chatCount = await Chat.countDocuments({ participants: userId });
@@ -136,17 +169,12 @@ export default async function ProfilePage({ params }: PageProps) {
 
             {/* Actions */}
             <div className="flex gap-2 pt-2">
-              <Button className="flex-1 gap-2 rounded-xl h-11 bg-gradient-to-r from-primary to-primary/90 shadow-lg shadow-primary/20" asChild>
-                <Link href={`/chat/new?user=${userId}`}>
-                  <MessageSquare className="h-4 w-4" />
-                  Send Message
-                </Link>
-              </Button>
-              <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl" asChild>
-                <Link href="/settings">
-                  <Settings className="h-4 w-4" />
-                </Link>
-              </Button>
+              <ProfileActions
+                userId={userId}
+                initialFriendStatus={friendStatus}
+                isOwnProfile={isOwnProfile}
+                friendshipId={friendshipId}
+              />
             </div>
           </CardContent>
         </Card>

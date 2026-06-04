@@ -8,7 +8,9 @@ import { createAdapter } from "@socket.io/redis-adapter";
 import Redis from "ioredis";
 import { processMessage } from "@/lib/chat-service";
 import connectDB from "@/lib/db";
+import { setIO } from "@/lib/socket-io";
 import UserStatus from "@/models/UserStatus";
+import Friendship from "@/models/Friendship";
 
 interface ExtendedSocket extends Socket {
   userId?: string;
@@ -30,6 +32,7 @@ app.prepare().then(async () => {
       methods: ["GET", "POST"],
     },
   });
+  setIO(io);
 
   // Redis Adapter setup (optional but recommended for production)
   if (process.env.REDIS_URL) {
@@ -99,6 +102,27 @@ app.prepare().then(async () => {
     socket.on("send_message", async (message, callback) => {
       // message: { chatId, text, senderId, receiverId }
       try {
+        const sId =
+          typeof message.senderId === "object"
+            ? message.senderId._id
+            : message.senderId;
+        const rId =
+          typeof message.receiverId === "object"
+            ? message.receiverId._id
+            : message.receiverId;
+
+        const areFriends = await Friendship.findOne({
+          $or: [
+            { requester: sId, recipient: rId, status: "accepted" },
+            { requester: rId, recipient: sId, status: "accepted" },
+          ],
+        });
+        if (!areFriends) {
+          if (callback)
+            callback({ status: "error", error: "You must be friends to send messages" });
+          return;
+        }
+
         let processedMessage;
 
         // If message has _id, it's likely already processed/saved (e.g. via voice API)
@@ -117,15 +141,6 @@ app.prepare().then(async () => {
         io.to(message.chatId).emit("receive_message", processedMessage);
 
         // Also emit new_message event for sidebar updates via user rooms
-        const sId =
-          typeof message.senderId === "object"
-            ? message.senderId._id
-            : message.senderId;
-        const rId =
-          typeof message.receiverId === "object"
-            ? message.receiverId._id
-            : message.receiverId;
-
         io.to(rId).emit("new_message", processedMessage);
         io.to(sId).emit("new_message", processedMessage);
 

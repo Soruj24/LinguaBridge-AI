@@ -1,70 +1,129 @@
 "use client";
 
 import { Link, usePathname } from "@/navigation";
-import { LayoutDashboard, MessageSquare, Settings, Menu } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "@/components/sidebar";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
+interface TabBase {
+  labelKey: "dashboard" | "chats" | "settings";
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+interface TabLink extends TabBase {
+  href: string;
+  isSheet: false;
+}
+
+interface TabSheet extends TabBase {
+  isSheet: true;
+}
+
+type Tab = TabLink | TabSheet;
+
+const tabs: Tab[] = [
+  { href: "/dashboard", labelKey: "dashboard", icon: LayoutDashboard, isSheet: false },
+  { labelKey: "chats", icon: MessageSquare, isSheet: true },
+  { href: "/settings", labelKey: "settings", icon: Settings, isSheet: false },
+];
+
+function TabButton({
+  icon: Icon,
+  label,
+  isActive,
+  onClick,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  isActive: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex flex-col items-center gap-0.5 text-[10px] font-medium transition-all p-1.5 rounded-xl min-w-[4rem]",
+        isActive
+          ? "text-primary"
+          : "text-muted-foreground hover:text-foreground",
+      )}
+    >
+      <div
+        className={cn(
+          "h-9 w-9 rounded-xl flex items-center justify-center transition-all",
+          isActive
+            ? "bg-primary/10 shadow-sm"
+            : "hover:bg-muted/50",
+        )}
+      >
+        <Icon className="h-5 w-5" />
+      </div>
+      <span className={cn(
+        isActive ? "font-semibold" : "",
+      )}>
+        {label}
+      </span>
+      {isActive && (
+        <span className="h-0.5 w-4 rounded-full bg-primary mt-0.5" />
+      )}
+    </button>
+  );
+}
+
 export function MobileNav() {
-  const t = useTranslations('MobileNav');
+  const t = useTranslations("MobileNav");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  // Hide on chat routes to give full screen space
   if (pathname?.startsWith("/chat/")) {
     return null;
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t bg-background/80 backdrop-blur-xl z-50 md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-      <div className="flex items-center justify-around h-16 px-2">
-        <Link
-          href="/dashboard"
-          className={cn(
-            "flex flex-col items-center gap-1 text-xs font-medium transition-all p-2 rounded-xl",
-            pathname === "/dashboard"
-              ? "text-primary bg-primary/10"
-              : "text-muted-foreground hover:text-primary hover:bg-muted/50"
-          )}
-        >
-          <LayoutDashboard className="h-5 w-5" />
-          {t('dashboard')}
-        </Link>
+    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden pb-[env(safe-area-inset-bottom)]">
+      <div className="absolute inset-0 border-t border-border/40 bg-background/85 backdrop-blur-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.08)]" />
+      <div className="relative flex items-center justify-around h-[4.25rem] px-4">
+        {tabs.map((tab) => {
+          if (tab.isSheet) {
+            const isActive = pathname?.startsWith("/chat");
+            return (
+              <Sheet key="chats" open={open} onOpenChange={setOpen}>
+                <SheetTrigger asChild>
+                  <span>
+                    <TabButton
+                      icon={tab.icon}
+                      label={t(tab.labelKey)}
+                      isActive={!!isActive}
+                    />
+                  </span>
+                </SheetTrigger>
+                <SheetContent
+                  side="left"
+                  className="p-0 w-80 border-r border-border/40"
+                >
+                  <Sidebar
+                    className="w-full h-full border-none shadow-none"
+                    onClose={() => setOpen(false)}
+                  />
+                </SheetContent>
+              </Sheet>
+            );
+          }
 
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <button
-              className={cn(
-                "flex flex-col items-center gap-1 text-xs font-medium transition-all p-2 rounded-xl",
-                pathname === "/chat" || pathname?.startsWith("/chat")
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-primary hover:bg-muted/50"
-              )}
-            >
-              <MessageSquare className="h-5 w-5" />
-              {t('chats')}
-            </button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-80 border-r-0">
-            <Sidebar className="w-full h-full border-none shadow-none" onClose={() => setOpen(false)} />
-          </SheetContent>
-        </Sheet>
-
-        <Link
-          href="/settings"
-          className={cn(
-            "flex flex-col items-center gap-1 text-xs font-medium transition-all p-2 rounded-xl",
-            pathname === "/settings"
-              ? "text-primary bg-primary/10"
-              : "text-muted-foreground hover:text-primary hover:bg-muted/50"
-          )}
-        >
-          <Settings className="h-5 w-5" />
-          {t('settings')}
-        </Link>
+          const isActive = pathname === tab.href;
+          return (
+            <Link key={tab.href} href={tab.href}>
+              <TabButton
+                icon={tab.icon}
+                label={t(tab.labelKey)}
+                isActive={isActive}
+              />
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

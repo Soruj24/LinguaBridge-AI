@@ -52,6 +52,7 @@
     "name": "Name"
   },
   "Sidebar": {
+    "dashboard": "Dashboard",
     "newChat": "New Chat",
     "search": "Search chats...",
     "settings": "Settings",

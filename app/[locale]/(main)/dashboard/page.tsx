@@ -6,6 +6,7 @@ import { RecentConversations } from "@/components/dashboard/recent-conversations
 import { PremiumCard } from "@/components/dashboard/premium-card";
 import { WelcomeBanner } from "@/components/dashboard/welcome-banner";
 import { SkillRadar } from "@/components/dashboard/skill-radar";
+import { FriendRequestsCard } from "@/components/dashboard/friend-requests-card";
 
 export default function DashboardPage() {
   return (
@@ -40,6 +41,7 @@ export default function DashboardPage() {
               <RecentConversations />
             </div>
             <div className="lg:col-span-2 space-y-6">
+              <FriendRequestsCard />
               <PremiumCard />
               <SkillRadar />
             </div>
