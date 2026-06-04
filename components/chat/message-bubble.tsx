@@ -1,27 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
-import {
-  MoreHorizontal,
-  Copy,
-  Reply,
-  Heart,
-  Smile,
-  ThumbsUp,
-  ThumbsDown,
-  Volume2,
-  VolumeX,
-  Globe,
-  RefreshCw,
-  Check,
-  CheckCheck,
-} from "lucide-react";
-import { useState } from "react";
+import { Volume2, Check, Globe } from "lucide-react";
+import { useChatMessageBubble } from "./use-chat-message-bubble";
 
 export interface MessageBubbleProps {
   message: {
@@ -49,17 +34,13 @@ export function MessageBubble({
   onCopy,
   className,
 }: MessageBubbleProps) {
-  const [showActions, setShowActions] = useState(false);
-  const [showTranslation, setShowTranslation] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { showActions, setShowActions, showTranslation, setShowTranslation, copied, handleCopy } = useChatMessageBubble();
 
-  const handleCopy = () => {
+  const doCopy = () => {
     const text = showTranslation && message.translatedText
       ? message.translatedText
       : message.originalText;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    handleCopy(text);
     onCopy?.(text);
   };
 
@@ -71,11 +52,7 @@ export function MessageBubble({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        "flex gap-2 max-w-[80%]",
-        isOwn ? "ml-auto flex-row-reverse" : "mr-auto",
-        className
-      )}
+      className={cn("flex gap-2 max-w-[80%]", isOwn ? "ml-auto flex-row-reverse" : "mr-auto", className)}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
@@ -87,21 +64,11 @@ export function MessageBubble({
       )}
 
       <div className="relative">
-        <div
-          className={cn(
-            "rounded-2xl px-4 py-2",
-            isOwn
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted"
-          )}
-        >
+        <div className={cn("rounded-2xl px-4 py-2", isOwn ? "bg-primary text-primary-foreground" : "bg-muted")}>
           {message.translatedText && !isOwn && (
             <button
               onClick={() => setShowTranslation(!showTranslation)}
-              className={cn(
-                "flex items-center gap-1 text-xs mb-1",
-                showTranslation ? "text-primary font-medium" : "text-muted-foreground"
-              )}
+              className={cn("flex items-center gap-1 text-xs mb-1", showTranslation ? "text-primary font-medium" : "text-muted-foreground")}
             >
               <Globe className="h-3 w-3" />
               {showTranslation ? "Translated" : "Show translation"}
@@ -118,15 +85,8 @@ export function MessageBubble({
             </div>
           )}
 
-          <div
-            className={cn(
-              "text-xs mt-1 flex items-center gap-1",
-              isOwn ? "text-primary-foreground/70 justify-end" : "text-muted-foreground"
-            )}
-          >
-            <span>
-              {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
-            </span>
+          <div className={cn("text-xs mt-1 flex items-center gap-1", isOwn ? "text-primary-foreground/70 justify-end" : "text-muted-foreground")}>
+            <span>{formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}</span>
             {isOwn && (
               <span className="flex items-center">
                 <Check className="h-3 w-3" />
@@ -136,30 +96,17 @@ export function MessageBubble({
         </div>
 
         {showActions && (
-          <div
-            className={cn(
-              "absolute top-1/2 -translate-y-1/2 flex items-center gap-1 bg-background rounded-full shadow-md border p-1",
-              isOwn ? "right-full mr-2" : "left-full ml-2"
-            )}
-          >
+          <div className={cn(
+            "absolute top-1/2 -translate-y-1/2 flex items-center gap-1 bg-background rounded-full shadow-md border p-1",
+            isOwn ? "right-full mr-2" : "left-full ml-2"
+          )}>
             {REACTIONS.map((emoji) => (
-              <button
-                key={emoji}
-                onClick={() => onReact?.(message._id, emoji)}
-                className="p-1 hover:bg-muted rounded-full text-sm"
-              >
+              <button key={emoji} onClick={() => onReact?.(message._id, emoji)} className="p-1 hover:bg-muted rounded-full text-sm">
                 {emoji}
               </button>
             ))}
-            <button
-              onClick={handleCopy}
-              className="p-1 hover:bg-muted rounded-full"
-            >
-              {copied ? (
-                <Check className="h-3 w-3 text-green-500" />
-              ) : (
-                <Copy className="h-3 w-3" />
-              )}
+            <button onClick={doCopy} className="p-1 hover:bg-muted rounded-full">
+              {copied ? <Check className="h-3 w-3 text-green-500" /> : <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>}
             </button>
           </div>
         )}
@@ -168,12 +115,12 @@ export function MessageBubble({
   );
 }
 
-interface TypingIndicatorProps {
+interface ChatTypingIndicatorProps {
   name?: string;
   className?: string;
 }
 
-export function ChatTypingIndicator({ name, className }: TypingIndicatorProps) {
+export function ChatTypingIndicator({ name, className }: ChatTypingIndicatorProps) {
   return (
     <div className={cn("flex gap-2", className)}>
       <Avatar className="h-8 w-8">

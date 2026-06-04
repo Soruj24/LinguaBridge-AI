@@ -1,67 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Loader2, MessageSquarePlus, Sparkles, Send } from "lucide-react";
-import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-
-const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }).optional().or(z.literal("")),
-  message: z.string().min(10, {
-    message: "Feedback must be at least 10 characters.",
-  }),
-});
+import { useFeedbackDialog } from "./use-feedback-dialog";
 
 export function FeedbackDialog() {
-  const t = useTranslations('Feedback');
-  const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      message: "",
-    },
-  });
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    console.log("Feedback submitted:", values);
-    toast.success(t('success'));
-    
-    setIsSubmitting(false);
-    setOpen(false);
-    form.reset();
-  }
+  const t = useTranslations("Feedback");
+  const { open, setOpen, form, isSubmitting, onSubmit } = useFeedbackDialog();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -71,7 +27,7 @@ export function FeedbackDialog() {
           <span className="relative flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 px-5 py-2.5 text-sm font-medium text-white overflow-hidden">
             <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <Sparkles className="h-4 w-4 relative animate-[float_2.5s_ease-in-out_infinite]" />
-            <span className="relative">{t('trigger')}</span>
+            <span className="relative">{t("trigger")}</span>
           </span>
         </button>
       </DialogTrigger>
@@ -88,11 +44,9 @@ export function FeedbackDialog() {
                 <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
                   <MessageSquarePlus className="h-4 w-4 text-primary-foreground" />
                 </div>
-                {t('title')}
+                {t("title")}
               </DialogTitle>
-              <DialogDescription>
-                {t('description')}
-              </DialogDescription>
+              <DialogDescription>{t("description")}</DialogDescription>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-6 pb-6">
@@ -101,13 +55,9 @@ export function FeedbackDialog() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('emailLabel')}</FormLabel>
+                      <FormLabel>{t("emailLabel")}</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder={t('emailPlaceholder')} 
-                          {...field}
-                          className="h-11 rounded-xl bg-muted/50" 
-                        />
+                        <Input placeholder={t("emailPlaceholder")} {...field} className="h-11 rounded-xl bg-muted/50" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -118,10 +68,10 @@ export function FeedbackDialog() {
                   name="message"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('messageLabel')}</FormLabel>
+                      <FormLabel>{t("messageLabel")}</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder={t('messagePlaceholder')}
+                          placeholder={t("messagePlaceholder")}
                           className="min-h-[100px] rounded-xl bg-muted/50 resize-none"
                           {...field}
                         />
@@ -131,17 +81,13 @@ export function FeedbackDialog() {
                   )}
                 />
                 <DialogFooter>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     disabled={isSubmitting}
                     className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20"
                   >
-                    {isSubmitting ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Send className="mr-2 h-4 w-4" />
-                    )}
-                    {isSubmitting ? t('submitting') : t('submit')}
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                    {isSubmitting ? t("submitting") : t("submit")}
                   </Button>
                 </DialogFooter>
               </form>
