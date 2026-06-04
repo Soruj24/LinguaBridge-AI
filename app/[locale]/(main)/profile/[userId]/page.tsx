@@ -1,17 +1,12 @@
 import { Link } from "@/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import connectDB from "@/lib/db";
-import User from "@/models/User";
-import Chat from "@/models/Chat";
-import Message from "@/models/Message";
-import Friendship from "@/models/Friendship";
 import { auth } from "@/auth";
 import { Globe, MessageSquare, Languages, ArrowLeft, CalendarDays, Activity } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProfileActions } from "@/components/profile-actions";
+import { getProfileData } from "@/lib/profile-service";
 
 interface PageProps {
   params: Promise<{ locale: string; userId: string }>;
@@ -21,71 +16,33 @@ export default async function ProfilePage({ params }: PageProps) {
   const { userId } = await params;
   const session = await auth();
 
-  await connectDB();
-
-  const user = await User.findById(userId).select("-password");
-  if (!user) {
+  let data;
+  try {
+    data = await getProfileData(userId, session?.user?.email);
+  } catch {
     notFound();
   }
 
-  const currentUser = session?.user?.email
-    ? await User.findOne({ email: session.user.email })
-    : null;
-
-  const isOwnProfile = currentUser?._id.toString() === userId;
-
-  let friendStatus: "none" | "friends" | "request_sent" | "request_received" = "none";
-  let friendshipId: string | null = null;
-  if (currentUser && !isOwnProfile) {
-    const friendship = await Friendship.findOne({
-      $or: [
-        { requester: currentUser._id, recipient: userId },
-        { requester: userId, recipient: currentUser._id },
-      ],
-    });
-    if (friendship) {
-      friendshipId = friendship._id.toString();
-      if (friendship.status === "accepted") {
-        friendStatus = "friends";
-      } else if (friendship.status === "pending") {
-        friendStatus =
-          friendship.requester.toString() === currentUser._id.toString()
-            ? "request_sent"
-            : "request_received";
-      }
-    }
-  }
-
-  const chatCount = await Chat.countDocuments({ participants: userId });
-  const messageCount = await Message.countDocuments({
-    $or: [{ senderId: userId }, { receiverId: userId }],
-  });
+  const { user, isOwnProfile, friendStatus, friendshipId, chatCount, messageCount } = data;
 
   return (
     <div className="min-h-full flex items-center justify-center p-4 pb-20 md:pb-6">
       <div className="w-full max-w-lg space-y-4">
-        {/* Back link */}
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
+        <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-4 w-4" />
           Back to Dashboard
         </Link>
-
         <Card className="border shadow-lg overflow-hidden">
-          {/* Header gradient */}
           <div className="h-24 bg-gradient-to-br from-primary/20 via-primary/10 to-background relative overflow-hidden">
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl" />
             <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-blue-500/15 rounded-full blur-3xl" />
           </div>
-
           <CardHeader className="text-center -mt-12 relative z-10 pb-0">
             <div className="flex justify-center mb-3">
               <Avatar className="h-24 w-24 border-4 border-background shadow-xl">
                 <AvatarImage src={user.avatar} />
                 <AvatarFallback className="text-2xl bg-gradient-to-br from-primary to-primary/70 text-primary-foreground font-bold">
-                  {user.name?.[0]?.toUpperCase()}
+                  {(user.name?.[0] || "").toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </div>
@@ -104,9 +61,7 @@ export default async function ProfilePage({ params }: PageProps) {
               )}
             </div>
           </CardHeader>
-
           <CardContent className="space-y-5 pt-6">
-            {/* Stats grid */}
             <div className="grid grid-cols-2 gap-3">
               <div className="text-center p-4 rounded-xl bg-gradient-to-br from-primary/5 to-transparent border border-primary/10">
                 <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-2">
@@ -123,8 +78,6 @@ export default async function ProfilePage({ params }: PageProps) {
                 <p className="text-xs text-muted-foreground">Messages</p>
               </div>
             </div>
-
-            {/* About section */}
             <div className="space-y-2 p-4 rounded-xl bg-muted/30">
               <h3 className="font-semibold text-sm flex items-center gap-2">
                 <Activity className="h-4 w-4 text-primary" />
@@ -134,8 +87,6 @@ export default async function ProfilePage({ params }: PageProps) {
                 {user.bio || "This user hasn't added a bio yet."}
               </p>
             </div>
-
-            {/* Dates */}
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="p-3 rounded-xl bg-muted/20">
                 <p className="text-muted-foreground text-xs flex items-center gap-1 mb-1">
@@ -144,10 +95,7 @@ export default async function ProfilePage({ params }: PageProps) {
                 </p>
                 <p className="font-medium">
                   {user.createdAt
-                    ? new Date(user.createdAt).toLocaleDateString(undefined, {
-                        month: "long",
-                        year: "numeric",
-                      })
+                    ? new Date(user.createdAt).toLocaleDateString(undefined, { month: "long", year: "numeric" })
                     : "Unknown"}
                 </p>
               </div>
@@ -158,16 +106,11 @@ export default async function ProfilePage({ params }: PageProps) {
                 </p>
                 <p className="font-medium">
                   {user.updatedAt
-                    ? new Date(user.updatedAt).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                      })
+                    ? new Date(user.updatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })
                     : "Unknown"}
                 </p>
               </div>
             </div>
-
-            {/* Actions */}
             <div className="flex gap-2 pt-2">
               <ProfileActions
                 userId={userId}
