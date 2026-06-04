@@ -54,3 +54,5 @@ export const languageMap: Record<string, string> = {
   uz: "Uzbek",
   kk: "Kazakh",
 };
+
+export const languages = Object.entries(languageMap).map(([code, name]) => ({ code, name }));
