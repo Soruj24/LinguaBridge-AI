@@ -1,62 +1,23 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { usePreferences } from "@/hooks/use-preferences";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Volume2,
-  Loader2,
-  Trash2,
-  SmilePlus,
-  Languages,
-  Globe,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useSession } from "next-auth/react";
-import { motion, AnimatePresence } from "framer-motion";
-import { AudioPlayer } from "@/components/audio-player";
-import { usePreferences } from "@/hooks/use-preferences";
-import { useTranslations } from "next-intl";
+import { SmilePlus, Trash2, Loader2, Volume2 } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FileBubble } from "@/components/ui/file-preview";
-
-interface Reaction {
-  emoji: string;
-  userId: string;
-}
-
-interface MessageBubbleProps {
-  message: {
-    _id: string;
-    originalText: string;
-    translatedText?: string;
-    voiceUrl?: string;
-    translatedVoiceUrl?: string;
-    fileUrl?: string;
-    fileType?: string;
-    fileSize?: number;
-    isImage?: boolean;
-    createdAt: string;
-    senderId: {
-      name: string;
-      avatar?: string;
-    };
-    reactions?: Reaction[];
-    languageFrom?: string;
-    languageTo?: string;
-    phoneticText?: string;
-  };
-  isMe: boolean;
-  onDelete?: (id: string) => void;
-  currentUserId?: string;
-  isSameSender?: boolean;
-}
+import type { MessageBubbleProps } from "./message-bubble/types";
+import { MessageBubbleContent } from "./message-bubble/message-bubble-content";
+import { useReactions } from "./message-bubble/use-reactions";
+import { useTTS } from "./message-bubble/use-tts";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
@@ -68,26 +29,13 @@ export function MessageBubble({
   isSameSender,
 }: MessageBubbleProps) {
   const t = useTranslations("Chat");
-  const [isReading, setIsReading] = useState(false);
-  const [isLoadingTTS, setIsLoadingTTS] = useState(false);
+  const { reduceMotion, lowBandwidth } = usePreferences();
+  const { data: session } = useSession();
   const [showPhonetic, setShowPhonetic] = useState(false);
-  const [localReactions, setLocalReactions] = useState<Reaction[]>(
-    message.reactions || [],
-  );
   const [viewMode, setViewMode] = useState<"original" | "translated" | "both">(
     isMe ? "original" : message.translatedText ? "translated" : "original",
   );
-  const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
-  const { reduceMotion, lowBandwidth } = usePreferences();
-  const { data: session } = useSession();
 
-  useEffect(() => {
-    if (message.reactions) {
-      setLocalReactions(message.reactions);
-    }
-  }, [message.reactions]);
-
-  // Update default view mode if translated text becomes available later (optimistic)
   useEffect(() => {
     if (
       !isMe &&
@@ -99,76 +47,12 @@ export function MessageBubble({
     }
   }, [message.translatedText, isMe]);
 
-  const handleReaction = async (emoji: string) => {
-    if (!currentUserId) return;
-
-    // Optimistic update
-    const existingIndex = localReactions.findIndex(
-      (r) => r.emoji === emoji && r.userId === currentUserId,
-    );
-
-    const newReactions = [...localReactions];
-    if (existingIndex > -1) {
-      newReactions.splice(existingIndex, 1);
-    } else {
-      newReactions.push({ emoji, userId: currentUserId });
-    }
-    setLocalReactions(newReactions);
-
-    try {
-      await axios.post(`/api/chat/message/${message._id}/react`, { emoji });
-    } catch (error) {
-      console.error("Failed to react", error);
-      // Revert on error
-      setLocalReactions(message.reactions || []);
-    }
-  };
-
-  const groupedReactions = localReactions.reduce(
-    (acc, reaction) => {
-      acc[reaction.emoji] = (acc[reaction.emoji] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
+  const { groupedReactions, handleReaction } = useReactions(
+    currentUserId,
+    message.reactions,
+    message._id,
   );
-
-  const handleTTS = async (text: string) => {
-    if (isReading) {
-      ttsAudioRef.current?.pause();
-      setIsReading(false);
-      return;
-    }
-
-    try {
-      setIsLoadingTTS(true);
-      const res = await axios.post(
-        "/api/chat/tts",
-        { text },
-        { responseType: "blob" },
-      );
-      const url = URL.createObjectURL(res.data);
-
-      if (ttsAudioRef.current) {
-        ttsAudioRef.current.pause();
-      }
-      ttsAudioRef.current = new Audio(url);
-
-      ttsAudioRef.current.onended = () => setIsReading(false);
-      ttsAudioRef.current.play();
-      setIsReading(true);
-    } catch (error) {
-      console.error("TTS error", error);
-    } finally {
-      setIsLoadingTTS(false);
-    }
-  };
-
-  // Clean up audio on unmount
-  useEffect(() => {
-    return () => {
-      if (ttsAudioRef.current) ttsAudioRef.current.pause();
-    };
-  }, []);
+  const { isReading, isLoadingTTS, handleTTS } = useTTS();
 
   return (
     <motion.div
@@ -207,7 +91,6 @@ export function MessageBubble({
         </div>
       )}
 
-      {/* Low Bandwidth Sender Name Fallback */}
       {!isMe && lowBandwidth && !isSameSender && (
         <div className="w-8 shrink-0 flex items-center justify-center">
           <span className="text-xs font-bold text-muted-foreground w-8 h-8 flex items-center justify-center bg-muted rounded-full">
@@ -222,118 +105,27 @@ export function MessageBubble({
           isMe && "items-end",
         )}
       >
-<div
-        className={cn(
-          "relative px-4 py-2.5 shadow-sm text-sm break-words transition-all",
-          isMe
-            ? "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl rounded-br-sm shadow-lg shadow-primary/25"
-            : "bg-gradient-to-br from-muted/90 via-muted/70 to-muted/50 text-foreground border border-border/30 rounded-2xl rounded-bl-sm",
-          isSameSender && isMe && "rounded-tr-md",
-          isSameSender && !isMe && "rounded-tl-md",
-          (message.voiceUrl || message.translatedVoiceUrl) && "min-w-[200px]",
-        )}
-      >
-          {/* Voice Message Players */}
-          {(message.voiceUrl || message.translatedVoiceUrl) &&
-            !lowBandwidth && (
-              <div className="space-y-3 mb-2">
-                {message.voiceUrl && (
-                  <div className="space-y-1">
-                    {message.translatedVoiceUrl && (
-                      <div className="text-[10px] opacity-70 ml-1 font-medium">
-                        Original
-                      </div>
-                    )}
-                    <AudioPlayer
-                      src={message.voiceUrl}
-                      variant={isMe ? "sender" : "receiver"}
-                    />
-                  </div>
-                )}
-                {message.translatedVoiceUrl && (
-                  <div className="space-y-1">
-                    <div className="text-[10px] opacity-70 ml-1 font-medium">
-                      {t("translated")}
-                    </div>
-                    <AudioPlayer
-                      src={message.translatedVoiceUrl}
-                      variant={isMe ? "sender" : "receiver"}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-          {/* Low Bandwidth Audio Placeholder */}
-          {(message.voiceUrl || message.translatedVoiceUrl) && lowBandwidth && (
-            <div className="mb-2 p-2 bg-background/20 rounded border border-current/10 text-xs italic opacity-80 flex items-center gap-2">
-              <Volume2 className="h-3 w-3" />
-              <span>{t("audioHidden")}</span>
-            </div>
+        <div
+          className={cn(
+            "relative px-4 py-2.5 shadow-sm text-sm break-words transition-all",
+            isMe
+              ? "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl rounded-br-sm shadow-lg shadow-primary/25"
+              : "bg-gradient-to-br from-muted/90 via-muted/70 to-muted/50 text-foreground border border-border/30 rounded-2xl rounded-bl-sm",
+            isSameSender && isMe && "rounded-tr-md",
+            isSameSender && !isMe && "rounded-tl-md",
+            (message.voiceUrl || message.translatedVoiceUrl) && "min-w-[200px]",
           )}
-
-          {/* File Attachment */}
-          {message.fileUrl && (
-            <div className="mb-2">
-              <FileBubble
-                fileUrl={message.fileUrl}
-                fileType={message.fileType}
-                fileSize={message.fileSize}
-                isImage={message.isImage}
-                fileName={message.originalText}
-              />
-            </div>
-          )}
-
-          {/* Text Message Content */}
-          <div className="leading-relaxed whitespace-pre-wrap">
-            {viewMode === "both" && message.translatedText ? (
-              <div className="space-y-1.5">
-                <div className="opacity-80 text-xs pb-1.5 border-b border-white/10 dark:border-black/10">
-                  <span className="text-[9px] font-bold uppercase tracking-wider opacity-60 mb-0.5 block">
-                    {message.languageFrom || t("original")}
-                  </span>
-                  {message.originalText}
-                </div>
-                <div className="text-xs pt-0.5">
-                  <span className="text-[9px] font-bold uppercase tracking-wider opacity-60 mb-0.5 block">
-                    {message.languageTo || t("translated")}
-                  </span>
-                  {message.translatedText}
-                </div>
-              </div>
-            ) : viewMode === "original" ? (
-              message.originalText || message.translatedText
-            ) : (
-              message.translatedText || message.originalText
-            )}
-
-            {/* Phonetic Pronunciation */}
-            {showPhonetic && message.phoneticText && (
-              <div className="mt-2 pt-2 border-t border-dashed border-current/20 text-xs italic opacity-80 font-mono">
-                <span className="text-[9px] font-bold uppercase not-italic opacity-60 mr-1">
-                  {t("ipa")}
-                </span>
-                {message.phoneticText}
-              </div>
-            )}
-          </div>
-
-          {/* Meta Info (Timestamp + Status) */}
-          <div
-            className={cn(
-              "flex items-center justify-end gap-1 select-none absolute bottom-1 right-2 opacity-0 group-hover:opacity-100 transition-opacity",
-              isMe ? "text-primary-foreground/70" : "text-foreground/50",
-            )}
-          >
-            {message.hasOwnProperty("isOptimistic") &&
-              (message as { isOptimistic?: boolean }).isOptimistic && (
-                <Loader2 className="h-3 w-3 animate-spin" />
-              )}
-          </div>
+        >
+          <MessageBubbleContent
+            message={message}
+            isMe={isMe}
+            viewMode={viewMode}
+            showPhonetic={showPhonetic}
+            lowBandwidth={lowBandwidth}
+            t={t}
+          />
         </div>
 
-        {/* Timestamp outside - small and subtle */}
         <div
           className={cn(
             "flex justify-end px-1 mt-1 opacity-70",
@@ -353,7 +145,6 @@ export function MessageBubble({
           </span>
         </div>
 
-        {/* Reactions Display */}
         {Object.keys(groupedReactions).length > 0 && (
           <div
             className={cn(
@@ -376,14 +167,12 @@ export function MessageBubble({
         )}
       </div>
 
-      {/* Reaction Trigger & Tools (Hover) */}
       <div
         className={cn(
           "opacity-0 group-hover:opacity-100 transition-opacity flex items-center self-center gap-1",
           isMe ? "order-first mr-2" : "ml-2",
         )}
       >
-        {/* Phonetic Helper (Placeholder) */}
         {message.phoneticText && (
           <Button
             variant="ghost"
@@ -401,7 +190,6 @@ export function MessageBubble({
           </Button>
         )}
 
-        {/* TTS Button */}
         {!message.voiceUrl && !message.translatedVoiceUrl && (
           <Button
             variant="ghost"
@@ -466,8 +254,6 @@ export function MessageBubble({
 
       {isMe && (
         <Avatar className="h-8 w-8 mb-0.5 shrink-0 opacity-0 w-0 hidden sm:block">
-          {" "}
-          {/* Hide my avatar or keep it invisible for spacing if needed, usually apps don't show my avatar */}
           <AvatarImage src={message.senderId?.avatar} />
           <AvatarFallback>{message.senderId?.name?.[0]}</AvatarFallback>
         </Avatar>
