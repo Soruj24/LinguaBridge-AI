@@ -1,19 +1,29 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 
-const PARTICLES = Array.from({ length: 30 }, (_, i) => ({
-  key: i,
-  top: `${Math.random() * 100}%`,
-  left: `${Math.random() * 100}%`,
-  duration: 3 + Math.random() * 4,
-  delay: Math.random() * 5,
-}));
+function seededRandom(seed: number) {
+  const x = Math.sin(seed * 9301 + 49297) * 49297;
+  return x - Math.floor(x);
+}
+
+function generateParticles() {
+  return Array.from({ length: 30 }, (_, i) => ({
+    key: i,
+    top: `${seededRandom(i * 3 + 1) * 100}%`,
+    left: `${seededRandom(i * 3 + 2) * 100}%`,
+    duration: 3 + seededRandom(i * 3 + 3) * 4,
+    delay: seededRandom(i * 3 + 4) * 5,
+  }));
+}
 
 export function Particles() {
+  const particles = useMemo(() => generateParticles(), []);
+
   return (
     <div className="absolute inset-0 pointer-events-none -z-5 overflow-hidden">
-      {PARTICLES.map((p) => (
+      {particles.map((p) => (
         <motion.div
           key={p.key}
           className="absolute h-1 w-1 rounded-full bg-primary/30"
