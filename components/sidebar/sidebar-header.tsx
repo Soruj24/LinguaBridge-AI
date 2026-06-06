@@ -3,16 +3,18 @@
 import { Link, usePathname } from "@/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Search, UserPlus, Users, LayoutDashboard, Settings } from "lucide-react";
+import {
+  MessageSquare,
+  Search,
+  UserPlus,
+  Users,
+  LayoutDashboard,
+  Settings,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notification-bell";
 import { GroupChatDialog } from "@/components/group-chat-dialog";
-
-const navItems = [
-  { href: "/dashboard", labelKey: "dashboard" as const, icon: LayoutDashboard },
-  { href: "/settings", labelKey: "settings" as const, icon: Settings },
-] as const;
 
 interface SidebarHeaderProps {
   searchQuery: string;
@@ -23,16 +25,22 @@ interface SidebarHeaderProps {
 }
 
 export function SidebarHeader({
-  searchQuery, onSearchChange, onOpenAddFriend,
-  onGroupChatCreated, onClose,
+  searchQuery,
+  onSearchChange,
+  onOpenAddFriend,
+  onGroupChatCreated,
+  onClose,
 }: SidebarHeaderProps) {
   const t = useTranslations("Sidebar");
-  const pathname = usePathname();
 
   return (
     <div className="px-4 pt-4 pb-3 space-y-3 border-b border-border/40 bg-gradient-to-b from-primary/[0.04] to-transparent">
       <div className="flex items-center justify-between">
-        <Link href="/dashboard" onClick={onClose} className="flex items-center gap-2.5 group">
+        <Link
+          href="/dashboard"
+          onClick={onClose}
+          className="flex items-center gap-2.5 group"
+        >
           <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-primary/30 transition-all group-hover:scale-105">
             <MessageSquare className="h-4.5 w-4.5 text-primary-foreground" />
           </div>
@@ -71,32 +79,6 @@ export function SidebarHeader({
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
-
-      <nav className="flex items-center gap-1 -mx-1">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClose}
-              className={cn(
-                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                isActive
-                  ? "bg-primary/10 text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-              )}
-            >
-              <item.icon className="h-3.5 w-3.5" />
-              {t(item.labelKey)}
-            </Link>
-          );
-        })}
-        <div className="flex-1" />
-        <span className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-wider pr-1">
-          Friends
-        </span>
-      </nav>
     </div>
   );
 }

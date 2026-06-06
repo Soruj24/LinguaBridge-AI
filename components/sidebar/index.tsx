@@ -4,7 +4,6 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { SidebarHeader } from "./sidebar-header";
-import { SidebarTabs } from "./sidebar-tabs";
 import { SidebarContent } from "./sidebar-content";
 import { SidebarFooter } from "./sidebar-footer";
 import { LanguageModal } from "@/components/language-modal";
@@ -13,12 +12,25 @@ import type { SidebarProps } from "@/types/sidebar";
 
 export function Sidebar({ className, onClose }: SidebarProps) {
   const {
-    incomingRequests, outgoingRequests,
-    isLoading, searchQuery, setSearchQuery,
-    acceptingIds, rejectingIds, activeTab, setActiveTab,
-    onlineUsers, chatMap, filteredFriends, totalPending,
-    fetchData, handleAccept, handleReject, cancelRequest,
-    handleUnfriend, handleFriendClick,
+    incomingRequests,
+    outgoingRequests,
+    isLoading,
+    searchQuery,
+    setSearchQuery,
+    acceptingIds,
+    rejectingIds,
+    activeTab,
+    setActiveTab,
+    onlineUsers,
+    chatMap,
+    filteredFriends,
+    totalPending,
+    fetchData,
+    handleAccept,
+    handleReject,
+    cancelRequest,
+    handleUnfriend,
+    handleFriendClick,
   } = useSidebar();
 
   const [showLanguageModal, setShowLanguageModal] = useState(false);
@@ -37,12 +49,6 @@ export function Sidebar({ className, onClose }: SidebarProps) {
         onOpenAddFriend={() => setShowAddFriend(true)}
         onGroupChatCreated={fetchData}
         onClose={onClose}
-      />
-
-      <SidebarTabs
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        totalPending={totalPending}
       />
 
       <SidebarContent
@@ -69,8 +75,15 @@ export function Sidebar({ className, onClose }: SidebarProps) {
 
       <SidebarFooter onOpenLanguageModal={() => setShowLanguageModal(true)} />
 
-      <LanguageModal open={showLanguageModal} onOpenChange={setShowLanguageModal} />
-      <AddFriendDialog open={showAddFriend} onOpenChange={setShowAddFriend} onAdded={fetchData} />
+      <LanguageModal
+        open={showLanguageModal}
+        onOpenChange={setShowLanguageModal}
+      />
+      <AddFriendDialog
+        open={showAddFriend}
+        onOpenChange={setShowAddFriend}
+        onAdded={fetchData}
+      />
     </div>
   );
 }
