@@ -56,8 +56,8 @@ export default function Error({ error, reset }: ErrorProps) {
             )}
           </div>
           <p className="text-muted-foreground text-center">
-            Don&apos;t worry, our team has been notified. Try refreshing the page or
-            contact support if the problem persists.
+            Don&apos;t worry, our team has been notified. Try refreshing the
+            page or contact support if the problem persists.
           </p>
         </CardContent>
         <CardFooter className="flex gap-3 justify-center flex-wrap">
