@@ -7,12 +7,9 @@ import {
   MessageSquare,
   Search,
   UserPlus,
-  Users,
-  LayoutDashboard,
-  Settings,
+  Users, 
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notification-bell";
 import { GroupChatDialog } from "@/components/group-chat-dialog";
 

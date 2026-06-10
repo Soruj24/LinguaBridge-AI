@@ -1,5 +1,28 @@
 import crypto from "crypto";
 
+export function generateUnsubscribeToken(email: string): string {
+  const secret = process.env.NEXTAUTH_SECRET || "fallback-secret";
+  const hash = crypto.createHmac("sha256", secret).update(email).digest("hex");
+  return hash;
+}
+
+export function getUnsubscribeFooter(baseUrl: string, email: string, type: "marketing" | "security"): string {
+  const token = generateUnsubscribeToken(email);
+  const unsubscribeUrl = `${baseUrl}/api/auth/email-preferences/unsubscribe?token=${token}&email=${encodeURIComponent(email)}&type=${type}`;
+  return `
+    <div style="border-top: 1px solid #eee; padding-top: 16px; margin-top: 24px;">
+      <p style="color: #999; font-size: 12px; line-height: 1.5; margin: 0 0 8px;">
+        You received this email because you have an account with LinguaBridge AI.
+      </p>
+      <p style="margin: 0;">
+        <a href="${unsubscribeUrl}" style="color: #999; font-size: 12px; text-decoration: underline;">
+          Unsubscribe from these emails
+        </a>
+      </p>
+    </div>
+  `;
+}
+
 export const EMAIL_VERIFICATION_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
 export const PASSWORD_RESET_EXPIRY = 60 * 60 * 1000; // 1 hour
 export const MAX_LOGIN_ATTEMPTS = 5;
@@ -32,9 +55,11 @@ export interface EmailTemplate {
 export function getEmailVerificationTemplate(
   name: string,
   token: string,
-  baseUrl: string
+  baseUrl: string,
+  email?: string
 ): EmailTemplate {
-  const verificationUrl = `${baseUrl}/api/auth/verify-email?token=${token}`;
+  const verificationUrl = `${baseUrl}/verify-email?token=${token}`;
+  const unsubscribeFooter = email ? getUnsubscribeFooter(baseUrl, email, "marketing") : "";
   
   return {
     subject: "Verify your LinguaBridge AI account",
@@ -75,6 +100,7 @@ export function getEmailVerificationTemplate(
             <div style="border-top: 1px solid #eee; padding-top: 24px; margin-top: 32px;">
               <p style="color: #999; font-size: 13px; line-height: 1.6; margin: 0;">If you didn't create an account with LinguaBridge AI, you can safely ignore this email.</p>
             </div>
+            ${unsubscribeFooter}
           </div>
         </body>
       </html>
@@ -85,9 +111,11 @@ export function getEmailVerificationTemplate(
 export function getPasswordResetTemplate(
   name: string,
   token: string,
-  baseUrl: string
+  baseUrl: string,
+  email?: string
 ): EmailTemplate {
-  const resetUrl = `${baseUrl}/api/auth/reset-password?token=${token}`;
+  const resetUrl = `${baseUrl}/reset-password?token=${token}`;
+  const unsubscribeFooter = email ? getUnsubscribeFooter(baseUrl, email, "security") : "";
   
   return {
     subject: "Reset your LinguaBridge AI password",
@@ -131,6 +159,7 @@ export function getPasswordResetTemplate(
             <div style="border-top: 1px solid #eee; padding-top: 24px; margin-top: 32px;">
               <p style="color: #999; font-size: 13px; line-height: 1.6; margin: 0;">This is an automated security message from LinguaBridge AI.</p>
             </div>
+            ${unsubscribeFooter}
           </div>
         </body>
       </html>

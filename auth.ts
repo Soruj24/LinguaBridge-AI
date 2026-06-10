@@ -73,6 +73,10 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
             highContrast: boolean;
             autoPlayAudio: boolean;
           };
+          emailPreferences?: {
+            marketing: boolean;
+            security: boolean;
+          };
         };
 
         token.id = String(u._id?.toString() || u.id || "");
@@ -81,6 +85,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         token.avatar = u.avatar || undefined;
         token.isEmailVerified = u.isEmailVerified || false;
         token.preferences = u.preferences;
+        token.emailPreferences = u.emailPreferences;
       }
 
       if (trigger === "update" && session) {
@@ -88,6 +93,9 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         token.avatar = session.avatar;
         if (session.user?.preferences) {
           token.preferences = session.user.preferences;
+        }
+        if (session.user?.emailPreferences) {
+          token.emailPreferences = session.user.emailPreferences;
         }
       }
       return token;
@@ -100,6 +108,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         session.user.avatar = token.avatar;
         session.user.image = token.avatar || session.user.image;
         session.user.preferences = token.preferences;
+        session.user.emailPreferences = token.emailPreferences;
         session.user.isEmailVerified = token.isEmailVerified;
       }
       return session;

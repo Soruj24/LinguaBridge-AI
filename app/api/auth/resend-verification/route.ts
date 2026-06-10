@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { generateEmailVerificationToken, getEmailVerificationTemplate, EMAIL_VERIFICATION_EXPIRY } from "@/lib/email-templates";
-import { sendEmail } from "@/lib/email";
+import { sendEmailWithPreferenceCheck } from "@/lib/email";
 import { z } from "zod";
 
 const resendSchema = z.object({
@@ -40,12 +40,12 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const template = getEmailVerificationTemplate(user.name, token, baseUrl);
+    const template = getEmailVerificationTemplate(user.name, token, baseUrl, user.email);
 
-    await sendEmail({
+    await sendEmailWithPreferenceCheck({
       to: user.email,
       ...template,
-    });
+    }, "marketing");
 
     return NextResponse.json(
       { message: "Verification email sent if account exists." },

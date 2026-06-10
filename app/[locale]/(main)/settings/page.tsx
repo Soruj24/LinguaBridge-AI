@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { useSettings } from "@/hooks/use-settings";
-import { SettingsAppearance, SettingsProfile, SettingsAccessibility } from "@/components/settings";
+import { SettingsAppearance, SettingsProfile, SettingsAccessibility, SettingsEmailNotifications } from "@/components/settings";
 
 export default function SettingsPage() {
   const s = useSettings();
@@ -21,6 +21,7 @@ export default function SettingsPage() {
           <SettingsAppearance />
           <Form {...s.form}>
             <SettingsProfile form={s.form} onSubmit={s.onSubmit} isLoading={s.isLoading} />
+            <SettingsEmailNotifications control={s.form.control} />
             <SettingsAccessibility control={s.form.control} />
           </Form>
         </CardContent>

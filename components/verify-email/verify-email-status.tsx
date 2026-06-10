@@ -47,7 +47,7 @@ export function VerifyEmailStatus({ status, countdown }: VerifyEmailStatusProps)
                   <CheckCircle className="h-8 w-8 text-green-600" />
                 </motion.div>
                 <h3 className="text-lg font-semibold mb-2">Welcome to LinguaBridge AI!</h3>
-                <p className="text-muted-foreground text-sm max-w-[300px] mb-3">Your email has been verified. Redirecting to login...</p>
+                <p className="text-muted-foreground text-sm max-w-[300px] mb-3">Your email has been verified. Redirecting to dashboard...</p>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Loader2 className="h-3 w-3 animate-spin" />
                   <span>Redirecting in {countdown}s</span>
@@ -67,8 +67,8 @@ export function VerifyEmailStatus({ status, countdown }: VerifyEmailStatusProps)
         </CardContent>
         <CardFooter className="flex flex-col gap-3 pb-6">
           {status === "success" && (
-            <Link className="w-full" href="/login">
-              <Button className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20">Go to Login</Button>
+            <Link className="w-full" href="/dashboard">
+              <Button className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20">Go to Dashboard</Button>
             </Link>
           )}
           {status === "error" && (

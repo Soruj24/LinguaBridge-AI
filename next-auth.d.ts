@@ -13,6 +13,10 @@ declare module "next-auth" {
         highContrast: boolean
         autoPlayAudio: boolean
       }
+      emailPreferences?: {
+        marketing: boolean
+        security: boolean
+      }
     } & DefaultSession["user"]
   }
 
@@ -25,6 +29,10 @@ declare module "next-auth" {
         reduceMotion: boolean
         highContrast: boolean
         autoPlayAudio: boolean
+      }
+      emailPreferences?: {
+        marketing: boolean
+        security: boolean
       }
   }
 }
@@ -40,6 +48,10 @@ declare module "next-auth/jwt" {
       reduceMotion: boolean
       highContrast: boolean
       autoPlayAudio: boolean
+    }
+    emailPreferences?: {
+      marketing: boolean
+      security: boolean
     }
   }
 }

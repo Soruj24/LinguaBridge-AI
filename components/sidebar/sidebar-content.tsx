@@ -57,6 +57,7 @@ export function SidebarContent(props: SidebarContentProps) {
           onOpenAddFriend={props.onOpenAddFriend}
         />
       )}
+
     </ScrollArea>
   );
 }

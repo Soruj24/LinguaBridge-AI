@@ -23,6 +23,12 @@ const updateSchema = z.object({
       autoPlayAudio: z.boolean().optional(),
     })
     .optional(),
+  emailPreferences: z
+    .object({
+      marketing: z.boolean().optional(),
+      security: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 export async function PUT(req: Request) {
@@ -43,6 +49,7 @@ export async function PUT(req: Request) {
       targetEmail,
       deleteUser,
       preferences,
+      emailPreferences,
     } =
       updateSchema.parse(body);
 
@@ -62,7 +69,6 @@ export async function PUT(req: Request) {
     }
 
     if (preferences) {
-      // Use dot notation to update specific preference fields without overwriting the whole object
       if (preferences.lowBandwidth !== undefined)
         updateData["preferences.lowBandwidth"] = preferences.lowBandwidth;
       if (preferences.reduceMotion !== undefined)
@@ -71,6 +77,13 @@ export async function PUT(req: Request) {
         updateData["preferences.highContrast"] = preferences.highContrast;
       if (preferences.autoPlayAudio !== undefined)
         updateData["preferences.autoPlayAudio"] = preferences.autoPlayAudio;
+    }
+
+    if (emailPreferences) {
+      if (emailPreferences.marketing !== undefined)
+        updateData["emailPreferences.marketing"] = emailPreferences.marketing;
+      if (emailPreferences.security !== undefined)
+        updateData["emailPreferences.security"] = emailPreferences.security;
     }
 
     // Determine target user: admin may update others; regular users update self

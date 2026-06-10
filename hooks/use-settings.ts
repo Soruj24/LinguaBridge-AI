@@ -24,6 +24,10 @@ export function useSettings() {
         highContrast: false,
         autoPlayAudio: true,
       },
+      emailPreferences: {
+        marketing: true,
+        security: true,
+      },
     },
   });
 
@@ -39,6 +43,10 @@ export function useSettings() {
           highContrast?: boolean;
           autoPlayAudio?: boolean;
         };
+        emailPreferences?: {
+          marketing?: boolean;
+          security?: boolean;
+        };
       };
       form.reset({
         name: user.name || "",
@@ -49,6 +57,10 @@ export function useSettings() {
           reduceMotion: user.preferences?.reduceMotion || false,
           highContrast: user.preferences?.highContrast || false,
           autoPlayAudio: user.preferences?.autoPlayAudio ?? true,
+        },
+        emailPreferences: {
+          marketing: user.emailPreferences?.marketing ?? true,
+          security: user.emailPreferences?.security ?? true,
         },
       });
     }

@@ -10,6 +10,10 @@ export const settingsSchema = z.object({
     highContrast: z.boolean(),
     autoPlayAudio: z.boolean(),
   }),
+  emailPreferences: z.object({
+    marketing: z.boolean(),
+    security: z.boolean(),
+  }),
 });
 
 export type SettingsFormValues = z.infer<typeof settingsSchema>;

@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { PASSWORD_RESET_EXPIRY, generatePasswordResetToken, getPasswordResetTemplate } from "@/lib/email-templates";
-import { sendEmail } from "@/lib/email";
+import { sendEmailWithPreferenceCheck } from "@/lib/email";
 
 const forgotSchema = z.object({
   email: z.string().email(),
@@ -34,12 +34,12 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const template = getPasswordResetTemplate(user.name, token, baseUrl);
+    const template = getPasswordResetTemplate(user.name, token, baseUrl, user.email);
 
-    await sendEmail({
+    await sendEmailWithPreferenceCheck({
       to: user.email,
       ...template,
-    });
+    }, "security");
 
     return NextResponse.json(
       { message: "Password reset email sent if account exists." },

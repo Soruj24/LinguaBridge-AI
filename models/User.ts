@@ -58,6 +58,10 @@ const UserSchema = new mongoose.Schema(
     },
     twoFactorSecret: String,
     twoFactorRecoveryCodes: [String],
+    emailPreferences: {
+      marketing: { type: Boolean, default: true },
+      security: { type: Boolean, default: true },
+    },
     preferences: {
       lowBandwidth: { type: Boolean, default: false },
       reduceMotion: { type: Boolean, default: false },

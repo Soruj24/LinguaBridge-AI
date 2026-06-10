@@ -1,10 +1,11 @@
 import type { LoginNotificationData } from "./types";
 import type { EmailTemplate } from "../email-templates";
+import { getUnsubscribeFooter } from "../email-templates";
 
 export function getLoginNotificationTemplate(
   data: LoginNotificationData,
 ): EmailTemplate {
-  const { name, browser, os, ipAddress, timestamp } = data;
+  const { name, browser, os, ipAddress, timestamp, email } = data;
   const formattedTime = timestamp.toLocaleString("en-US", {
     weekday: "long",
     year: "numeric",
@@ -15,9 +16,12 @@ export function getLoginNotificationTemplate(
     timeZoneName: "short",
   });
 
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const unsubscribeFooter = getUnsubscribeFooter(baseUrl, email, "security");
+
   return {
     subject: `New login to your LinguaBridge AI account`,
-    text: `Hello ${name},\n\nWe detected a new login to your account.\n\nDevice: ${os} - ${browser}\nTime: ${formattedTime}\nIP: ${ipAddress || "Unknown"}\n\nIf this was you, you can ignore this email.\n\nIf this wasn't you, please secure your account immediately by changing your password.`,
+    text: `Hello ${name},\n\nWe detected a new login to your account.\n\nDevice: ${os} - ${browser}\nTime: ${formattedTime}\n\nIP: ${ipAddress || "Unknown"}\n\nIf this was you, you can ignore this email.\n\nIf this wasn't you, please secure your account immediately by changing your password.`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -75,6 +79,7 @@ export function getLoginNotificationTemplate(
             <div style="border-top: 1px solid #eee; padding-top: 24px; margin-top: 32px;">
               <p style="color: #999; font-size: 13px; line-height: 1.6; margin: 0;">This is an automated security notification from LinguaBridge AI. If you have concerns about your account security, please contact our support team.</p>
             </div>
+            ${unsubscribeFooter}
           </div>
         </body>
       </html>

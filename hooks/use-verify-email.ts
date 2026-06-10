@@ -33,7 +33,7 @@ export function useVerifyEmail() {
     if (status !== "success") return;
     const timer = setInterval(() => {
       setCountdown((prev) => {
-        if (prev <= 1) { clearInterval(timer); router.push("/login"); return 0; }
+        if (prev <= 1) { clearInterval(timer); router.push("/dashboard"); return 0; }
         return prev - 1;
       });
     }, 1000);

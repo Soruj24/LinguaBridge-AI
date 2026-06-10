@@ -4,7 +4,7 @@ import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { z, ZodError } from "zod";
 import { generateEmailVerificationToken, getEmailVerificationTemplate, EMAIL_VERIFICATION_EXPIRY } from "@/lib/email-templates";
-import { sendEmail } from "@/lib/email";
+import { sendEmailWithPreferenceCheck } from "@/lib/email";
 
 const registerSchema = z.object({
   name: z.string().min(2),
@@ -45,13 +45,13 @@ export async function POST(req: Request) {
     });
 
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const template = getEmailVerificationTemplate(name, verificationToken, baseUrl);
+    const template = getEmailVerificationTemplate(name, verificationToken, baseUrl, email);
 
     try {
-      await sendEmail({
+      await sendEmailWithPreferenceCheck({
         to: email,
         ...template,
-      });
+      }, "marketing");
     } catch (emailError) {
       console.error("Failed to send verification email:", emailError);
     }

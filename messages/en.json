@@ -112,7 +112,12 @@
     "reduceMotion": "Reduce Motion",
     "lowBandwidth": "Low Bandwidth Mode",
     "highContrast": "High Contrast",
-    "autoPlayAudio": "Auto-play Audio"
+    "autoPlayAudio": "Auto-play Audio",
+    "emailNotifications": "Email Notifications",
+    "marketingEmails": "Marketing Emails",
+    "marketingEmailsDesc": "Product updates, tips, and promotional content.",
+    "securityEmails": "Security Emails",
+    "securityEmailsDesc": "Login alerts, password resets, and security notifications."
   },
   "LanguageModal": {
     "title": "Select Your Language",

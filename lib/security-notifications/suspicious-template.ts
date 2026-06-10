@@ -1,10 +1,11 @@
 import type { SuspiciousActivityData } from "./types";
 import type { EmailTemplate } from "../email-templates";
+import { getUnsubscribeFooter } from "../email-templates";
 
 export function getSuspiciousActivityTemplate(
   data: SuspiciousActivityData,
 ): EmailTemplate {
-  const { name, reason, details, ipAddress, timestamp } = data;
+  const { name, reason, details, ipAddress, timestamp, email } = data;
   const formattedTime = timestamp.toLocaleString("en-US", {
     weekday: "long",
     year: "numeric",
@@ -14,6 +15,9 @@ export function getSuspiciousActivityTemplate(
     minute: "2-digit",
     timeZoneName: "short",
   });
+
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const unsubscribeFooter = getUnsubscribeFooter(baseUrl, email, "security");
 
   return {
     subject: `Security Alert: Suspicious Activity on Your LinguaBridge AI Account`,
@@ -72,6 +76,7 @@ export function getSuspiciousActivityTemplate(
             <div style="border-top: 1px solid #eee; padding-top: 24px; margin-top: 32px;">
               <p style="color: #999; font-size: 13px; line-height: 1.6; margin: 0;">If you did not notice any suspicious activity, you can safely ignore this email. However, we recommend reviewing your account security settings as a precaution.</p>
             </div>
+            ${unsubscribeFooter}
           </div>
         </body>
       </html>
