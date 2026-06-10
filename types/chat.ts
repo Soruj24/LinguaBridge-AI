@@ -7,8 +7,22 @@ export interface Message {
   translatedText?: string;
   voiceUrl?: string;
   translatedVoiceUrl?: string;
+  fileUrl?: string;
+  isImage?: boolean;
   createdAt: string;
   isOptimistic?: boolean;
+  readBy?: string[];
+  replyTo?: {
+    _id: string;
+    originalText: string;
+    senderId: { _id: string; name: string };
+    fileUrl?: string;
+    isImage?: boolean;
+  };
+  isPinned?: boolean;
+  editedAt?: string | null;
+  scheduledAt?: string;
+  status?: "scheduled" | "sent" | "failed";
 }
 
 export interface Chat {
@@ -20,6 +34,11 @@ export interface Chat {
     avatar?: string;
     preferredLanguage: string;
   }[];
+  alwaysTranslate?: boolean;
+  autoTranslateLanguage?: string | null;
+  markedUnreadBy?: string[];
+  isArchived?: boolean;
+  archivedAt?: string | null;
 }
 
 export const LANGUAGE_FLAGS: Record<string, string> = {

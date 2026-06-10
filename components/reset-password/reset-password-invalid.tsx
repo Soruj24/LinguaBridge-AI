@@ -4,11 +4,11 @@ import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/navigation";
-import { motion } from "framer-motion";
+
 
 export function ResetPasswordInvalid() {
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: "easeOut" }}>
+    <div>
       <Card className="w-full border border-border/50 bg-card/50 backdrop-blur-sm shadow-xl shadow-primary/5">
         <CardHeader className="space-y-1 pb-6">
           <CardTitle className="text-2xl font-bold tracking-tight">Invalid Reset Link</CardTitle>
@@ -32,6 +32,6 @@ export function ResetPasswordInvalid() {
           </Link>
         </CardFooter>
       </Card>
-    </motion.div>
+    </div>
   );
 }

@@ -5,7 +5,6 @@ import { useRouter } from "@/navigation";
 import { useSession } from "next-auth/react";
 import { Search, ArrowRight, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
 interface SearchChat {
@@ -94,12 +93,8 @@ export function DashboardNavbarSearch() {
           }}
           onFocus={() => setSearchOpen(true)}
         />
-        <AnimatePresence>
-          {searchOpen && (searchQuery || searchResults.length > 0) && (
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
+        {searchOpen && (searchQuery || searchResults.length > 0) && (
+            <div
               className="absolute top-full mt-2 left-0 right-0 bg-card rounded-xl border shadow-xl z-50 overflow-hidden"
             >
               {isSearching ? (
@@ -150,9 +145,8 @@ export function DashboardNavbarSearch() {
                   </p>
                 </div>
               ) : null}
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
       </div>
     </div>
   );

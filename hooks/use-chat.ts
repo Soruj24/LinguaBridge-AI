@@ -30,6 +30,10 @@ export function useChat(chatId: string) {
   const [searchResults, setSearchResults] = useState<Message[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isRestoringScroll, setIsRestoringScroll] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+  const [scheduledMessages, setScheduledMessages] = useState<Message[]>([]);
+  const [alwaysTranslate, setAlwaysTranslate] = useState(false);
+  const [autoTranslateLanguage, setAutoTranslateLanguage] = useState<string | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -64,6 +68,16 @@ export function useChat(chatId: string) {
     }
   }, []);
 
+  const markMessagesAsRead = useCallback(async (messageIds: string[]) => {
+    if (messageIds.length === 0) return;
+    try {
+      await axios.post("/api/chat/read", { chatId, messageIds });
+      socket?.emit("messages_read", { chatId, messageIds, userId: currentUserId });
+    } catch {
+      // silently fail
+    }
+  }, [chatId, socket, currentUserId]);
+
   const fetchMessages = useCallback(async (before?: string) => {
     try {
       if (before) {
@@ -82,6 +96,24 @@ export function useChat(chatId: string) {
       } else {
         setMessages(res.data.messages);
         setChat(res.data.chat);
+
+        const myId = res.data.chat?.participants?.find(
+          (p: { email: string }) => p.email === session?.user?.email,
+        )?._id ?? session?.user?.id;
+
+        const unreadIds = res.data.messages
+          .filter((m: Message) => m.senderId._id !== myId && !m.readBy?.includes(myId))
+          .map((m: Message) => m._id);
+
+        if (unreadIds.length > 0) {
+          try {
+            await axios.post("/api/chat/read", { chatId, messageIds: unreadIds });
+            socket?.emit("messages_read", { chatId, messageIds: unreadIds, userId: myId });
+          } catch {
+            // silently fail
+          }
+        }
+
         scrollToBottom();
       }
       setHasMore(res.data.hasMore);
@@ -93,7 +125,7 @@ export function useChat(chatId: string) {
         setIsLoading(false);
       }
     }
-  }, [chatId, scrollToBottom]);
+  }, [chatId, scrollToBottom, session, socket]);
 
   const fetchSuggestions = useCallback(async () => {
     try {
@@ -114,6 +146,27 @@ export function useChat(chatId: string) {
     fetchMessages();
     fetchSuggestions();
   }, [chatId, fetchMessages, fetchSuggestions]);
+
+  useEffect(() => {
+    if (chat) {
+      setAlwaysTranslate((chat as Chat & { alwaysTranslate?: boolean }).alwaysTranslate ?? false);
+      setAutoTranslateLanguage((chat as Chat & { autoTranslateLanguage?: string | null }).autoTranslateLanguage ?? null);
+    }
+  }, [chat]);
+
+  const updateTranslateSettings = useCallback(async (enabled: boolean, language?: string | null) => {
+    try {
+      await axios.patch(`/api/chat/${chatId}`, {
+        alwaysTranslate: enabled,
+        autoTranslateLanguage: language ?? null,
+      });
+      setAlwaysTranslate(enabled);
+      setAutoTranslateLanguage(language ?? null);
+      toast.success(enabled ? "Auto-translate enabled" : "Auto-translate disabled");
+    } catch {
+      toast.error("Failed to update translation settings");
+    }
+  }, [chatId]);
 
   useEffect(() => {
     if (!socket) return;
@@ -145,7 +198,16 @@ export function useChat(chatId: string) {
 
       if (message.senderId?._id !== getSenderId()) {
         fetchSuggestions();
+        markMessagesAsRead([message._id]);
       }
+    });
+
+    socket.on("messages_read", ({ messageIds, userId }) => {
+      setMessages((prev) => prev.map((m) =>
+        messageIds.includes(m._id)
+          ? { ...m, readBy: [...new Set([...(m.readBy || []), userId])] }
+          : m
+      ));
     });
 
     socket.on("typing", ({ chatId: eventChatId, userId }) => {
@@ -167,10 +229,34 @@ export function useChat(chatId: string) {
       setMessages((prev) => prev.filter((m) => m._id !== messageId));
     });
 
+    socket.on("message_pinned", ({ messageId, isPinned, message: updatedMessage }) => {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m._id === messageId
+            ? { ...m, isPinned, ...(updatedMessage ? { originalText: updatedMessage.originalText } : {}) }
+            : m,
+        ),
+      );
+    });
+
+    socket.on("message_edited", (updatedMessage: Message) => {
+      if (updatedMessage.chatId !== chatId) return;
+      setMessages((prev) =>
+        prev.map((m) =>
+          m._id === updatedMessage._id
+            ? { ...m, originalText: updatedMessage.originalText, editedAt: updatedMessage.editedAt }
+            : m,
+        ),
+      );
+    });
+
     return () => {
       socket.off("receive_message");
       socket.off("typing");
       socket.off("message_deleted");
+      socket.off("messages_read");
+      socket.off("message_edited");
+      socket.off("message_pinned");
     };
   }, [chatId, socket, chat, session, scrollToBottom, fetchSuggestions, getSenderId]);
 
@@ -195,6 +281,20 @@ export function useChat(chatId: string) {
     }
   }, [hasMore, isLoadingMore, messages, fetchMessages]);
 
+  const handleEditMessage = useCallback(async (messageId: string, newText: string) => {
+    if (!newText.trim()) return;
+    try {
+      const res = await axios.patch(`/api/chat/message/${messageId}`, { text: newText });
+      const updatedMessage = res.data;
+      setMessages((prev) =>
+        prev.map((m) => (m._id === messageId ? { ...m, originalText: updatedMessage.originalText, editedAt: updatedMessage.editedAt } : m)),
+      );
+      socket?.emit("edit_message", { chatId, message: updatedMessage });
+    } catch {
+      toast.error("Failed to edit message");
+    }
+  }, [chatId, socket]);
+
   const handleDeleteMessage = useCallback(async (messageId: string) => {
     try {
       await axios.delete(`/api/chat/message/${messageId}`);
@@ -205,6 +305,36 @@ export function useChat(chatId: string) {
       toast.error("Failed to delete message");
     }
   }, [chatId, socket]);
+
+  const handlePinMessage = useCallback(async (messageId: string) => {
+    try {
+      const res = await axios.post(`/api/chat/message/${messageId}/pin`, { action: "pin" });
+      const updatedMessage = res.data;
+      setMessages((prev) =>
+        prev.map((m) => (m._id === messageId ? { ...m, isPinned: true } : m)),
+      );
+      toast.success("Message pinned");
+    } catch {
+      toast.error("Failed to pin message");
+    }
+  }, []);
+
+  const handleUnpinMessage = useCallback(async (messageId: string) => {
+    try {
+      const res = await axios.post(`/api/chat/message/${messageId}/pin`, { action: "unpin" });
+      const updatedMessage = res.data;
+      setMessages((prev) =>
+        prev.map((m) => (m._id === messageId ? { ...m, isPinned: false } : m)),
+      );
+      toast.success("Message unpinned");
+    } catch {
+      toast.error("Failed to unpin message");
+    }
+  }, []);
+
+  const pinnedMessages = messages
+    .filter((m) => m.isPinned)
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
   const handleInputChange = useCallback((
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -236,6 +366,39 @@ export function useChat(chatId: string) {
     }
   }, [newMessage, t]);
 
+  const handleGifSelect = useCallback(async (gifUrl: string) => {
+    const receiverId = getReceiverId();
+    const senderId = getSenderId();
+    if (!receiverId || !senderId) return;
+
+    if (socket) {
+      socket.emit("send_message", { chatId, receiverId, senderId, text: gifUrl },
+        (response: { status: string }) => {
+          if (response?.status !== "ok") {
+            toast.error(t("sendFailed"));
+          }
+        },
+      );
+
+      const tempMessage: Message = {
+        _id: Date.now().toString(),
+        chatId,
+        senderId: {
+          _id: senderId,
+          name: session?.user?.name || "Me",
+          email: session?.user?.email || "",
+          avatar: session?.user?.image || undefined,
+        },
+        originalText: gifUrl,
+        createdAt: new Date().toISOString(),
+        isOptimistic: true,
+      };
+
+      setMessages((prev) => [...prev, tempMessage]);
+      scrollToBottom();
+    }
+  }, [getReceiverId, getSenderId, socket, chatId, session, scrollToBottom, t]);
+
   const sendMessage = useCallback(async () => {
     if (!newMessage.trim()) return;
     const receiverId = getReceiverId();
@@ -243,7 +406,9 @@ export function useChat(chatId: string) {
     if (!receiverId || !senderId) return;
 
     if (socket) {
-      socket.emit("send_message", { chatId, receiverId, senderId, text: newMessage },
+      const replyToId = replyingTo?._id;
+
+      socket.emit("send_message", { chatId, receiverId, senderId, text: newMessage, replyToId },
         (response: { status: string }) => {
           if (response?.status !== "ok") {
             toast.error(t("sendFailed"));
@@ -263,14 +428,24 @@ export function useChat(chatId: string) {
         originalText: newMessage,
         createdAt: new Date().toISOString(),
         isOptimistic: true,
+        replyTo: replyingTo
+          ? {
+              _id: replyingTo._id,
+              originalText: replyingTo.originalText,
+              senderId: { _id: replyingTo.senderId._id, name: replyingTo.senderId.name },
+              fileUrl: replyingTo.fileUrl,
+              isImage: replyingTo.isImage,
+            }
+          : undefined,
       };
 
       setMessages((prev) => [...prev, tempMessage]);
       setNewMessage("");
       setSuggestions([]);
+      setReplyingTo(null);
       scrollToBottom();
     }
-  }, [newMessage, getReceiverId, getSenderId, socket, chatId, session, scrollToBottom, t]);
+  }, [newMessage, getReceiverId, getSenderId, socket, chatId, session, scrollToBottom, t, replyingTo]);
 
   const sendVoiceMessage = useCallback(async (audioBlob: Blob) => {
     const receiverId = getReceiverId();
@@ -363,6 +538,30 @@ export function useChat(chatId: string) {
     }
   }, [chatId]);
 
+  const handleForwardMessage = useCallback(async (messageId: string, targetChatId: string) => {
+    try {
+      const res = await axios.post("/api/chat/forward", { messageId, targetChatId });
+      const msg = res.data;
+
+      if (msg.chatId === chatId) {
+        setMessages((prev) => {
+          if (prev.some((m) => m._id === msg._id)) return prev;
+          return [...prev, msg];
+        });
+        scrollToBottom();
+      }
+
+      toast.success("Message forwarded");
+      return msg;
+    } catch (err: unknown) {
+      const errorMsg = axios.isAxiosError(err) && err.response?.data?.error
+        ? err.response.data.error
+        : "Failed to forward message";
+      toast.error(errorMsg);
+      throw err;
+    }
+  }, [chatId, scrollToBottom]);
+
   const handleClearChat = useCallback(async () => {
     try {
       await axios.patch(`/api/chat/${chatId}`, { action: "clear" });
@@ -373,8 +572,72 @@ export function useChat(chatId: string) {
     }
   }, [chatId]);
 
+  const fetchScheduledMessages = useCallback(async () => {
+    try {
+      const res = await axios.get(`/api/chat/scheduled?chatId=${chatId}`);
+      setScheduledMessages(res.data);
+    } catch {
+      // silently fail
+    }
+  }, [chatId]);
+
+  useEffect(() => {
+    if (chatId) fetchScheduledMessages();
+  }, [chatId, fetchScheduledMessages]);
+
+  const handleSchedule = useCallback(async (text: string, scheduledAt: string) => {
+    try {
+      const res = await axios.post("/api/chat/schedule", { chatId, text, scheduledAt });
+      const scheduledMsg = res.data;
+      setMessages((prev) => [...prev, scheduledMsg]);
+      setNewMessage("");
+      setSuggestions([]);
+      scrollToBottom();
+      fetchScheduledMessages();
+      toast.success("Message scheduled");
+    } catch (err: unknown) {
+      const msg = axios.isAxiosError(err) && err.response?.data?.error
+        ? err.response.data.error
+        : "Failed to schedule message";
+      toast.error(msg);
+    }
+  }, [chatId, scrollToBottom, fetchScheduledMessages, setNewMessage]);
+
+  const exportChat = useCallback(async (chatId: string, format: "json" | "txt") => {
+    try {
+      const res = await axios.get(`/api/chat/${chatId}/export?format=${format}`, {
+        responseType: "blob",
+      });
+      const blob = new Blob([res.data], {
+        type: format === "json" ? "application/json" : "text/plain",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `chat-${chatId}.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success("Chat exported successfully");
+    } catch {
+      toast.error("Failed to export chat");
+    }
+  }, []);
+
+  const handleCancelScheduled = useCallback(async (messageId: string) => {
+    try {
+      await axios.delete(`/api/chat/scheduled/${messageId}`);
+      setScheduledMessages((prev) => prev.filter((m) => m._id !== messageId));
+      setMessages((prev) => prev.filter((m) => m._id !== messageId));
+      toast.success("Scheduled message cancelled");
+    } catch {
+      toast.error("Failed to cancel scheduled message");
+    }
+  }, []);
+
   const scrollToMessage = useCallback((msgId: string) => {
-    const el = searchResultRefs.current.get(msgId);
+    const el = searchResultRefs.current.get(msgId) || document.getElementById(`message-${msgId}`);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
       setSearchResults([]);
@@ -382,19 +645,23 @@ export function useChat(chatId: string) {
   }, []);
 
   return {
-    messages, chat, newMessage, setNewMessage,
+    messages, chat, setChat, newMessage, setNewMessage,
     isTyping, typingUser, hasMore, isLoading, isLoadingMore,
     suggestions, isLoadingSuggestions, isRewriting,
     selectedFile, setSelectedFile, isUploading, isRecording,
     searchResults, isSearching,
     scrollRef, viewportRef, prevScrollHeightRef,
     searchResultRefs, mediaRecorderRef,
-    currentUserId, otherParticipant,
-    fetchMessages, fetchSuggestions, sendMessage,
+    currentUserId, otherParticipant, replyingTo, setReplyingTo,
+    fetchMessages, fetchSuggestions, markMessagesAsRead, sendMessage,
     sendVoiceMessage, sendFileMessage,
-    handleDeleteMessage, handleRewrite, handleSearch,
-    handleClearChat, handleInputChange, handleSuggestionClick,
-    handleFileSelect, startRecording, stopRecording,
+    handleDeleteMessage, handleEditMessage, handlePinMessage, handleUnpinMessage,
+    pinnedMessages, handleRewrite, handleSearch,
+    handleClearChat, handleForwardMessage, handleInputChange, handleSuggestionClick,
+    handleFileSelect, handleGifSelect, startRecording, stopRecording,
     scrollToBottom, scrollToMessage, onScroll,
+    handleSchedule, handleCancelScheduled, fetchScheduledMessages, scheduledMessages,
+    exportChat,
+    alwaysTranslate, autoTranslateLanguage, updateTranslateSettings,
   };
 }

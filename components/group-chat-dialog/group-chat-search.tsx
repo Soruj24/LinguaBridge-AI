@@ -4,7 +4,6 @@ import { Search, Loader2, CheckCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -70,10 +69,8 @@ export function GroupChatSearch({
             {users.map((user) => {
               const isSelected = selectedUsers.includes(user._id);
               return (
-                <motion.div
+                <div
                   key={user._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
                   className={cn(
                     "flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all border",
                     isSelected
@@ -101,7 +98,7 @@ export function GroupChatSearch({
                   ) : (
                     <span className="h-5 w-5 rounded-full border-2 border-muted-foreground/30 shrink-0" />
                   )}
-                </motion.div>
+                </div>
               );
             })}
           </div>

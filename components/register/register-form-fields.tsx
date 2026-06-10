@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { User, Mail, Lock, Eye, EyeOff, ChevronRight, Loader2 } from "lucide-react";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -31,12 +30,7 @@ export function RegisterFormFields({
   passwordValue, langSearch, setLangSearch, filteredLanguages,
 }: RegisterFormFieldsProps) {
   return (
-    <motion.div
-      key="form"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-    >
+    <div>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
@@ -110,16 +104,11 @@ export function RegisterFormFields({
           )}
         />
         {showRequirements && passwordValue && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
-          >
+          <div>
             <div className="p-3.5 rounded-xl bg-muted/30 border border-border/50">
               <PasswordRequirements password={passwordValue || ""} />
             </div>
-          </motion.div>
+          </div>
         )}
         <RegisterLanguageSelect
           control={form.control}
@@ -148,6 +137,6 @@ export function RegisterFormFields({
           )}
         </Button>
       </form>
-    </motion.div>
+    </div>
   );
 }

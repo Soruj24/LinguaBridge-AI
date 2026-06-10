@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,9 +40,7 @@ export function SecurityDeleteAccount({
             Delete Account
           </Button>
         ) : (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
+          <div
             className="space-y-4"
           >
             <div className="p-4 bg-destructive/10 rounded-lg border border-destructive/20">
@@ -93,7 +90,7 @@ export function SecurityDeleteAccount({
                 Cancel
               </Button>
             </div>
-          </motion.div>
+          </div>
         )}
       </CardContent>
     </Card>

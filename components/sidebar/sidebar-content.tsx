@@ -6,6 +6,7 @@ import { LoadingSkeleton } from "./loading-skeleton";
 import { RequestsList } from "./requests-list";
 import { FriendsList } from "./friends-list";
 import type { Friend, PendingRequest, ChatItem } from "@/types/sidebar";
+import type { Folder } from "@/types/folders";
 
 interface SidebarContentProps {
   isLoading: boolean;
@@ -24,6 +25,12 @@ interface SidebarContentProps {
   onFriendClick: (friend: Friend) => void;
   onUnfriend: (id: string) => void;
   onOpenAddFriend: () => void;
+  folders: Folder[];
+  onCreateFolder: (name: string) => void;
+  onDeleteFolder: (id: string) => void;
+  onAssignChatToFolder: (chatId: string, folderId: string | null) => void;
+  getFolderForChat: (chatId: string) => Folder | undefined;
+  onUnarchiveChat: (chatId: string) => void;
 }
 
 export function SidebarContent(props: SidebarContentProps) {
@@ -55,6 +62,12 @@ export function SidebarContent(props: SidebarContentProps) {
           onUnfriend={props.onUnfriend}
           searchQuery={props.searchQuery}
           onOpenAddFriend={props.onOpenAddFriend}
+          folders={props.folders}
+          onCreateFolder={props.onCreateFolder}
+          onDeleteFolder={props.onDeleteFolder}
+          onAssignChatToFolder={props.onAssignChatToFolder}
+          getFolderForChat={props.getFolderForChat}
+          onUnarchiveChat={props.onUnarchiveChat}
         />
       )}
 

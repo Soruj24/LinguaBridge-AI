@@ -37,16 +37,24 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const query: { chatId: string; createdAt?: { $lt: Date } } = { chatId: id };
+    const query: Record<string, unknown> = { chatId: id };
     if (before) {
       query.createdAt = { $lt: new Date(before) };
     }
+    query.$or = [
+      { status: { $ne: "scheduled" } },
+      { status: "scheduled", senderId: session.user.id },
+    ];
 
     const messages = await Message.find(query)
       .sort({ createdAt: -1 })
       .limit(limit)
       .populate("senderId", "name email avatar")
-      .populate("receiverId", "name email avatar");
+      .populate("receiverId", "name email avatar")
+      .populate({
+        path: "replyTo",
+        populate: { path: "senderId", select: "name" },
+      });
 
     return NextResponse.json({
       chat,
@@ -93,6 +101,13 @@ export async function PATCH(
     if (body.action === "clear") {
       await Message.deleteMany({ chatId: id });
       return NextResponse.json({ success: true });
+    }
+
+    if (body.hasOwnProperty("alwaysTranslate")) {
+      chat.alwaysTranslate = body.alwaysTranslate;
+      chat.autoTranslateLanguage = body.autoTranslateLanguage ?? null;
+      await chat.save();
+      return NextResponse.json({ chat });
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });

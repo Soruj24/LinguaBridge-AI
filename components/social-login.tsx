@@ -2,7 +2,6 @@
 
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
@@ -20,11 +19,8 @@ export function SocialLogin() {
   };
 
   return (
-    <motion.div
+    <div
       className="grid grid-cols-2 gap-3"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 }}
     >
       <Button
         variant="outline"
@@ -60,6 +56,6 @@ export function SocialLogin() {
         )}
         <span className="text-sm font-medium">GitHub</span>
       </Button>
-    </motion.div>
+    </div>
   );
 }

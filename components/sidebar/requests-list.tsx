@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { UserPlus, UserCheck, UserX, Loader2 } from "lucide-react";
+import { UserPlus, UserCheck, UserX, Loader2, Clock } from "lucide-react";
 import type { PendingRequest } from "@/types/sidebar";
 
 interface RequestsListProps {
@@ -22,45 +22,52 @@ export function RequestsList({
 }: RequestsListProps) {
   if (incomingRequests.length === 0 && outgoingRequests.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="h-12 w-12 rounded-2xl bg-muted/50 flex items-center justify-center mb-3">
-          <UserPlus className="h-6 w-6 text-muted-foreground/50" />
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="h-14 w-14 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+          <UserPlus className="h-7 w-7 text-muted-foreground/40" />
         </div>
-        <p className="text-sm font-medium text-foreground mb-1">No requests</p>
-        <p className="text-xs text-muted-foreground/60 max-w-[180px] leading-relaxed">
-          Search for people and send them a friend request
+        <p className="text-sm font-medium text-foreground mb-1">No pending requests</p>
+        <p className="text-xs text-muted-foreground/60 max-w-[200px] leading-relaxed">
+          Friend requests will appear here when someone wants to connect
         </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {incomingRequests.length > 0 && (
         <div>
-          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-2 px-1">
-            Incoming ({incomingRequests.length})
-          </h3>
-          <div className="space-y-1">
+          <div className="flex items-center gap-2 mb-3 px-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
+              Incoming
+            </span>
+            <span className="text-[10px] font-medium text-muted-foreground/40 bg-muted/50 px-2 py-0.5 rounded-full">
+              {incomingRequests.length}
+            </span>
+          </div>
+          <div className="space-y-2">
             {incomingRequests.map((req) => (
               <div
                 key={req._id}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/30 border border-border/30"
+                className="flex items-center gap-3 p-3 rounded-xl border bg-card hover:bg-muted/20 transition-colors"
               >
-                <Avatar className="h-9 w-9 shrink-0 ring-2 ring-primary/10">
+                <Avatar className="h-11 w-11 shrink-0 ring-1 ring-border">
                   <AvatarImage src={req.user.avatar} />
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                  <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
                     {req.user.name[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold truncate">{req.user.name}</p>
-                  <p className="text-xs text-muted-foreground/70 truncate">Sent you a request</p>
+                  <p className="text-xs text-muted-foreground/60 truncate">
+                    {req.user.email}
+                  </p>
                 </div>
-                <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center gap-1.5 shrink-0">
                   <Button
                     size="sm"
-                    className="h-7 w-7 rounded-lg p-0 bg-primary hover:bg-primary/90"
+                    className="h-8 px-3 rounded-lg gap-1.5 text-xs font-medium"
                     onClick={() => onAccept(req._id)}
                     disabled={acceptingIds.has(req._id)}
                   >
@@ -69,11 +76,12 @@ export function RequestsList({
                     ) : (
                       <UserCheck className="h-3.5 w-3.5" />
                     )}
+                    Accept
                   </Button>
                   <Button
                     size="sm"
-                    variant="ghost"
-                    className="h-7 w-7 rounded-lg p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    variant="outline"
+                    className="h-8 px-3 rounded-lg gap-1.5 text-xs font-medium text-muted-foreground border-muted-foreground/20 hover:text-destructive hover:border-destructive/30 hover:bg-destructive/5"
                     onClick={() => onReject(req._id)}
                     disabled={rejectingIds.has(req._id)}
                   >
@@ -82,6 +90,7 @@ export function RequestsList({
                     ) : (
                       <UserX className="h-3.5 w-3.5" />
                     )}
+                    Decline
                   </Button>
                 </div>
               </div>
@@ -92,16 +101,21 @@ export function RequestsList({
 
       {outgoingRequests.length > 0 && (
         <div>
-          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-2 px-1">
-            Sent ({outgoingRequests.length})
-          </h3>
-          <div className="space-y-1">
+          <div className="flex items-center gap-2 mb-3 px-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
+              Sent
+            </span>
+            <span className="text-[10px] font-medium text-muted-foreground/40 bg-muted/50 px-2 py-0.5 rounded-full">
+              {outgoingRequests.length}
+            </span>
+          </div>
+          <div className="space-y-2">
             {outgoingRequests.map((req) => (
               <div
                 key={req._id}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl opacity-60 group"
+                className="flex items-center gap-3 p-3 rounded-xl border border-dashed bg-muted/10 opacity-70 hover:opacity-100 transition-opacity group"
               >
-                <Avatar className="h-9 w-9 shrink-0">
+                <Avatar className="h-11 w-11 shrink-0">
                   <AvatarImage src={req.user.avatar} />
                   <AvatarFallback className="bg-muted-foreground/10 text-muted-foreground text-xs font-semibold">
                     {req.user.name[0]}
@@ -109,14 +123,19 @@ export function RequestsList({
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold truncate">{req.user.name}</p>
-                  <p className="text-xs text-muted-foreground/50">Request pending</p>
+                  <p className="text-xs text-muted-foreground/50 flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    Awaiting response
+                  </p>
                 </div>
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => onCancelRequest(req._id)}
-                  className="text-[10px] text-muted-foreground/40 hover:text-destructive italic opacity-0 group-hover:opacity-100 transition-all shrink-0"
+                  className="h-7 px-2 rounded-lg text-[11px] font-medium text-muted-foreground/50 hover:text-destructive opacity-0 group-hover:opacity-100 transition-all shrink-0"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             ))}
           </div>

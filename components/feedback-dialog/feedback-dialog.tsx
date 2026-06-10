@@ -2,7 +2,6 @@
 
 import { Loader2, MessageSquarePlus, Sparkles, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,24 +21,13 @@ export function FeedbackDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="group fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 p-0.5 shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all duration-300 hover:scale-110 active:scale-95">
-          <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-primary/0 via-white/30 to-primary/0 opacity-0 group-hover:opacity-100 animate-[shimmer_2s_ease-in-out_infinite] transition-opacity pointer-events-none" />
-          <span className="relative flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 px-5 py-2.5 text-sm font-medium text-white overflow-hidden">
-            <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <Sparkles className="h-4 w-4 relative animate-[float_2.5s_ease-in-out_infinite]" />
-            <span className="relative">{t("trigger")}</span>
-          </span>
+        <button className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-white shadow-lg">
+          <Sparkles className="h-4 w-4" />
+          <span>{t("trigger")}</span>
         </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] overflow-hidden p-0">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={open ? "content" : "empty"}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <DialogHeader className="px-6 pt-6 pb-2">
+        <DialogHeader className="px-6 pt-6 pb-2">
               <DialogTitle className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
                   <MessageSquarePlus className="h-4 w-4 text-primary-foreground" />
@@ -92,8 +80,6 @@ export function FeedbackDialog() {
                 </DialogFooter>
               </form>
             </Form>
-          </motion.div>
-        </AnimatePresence>
       </DialogContent>
     </Dialog>
   );

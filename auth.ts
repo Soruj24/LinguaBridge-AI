@@ -67,6 +67,8 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           preferredLanguage?: string;
           avatar?: string;
           isEmailVerified?: boolean;
+          showTypingIndicator?: boolean;
+          showReadReceipts?: boolean;
           preferences?: {
             lowBandwidth: boolean;
             reduceMotion: boolean;
@@ -77,6 +79,13 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
             marketing: boolean;
             security: boolean;
           };
+          notificationPreferences?: {
+            enabledTypes: string[];
+            doNotDisturb: { enabled: boolean; startTime: string; endTime: string };
+            sound: string;
+            vibration: boolean;
+            showPreview: boolean;
+          };
         };
 
         token.id = String(u._id?.toString() || u.id || "");
@@ -84,8 +93,11 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         token.preferredLanguage = u.preferredLanguage || "en";
         token.avatar = u.avatar || undefined;
         token.isEmailVerified = u.isEmailVerified || false;
+        token.showTypingIndicator = u.showTypingIndicator ?? true;
+        token.showReadReceipts = u.showReadReceipts ?? true;
         token.preferences = u.preferences;
         token.emailPreferences = u.emailPreferences;
+        token.notificationPreferences = u.notificationPreferences;
       }
 
       if (trigger === "update" && session) {
@@ -97,6 +109,15 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         if (session.user?.emailPreferences) {
           token.emailPreferences = session.user.emailPreferences;
         }
+        if (session.user?.notificationPreferences) {
+          token.notificationPreferences = session.user.notificationPreferences;
+        }
+        if (typeof session.showTypingIndicator === "boolean") {
+          token.showTypingIndicator = session.showTypingIndicator;
+        }
+        if (typeof session.showReadReceipts === "boolean") {
+          token.showReadReceipts = session.showReadReceipts;
+        }
       }
       return token;
     },
@@ -107,8 +128,11 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         session.user.preferredLanguage = token.preferredLanguage;
         session.user.avatar = token.avatar;
         session.user.image = token.avatar || session.user.image;
+        session.user.showTypingIndicator = token.showTypingIndicator;
+        session.user.showReadReceipts = token.showReadReceipts;
         session.user.preferences = token.preferences;
         session.user.emailPreferences = token.emailPreferences;
+        session.user.notificationPreferences = token.notificationPreferences;
         session.user.isEmailVerified = token.isEmailVerified;
       }
       return session;

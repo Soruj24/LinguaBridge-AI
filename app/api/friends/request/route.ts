@@ -4,6 +4,7 @@ import connectDB from "@/lib/db";
 import User from "@/models/User";
 import Friendship from "@/models/Friendship";
 import Notification from "@/models/Notification";
+import { isBlocked } from "@/lib/block-check";
 import { getIO } from "@/lib/socket-io";
 
 export async function POST(req: Request) {
@@ -39,6 +40,14 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "Recipient not found" },
         { status: 404 }
+      );
+    }
+
+    const blocked = await isBlocked(currentUser._id.toString(), recipientId);
+    if (blocked) {
+      return NextResponse.json(
+        { error: "Unable to send friend request" },
+        { status: 403 }
       );
     }
 

@@ -7,11 +7,19 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowLeft, User, Search, Info, Trash2 } from "lucide-react";
+import { ArrowLeft, User, Search, Info, Trash2, MoreVertical, Bookmark, Phone, Clock, X, Download, Archive, ArchiveRestore, Pin, PinOff, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { getLanguageFlag } from "@/types/chat";
+import { useCall } from "@/components/call-provider";
+import { useUserStatus } from "@/hooks/use-user-status";
+import { Badge } from "@/components/ui/badge";
+import {
+  Popover, PopoverContent, PopoverTrigger,
+} from "@/components/ui/popover";
+import type { Message } from "@/types/chat";
 
 interface ChatWindowHeaderProps {
+  chatId: string;
   otherParticipant?: {
     _id: string;
     name: string;
@@ -21,99 +29,224 @@ interface ChatWindowHeaderProps {
   onToggleSearch: () => void;
   onOpenChatInfo: () => void;
   onOpenClearConfirm: () => void;
+  onOpenPhrasebook?: () => void;
+  scheduledMessages?: Message[];
+  onCancelScheduled?: (messageId: string) => void;
+  exportChat: (chatId: string, format: "json" | "txt") => Promise<void>;
+  isArchived?: boolean;
+  onArchiveToggle?: () => void;
+  pinnedMessages?: Message[];
+  onUnpinMessage?: (messageId: string) => void;
 }
 
 export function ChatWindowHeader({
+  chatId,
   otherParticipant,
   onToggleSearch,
   onOpenChatInfo,
   onOpenClearConfirm,
+  onOpenPhrasebook,
+  scheduledMessages,
+  onCancelScheduled,
+  exportChat,
+  isArchived,
+  onArchiveToggle,
+  pinnedMessages,
+  onUnpinMessage,
 }: ChatWindowHeaderProps) {
   const router = useRouter();
   const t = useTranslations("Chat");
+  const { startCall, activeCall } = useCall();
+  const { targetIsOnline, targetLastSeenText } = useUserStatus(otherParticipant?._id);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-      <div className="flex items-center justify-between px-3 md:px-5 py-3">
+    <header className="sticky top-0 z-50 border-b bg-background">
+      <div className="flex items-center justify-between px-3 md:px-5 py-2.5">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden -ml-1 h-9 w-9 shrink-0 rounded-xl hover:bg-muted/70"
-            onClick={() => router.push("/dashboard")}
-          >
-            <ArrowLeft className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="md:hidden h-8 w-8 shrink-0" onClick={() => router.push("/dashboard")}>
+            <ArrowLeft className="h-4 w-4" />
           </Button>
 
           {otherParticipant && (
             <button
               onClick={() => router.push(`/profile/${otherParticipant._id}`)}
-              className="flex items-center gap-3 min-w-0 text-left hover:opacity-80 transition-opacity"
+              className="flex items-center gap-3 min-w-0 text-left"
             >
-              <div className="relative shrink-0">
-                <Avatar className="h-10 w-10 ring-2 ring-primary/15 ring-offset-2 ring-offset-background">
-                  <AvatarImage src={otherParticipant.avatar} />
-                  <AvatarFallback className="bg-gradient-to-br from-primary to-primary/70 text-primary-foreground font-semibold text-sm">
-                    {otherParticipant.name[0].toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-[2.5px] border-background" />
-              </div>
+              <Avatar className="h-9 w-9">
+                <AvatarImage src={otherParticipant.avatar} />
+                <AvatarFallback className="text-xs">{otherParticipant.name[0].toUpperCase()}</AvatarFallback>
+              </Avatar>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <h2 className="font-semibold text-[15px] truncate">
-                    {otherParticipant.name}
-                  </h2>
-                  <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/8 text-primary text-[11px] font-medium border border-primary/15">
+                  <h2 className="font-medium text-sm truncate">{otherParticipant.name}</h2>
+                  <span className="text-[10px] text-muted-foreground">
                     {getLanguageFlag(otherParticipant.preferredLanguage)}
-                    {otherParticipant.preferredLanguage === "en"
-                      ? "English"
-                      : otherParticipant.preferredLanguage}
+                    {otherParticipant.preferredLanguage === "en" ? "EN" : otherParticipant.preferredLanguage.toUpperCase()}
                   </span>
+                  <span title="Encrypted in transit" className="inline-flex"><Lock className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0" /></span>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
-                  </span>
-                  <span>Online</span>
-                </div>
+                <span className="text-xs text-muted-foreground">
+                  {targetIsOnline ? (
+                    <span className="flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-green-500 inline-block" />
+                      Online
+                    </span>
+                  ) : targetLastSeenText ? (
+                    <span className="flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground inline-block" />
+                      Last seen {targetLastSeenText.toLowerCase()}
+                    </span>
+                  ) : null}
+                </span>
               </div>
             </button>
           )}
         </div>
 
         <div className="flex items-center gap-1">
+          {otherParticipant && !activeCall && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => startCall(otherParticipant._id, otherParticipant.name)}
+              title="Voice call"
+            >
+              <Phone className="h-4 w-4 text-muted-foreground" />
+            </Button>
+          )}
+          {scheduledMessages && scheduledMessages.length > 0 && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 relative">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 text-[10px]">
+                    {scheduledMessages.length}
+                  </Badge>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-72 p-3">
+                <h4 className="text-sm font-medium mb-2">Scheduled messages</h4>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {scheduledMessages.map((msg) => (
+                    <div key={msg._id} className="flex items-start gap-2 rounded-lg bg-muted/50 p-2 text-sm">
+                      <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <p className="truncate text-xs">{msg.originalText}</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {new Date(msg.scheduledAt!).toLocaleString(undefined, {
+                            month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
+                      {onCancelScheduled && (
+                        <button
+                          onClick={() => onCancelScheduled(msg._id)}
+                          className="shrink-0 text-muted-foreground hover:text-destructive p-0.5"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
+          {pinnedMessages && pinnedMessages.length > 0 && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 relative">
+                  <Pin className="h-4 w-4 text-muted-foreground" />
+                  <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 text-[10px]">
+                    {pinnedMessages.length}
+                  </Badge>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-72 p-3">
+                <h4 className="text-sm font-medium mb-2">Pinned ({pinnedMessages.length})</h4>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {pinnedMessages.map((msg) => (
+                    <div key={msg._id} className="flex items-start gap-2 rounded-lg bg-muted/50 p-2 text-sm">
+                      <Pin className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-medium truncate">{msg.senderId.name}</p>
+                        <p className="truncate text-xs">{msg.originalText}</p>
+                      </div>
+                      {onUnpinMessage && (
+                        <button
+                          onClick={() => onUnpinMessage(msg._id)}
+                          className="shrink-0 text-muted-foreground hover:text-destructive p-0.5"
+                          title="Unpin"
+                        >
+                          <PinOff className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Download className="h-4 w-4 text-muted-foreground" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-40 p-1.5">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-sm font-normal"
+                onClick={() => exportChat(chatId, "json")}
+              >
+                Export as JSON
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-sm font-normal"
+                onClick={() => exportChat(chatId, "txt")}
+              >
+                Export as TXT
+              </Button>
+            </PopoverContent>
+          </Popover>
+          {onOpenPhrasebook && (
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenPhrasebook}>
+              <Bookmark className="h-4 w-4 text-muted-foreground" />
+            </Button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-muted/70">
-                <svg className="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                </svg>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52 p-1.5">
-              <DropdownMenuItem
-                className="cursor-pointer rounded-lg"
-                onClick={() => router.push(`/profile/${otherParticipant?._id}`)}
-              >
-                <User className="mr-2.5 h-4 w-4" />
+            <DropdownMenuContent align="end" className="w-44">
+              <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`/profile/${otherParticipant?._id}`)}>
+                <User className="mr-2 h-4 w-4" />
                 <span>{t("viewProfile")}</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer rounded-lg" onClick={onToggleSearch}>
-                <Search className="mr-2.5 h-4 w-4" />
+              <DropdownMenuItem className="cursor-pointer" onClick={onToggleSearch}>
+                <Search className="mr-2 h-4 w-4" />
                 <span>{t("searchChat")}</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer rounded-lg" onClick={onOpenChatInfo}>
-                <Info className="mr-2.5 h-4 w-4" />
+              <DropdownMenuItem className="cursor-pointer" onClick={onOpenChatInfo}>
+                <Info className="mr-2 h-4 w-4" />
                 <span>Chat info</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="my-1" />
-              <DropdownMenuItem
-                className="cursor-pointer rounded-lg text-destructive focus:text-destructive focus:bg-destructive/10"
-                onClick={onOpenClearConfirm}
-              >
-                <Trash2 className="mr-2.5 h-4 w-4" />
+              {onArchiveToggle && (
+                <DropdownMenuItem className="cursor-pointer" onClick={onArchiveToggle}>
+                  {isArchived ? (
+                    <><ArchiveRestore className="mr-2 h-4 w-4" /><span>Move to inbox</span></>
+                  ) : (
+                    <><Archive className="mr-2 h-4 w-4" /><span>Archive</span></>
+                  )}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive" onClick={onOpenClearConfirm}>
+                <Trash2 className="mr-2 h-4 w-4" />
                 <span>{t("clearChat")}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>

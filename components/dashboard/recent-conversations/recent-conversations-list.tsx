@@ -3,7 +3,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MessageCircle, ArrowRight, Globe } from "lucide-react";
-import { motion } from "framer-motion";
 import { Link } from "@/navigation";
 import { cn } from "@/lib/utils";
 
@@ -68,11 +67,8 @@ export function RecentConversationsList({
   return chats.map((chat, index) => {
     const other = getOtherParticipant(chat);
     return (
-      <motion.div
+      <div
         key={chat._id}
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.5 + index * 0.05 }}
       >
         <Link
           href={`/chat/${chat._id}`}
@@ -114,7 +110,7 @@ export function RecentConversationsList({
           </div>
           <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0 shrink-0" />
         </Link>
-      </motion.div>
+      </div>
     );
   });
 }

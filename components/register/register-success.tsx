@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { CheckCircle, Mail, ChevronRight } from "lucide-react";
 import { Link } from "@/navigation";
 import { Button } from "@/components/ui/button";
@@ -11,23 +10,11 @@ interface RegisterSuccessProps {
 
 export function RegisterSuccess({ email }: RegisterSuccessProps) {
   return (
-    <motion.div
-      key="success"
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.96 }}
-      className="flex flex-col items-center py-8 text-center"
-    >
+    <div className="flex flex-col items-center py-8 text-center">
       <div className="relative mb-6">
-        <div className="h-20 w-20 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-xl shadow-emerald-500/20">
-          <CheckCircle className="h-10 w-10 text-white" />
+        <div className="h-20 w-20 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+          <CheckCircle className="h-10 w-10 text-emerald-600" />
         </div>
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1.5, opacity: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="absolute inset-0 rounded-full bg-emerald-400/20"
-        />
       </div>
       <h3 className="text-lg font-bold mb-2">Check your email!</h3>
       <p className="text-muted-foreground text-sm max-w-[280px] mb-5 leading-relaxed">
@@ -47,6 +34,6 @@ export function RegisterSuccess({ email }: RegisterSuccessProps) {
           </Button>
         </Link>
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 interface VoiceWaveformProps {
   isRecording?: boolean;
@@ -71,24 +70,17 @@ export function VoiceWaveform({
       )}
     >
       {bars.map((height, i) => (
-        <motion.div
+        <div
           key={i}
-          initial={{ scaleY: 0.2 }}
-          animate={{ scaleY: height }}
-          transition={{
-            duration: 0.15,
-            repeat: isRecording || isPlaying ? Infinity : 0,
-            repeatType: "reverse",
-          }}
           className={cn(
-            "w-1 rounded-full",
+            "w-1 rounded-full transition-all duration-150",
             isRecording
               ? "bg-rose-500"
               : isPlaying
                 ? "bg-primary"
                 : "bg-muted"
           )}
-          style={{ height: "100%" }}
+          style={{ height: `${height * 100}%` }}
         />
       ))}
     </div>
@@ -110,28 +102,8 @@ export function RecordingPulse({ isRecording, className }: RecordingPulseProps) 
     >
       {isRecording && (
         <>
-          <motion.div
-            animate={{
-              scale: [1, 1.5, 1],
-              opacity: [0.5, 0, 0.5],
-            }}
-            transition={{
-              duration: 1,
-              repeat: Infinity,
-            }}
-            className="absolute inset-0 rounded-full bg-rose-500/30"
-          />
-          <motion.div
-            animate={{
-              scale: [1, 2, 1],
-              opacity: [0.3, 0, 0.3],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-            }}
-            className="absolute inset-0 rounded-full bg-rose-500/20"
-          />
+          <div className="absolute inset-0 rounded-full bg-rose-500/30 animate-ping" />
+          <div className="absolute inset-0 rounded-full bg-rose-500/20 animate-ping" style={{ animationDelay: "0.5s" }} />
         </>
       )}
       <div className="w-3 h-3 rounded-full bg-rose-500" />

@@ -1,13 +1,14 @@
 "use client";
 
 import TextareaAutosize from "react-textarea-autosize";
-import { Send } from "lucide-react";
+import { Send, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { ChatSuggestions } from "./chat-suggestions";
 import { ChatFilePreview } from "./chat-file-preview";
 import { ChatInputActions } from "./chat-input-actions";
-import { ChatRewriteDropdown } from "./chat-rewrite-dropdown";
+import { SchedulePicker } from "./schedule-picker";
+import type { Message } from "@/types/chat";
 
 interface ChatInputAreaProps {
   newMessage: string;
@@ -23,9 +24,11 @@ interface ChatInputAreaProps {
   isRecording: boolean;
   onStartRecording: () => void;
   onStopRecording: () => void;
-  onRewrite: (tone: string) => void;
-  isRewriting: boolean;
   onStickerSelect: (emoji: string) => void;
+  onGifSelect: (url: string) => void;
+  replyingTo?: Message | null;
+  onCancelReply?: () => void;
+  onSchedule?: (scheduledAt: string) => void;
 }
 
 export function ChatInputArea({
@@ -33,20 +36,49 @@ export function ChatInputArea({
   suggestions, onSuggestionClick,
   selectedFile, onFileSelect, onFileRemove, onFileSend, isUploading,
   isRecording, onStartRecording, onStopRecording,
-  onRewrite, isRewriting, onStickerSelect,
+  onStickerSelect, onGifSelect,
+  replyingTo, onCancelReply,
+  onSchedule,
 }: ChatInputAreaProps) {
   const t = useTranslations("Chat");
 
+  const replyPreviewText = replyingTo?.isImage
+    ? "📷 Image"
+    : replyingTo?.originalText
+      ? replyingTo.originalText.length > 80
+        ? replyingTo.originalText.slice(0, 80) + "..."
+        : replyingTo.originalText
+      : "";
+
   return (
-    <div className="border-t border-border/50 bg-background/80 backdrop-blur-xl sticky bottom-0 z-40 pb-[env(safe-area-inset-bottom)]">
+    <div className="border-t bg-background sticky bottom-0 z-40 pb-[env(safe-area-inset-bottom)]">
+      {replyingTo && onCancelReply && (
+        <div className="flex items-center gap-2 px-3 md:px-5 py-1.5 bg-muted/50 border-l-2 border-primary">
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-medium text-primary">
+              Replying to {replyingTo.senderId.name}
+            </div>
+            <div className="text-xs text-muted-foreground truncate">
+              {replyPreviewText}
+            </div>
+          </div>
+          <button
+            onClick={onCancelReply}
+            className="shrink-0 text-muted-foreground hover:text-foreground p-0.5"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
       <ChatSuggestions suggestions={suggestions} onSuggestionClick={onSuggestionClick} />
 
       <ChatFilePreview selectedFile={selectedFile} isUploading={isUploading} onFileRemove={onFileRemove} onFileSend={onFileSend} />
 
-      <div className="flex items-end gap-2 px-3 md:px-5 py-2.5">
-        <div className="flex-1 min-h-[46px] rounded-2xl bg-muted/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-muted/70 border border-border/40 flex flex-col transition-all">
+      <div className="flex items-end gap-2 px-3 md:px-5 py-2">
+        <div className="flex-1 flex items-end rounded-xl border bg-muted/30 focus-within:border-primary/50 transition-colors">
           <TextareaAutosize
-            className="w-full bg-transparent border-0 px-4 pt-3 pb-1.5 text-sm resize-none focus:outline-none placeholder:text-muted-foreground/60 leading-relaxed"
+            className="flex-1 bg-transparent px-3 py-2.5 text-sm resize-none focus:outline-none placeholder:text-muted-foreground"
             placeholder={t("typeMessage")}
             value={newMessage}
             onChange={onInputChange}
@@ -57,38 +89,27 @@ export function ChatInputArea({
               }
             }}
             minRows={1}
+            maxRows={5}
           />
-
-          <div className="flex items-center justify-between px-2 pb-1.5">
-            <ChatInputActions
-              isRecording={isRecording}
-              onFileSelect={onFileSelect}
-              onStartRecording={onStartRecording}
-              onStopRecording={onStopRecording}
-              onStickerSelect={onStickerSelect}
-            />
-            <span className="text-[10px] text-muted-foreground/50 px-1">
-              {newMessage.length > 0 && `${newMessage.length}`}
-            </span>
-          </div>
+          <ChatInputActions
+            isRecording={isRecording}
+            onFileSelect={onFileSelect}
+            onStartRecording={onStartRecording}
+            onStopRecording={onStopRecording}
+            onStickerSelect={onStickerSelect}
+            onGifSelect={onGifSelect}
+          />
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
-          <ChatRewriteDropdown
-            disabled={!newMessage.trim() || isRewriting}
-            isRewriting={isRewriting}
-            onRewrite={onRewrite}
+        {onSchedule && (
+          <SchedulePicker
+            onSchedule={(scheduledAt) => onSchedule(scheduledAt)}
+            onSendNow={onSend}
           />
-
-          <Button
-            size="icon"
-            onClick={onSend}
-            disabled={!newMessage.trim()}
-            className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none active:scale-95"
-          >
-            <Send className="h-5 w-5" />
-          </Button>
-        </div>
+        )}
+        <Button size="icon" onClick={onSend} disabled={!newMessage.trim()} className="h-9 w-9 shrink-0 rounded-xl">
+          <Send className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

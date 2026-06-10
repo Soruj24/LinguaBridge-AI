@@ -6,7 +6,6 @@ import { languageMap } from "@/lib/languages";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { motion } from "framer-motion";
 import { Globe2 } from "lucide-react";
 
 type UsageItem = { code: string; count: number };
@@ -52,11 +51,7 @@ export function LanguageChart() {
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
-    >
+    <div>
       <Card className="h-full bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg hover:shadow-xl transition-shadow">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -125,6 +120,6 @@ export function LanguageChart() {
           )}
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

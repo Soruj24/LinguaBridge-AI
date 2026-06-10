@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Users, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { GroupChatSearch } from "./group-chat-dialog/group-chat-search";
 import { GroupChatSelected } from "./group-chat-dialog/group-chat-selected";
@@ -51,10 +50,7 @@ export function GroupChatDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[500px] overflow-hidden p-0">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
+        <div>
           <DialogHeader className="px-6 pt-6 pb-2">
             <DialogTitle className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
@@ -109,7 +105,7 @@ export function GroupChatDialog({
               {t("createButton")}
             </Button>
           </div>
-        </motion.div>
+        </div>
       </DialogContent>
     </Dialog>
   );

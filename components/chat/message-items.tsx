@@ -8,9 +8,14 @@ interface MessageItemsProps {
   messages: Message[];
   currentUserId?: string;
   onDelete: (id: string) => void;
+  onEdit?: (id: string, newText: string) => void;
+  onReply?: (message: Message) => void;
+  onPin?: (id: string) => void;
+  onUnpin?: (id: string) => void;
+  onForward?: (message: import("@/components/message-bubble/types").MessageBubbleMessage) => void;
 }
 
-export function MessageItems({ messages, currentUserId, onDelete }: MessageItemsProps) {
+export function MessageItems({ messages, currentUserId, onDelete, onEdit, onReply, onPin, onUnpin, onForward }: MessageItemsProps) {
   return (
     <>
       {messages.map((msg, index) => {
@@ -34,13 +39,20 @@ export function MessageItems({ messages, currentUserId, onDelete }: MessageItems
                 <div className="flex-1 h-px bg-gradient-to-r from-border/0 via-border/60 to-border/0" />
               </div>
             )}
-            <MessageBubble
-              message={msg}
-              isMe={msg.senderId?._id === currentUserId}
-              onDelete={onDelete}
-              currentUserId={currentUserId}
-              isSameSender={isSameSender}
-            />
+            <div id={`message-${msg._id}`}>
+              <MessageBubble
+                message={msg}
+                isMe={msg.senderId?._id === currentUserId}
+                onDelete={onDelete}
+                currentUserId={currentUserId}
+                isSameSender={isSameSender}
+                onEdit={onEdit}
+                onReply={onReply ? (m: import("@/components/message-bubble/types").MessageBubbleMessage) => onReply(m as Message) : undefined}
+                onPin={onPin}
+                onUnpin={onUnpin}
+                onForward={onForward}
+              />
+            </div>
           </Fragment>
         );
       })}

@@ -1,8 +1,10 @@
 import connectDB from "@/lib/db";
 import User from "@/models/User";
+import UserStatus from "@/models/UserStatus";
 import Chat from "@/models/Chat";
 import Message from "@/models/Message";
 import Friendship from "@/models/Friendship";
+import Block from "@/models/Block";
 
 export interface ProfileUser {
   _id: string;
@@ -12,6 +14,8 @@ export interface ProfileUser {
   bio?: string;
   preferredLanguage?: string;
   isOnline?: boolean;
+  lastSeen?: string;
+  showLastSeen?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -23,16 +27,25 @@ export interface ProfileData {
   friendshipId: string | null;
   chatCount: number;
   messageCount: number;
+  hasBlocked: boolean;
+  blockId: string | null;
 }
 
-export async function getProfileData(userId: string, currentUserEmail?: string | null): Promise<ProfileData> {
+export async function getProfileData(
+  userId: string,
+  currentUserEmail?: string | null,
+): Promise<ProfileData> {
   await connectDB();
 
   const user = await User.findById(userId).select("-password").lean();
   if (!user) throw new Error("User not found");
 
+  const userStatus = await UserStatus.findOne({ userId }).lean();
+
   let friendStatus: ProfileData["friendStatus"] = "none";
   let friendshipId: string | null = null;
+  let hasBlocked = false;
+  let blockId: string | null = null;
 
   if (currentUserEmail) {
     const currentUser = await User.findOne({ email: currentUserEmail });
@@ -56,6 +69,15 @@ export async function getProfileData(userId: string, currentUserEmail?: string |
                 : "request_received";
           }
         }
+
+        const block = await Block.findOne({
+          blocker: currentUser._id,
+          blocked: userId,
+        });
+        if (block) {
+          hasBlocked = true;
+          blockId = block._id.toString();
+        }
       }
     }
   }
@@ -66,15 +88,26 @@ export async function getProfileData(userId: string, currentUserEmail?: string |
   });
 
   const isOwnProfile = currentUserEmail
-    ? (await User.findOne({ email: currentUserEmail }))?._id.toString() === userId
+    ? (
+        await User.findOne({ email: currentUserEmail })
+      )?._id.toString() === userId
     : false;
 
+  const userWithStatus = {
+    ...(user as unknown as ProfileUser),
+    isOnline: userStatus?.isOnline ?? false,
+    lastSeen: userStatus?.lastSeen?.toISOString?.() ?? userStatus?.lastSeen ?? null,
+    showLastSeen: (user as Record<string, unknown>)?.showLastSeen as boolean ?? true,
+  };
+
   return {
-    user: user as unknown as ProfileUser,
+    user: userWithStatus,
     isOwnProfile,
     friendStatus,
     friendshipId,
     chatCount,
     messageCount,
+    hasBlocked,
+    blockId,
   };
 }

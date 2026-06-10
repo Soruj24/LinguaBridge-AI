@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
 import Friendship from "@/models/Friendship";
+import Block from "@/models/Block";
 
 export async function GET() {
   try {
@@ -27,14 +28,30 @@ export async function GET() {
       .populate("recipient", "name email avatar preferredLanguage")
       .sort({ updatedAt: -1 });
 
-    const friends = friendships.map((f) => {
-      const isRequester = f.requester._id.toString() === currentUser._id.toString();
-      return {
-        friendshipId: f._id,
-        user: isRequester ? f.recipient : f.requester,
-        since: f.createdAt,
-      };
-    });
+    const blockedUsers = await Block.find({
+      $or: [
+        { blocker: currentUser._id },
+        { blocked: currentUser._id },
+      ],
+    }).lean();
+    const blockedIds = new Set(
+      blockedUsers.map((b) =>
+        b.blocker.toString() === currentUser._id.toString()
+          ? b.blocked.toString()
+          : b.blocker.toString()
+      ),
+    );
+
+    const friends = friendships
+      .map((f) => {
+        const isRequester = f.requester._id.toString() === currentUser._id.toString();
+        return {
+          friendshipId: f._id,
+          user: isRequester ? f.recipient : f.requester,
+          since: f.createdAt,
+        };
+      })
+      .filter((f) => !blockedIds.has(f.user._id.toString()));
 
     return NextResponse.json({ friends });
   } catch (error) {

@@ -9,7 +9,5 @@ export { LanguagesSection } from "./languages-section";
 export { FaqSection } from "./faq-section";
 export { CtaSection } from "./cta-section";
 export { FooterSection } from "./footer-section";
-export { Particles } from "./particles";
 export { ChatMockup } from "./chat-mockup";
 export { FaqItem } from "./faq-item";
-export { AnimatedCounter } from "./animated-counter";

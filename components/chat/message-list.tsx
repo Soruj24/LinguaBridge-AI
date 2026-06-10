@@ -15,6 +15,7 @@ export interface Message {
   voiceUrl?: string;
   createdAt: string;
   isOptimistic?: boolean;
+  readBy?: string[];
 }
 
 interface MessageListProps {

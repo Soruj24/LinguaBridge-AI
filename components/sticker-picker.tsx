@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Smile, Search, Sticker } from "lucide-react";
 import { useState } from "react";
-import { motion } from "framer-motion";
+
 
 const STICKER_PACKS = [
   {
@@ -83,16 +83,13 @@ export function StickerPicker({ onSelect }: StickerPickerProps) {
         <div className="p-2 max-h-48 overflow-y-auto">
           <div className="grid grid-cols-8 gap-1">
             {filteredEmojis.map((emoji, i) => (
-              <motion.button
+              <button
                 key={i}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: i * 0.01 }}
                 onClick={() => onSelect(emoji)}
                 className="p-2 text-xl hover:bg-muted rounded-lg cursor-pointer transition-all hover:scale-110"
               >
                 {emoji}
-              </motion.button>
+              </button>
             ))}
           </div>
         </div>

@@ -7,7 +7,6 @@ import { THEMES, ThemePreset, getCSSVariables } from "@/lib/themes";
 import { Palette, Check, Loader2 } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
 
 interface ThemeSelectorProps {
   variant?: "icon" | "full";
@@ -58,10 +57,8 @@ export function ThemeSelector({ variant = "icon" }: ThemeSelectorProps) {
         <PopoverContent className="w-72 p-3" align="end">
           <div className="grid grid-cols-4 gap-2">
             {THEMES.map((theme) => (
-              <motion.button
+              <button
                 key={theme.id}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
                 onClick={() => handleSelectTheme(theme)}
                 className={`relative h-10 w-10 rounded-lg border-2 overflow-hidden ${
                   currentTheme === theme.id ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted"
@@ -81,7 +78,7 @@ export function ThemeSelector({ variant = "icon" }: ThemeSelectorProps) {
                 {currentTheme === theme.id && (
                   <Check className="absolute inset-0 m-auto h-4 w-4 text-white" />
                 )}
-              </motion.button>
+              </button>
             ))}
           </div>
         </PopoverContent>
@@ -96,18 +93,16 @@ export function ThemeSelector({ variant = "icon" }: ThemeSelectorProps) {
         Theme
       </h3>
       <div className="grid grid-cols-4 gap-3">
-        {THEMES.map((theme) => (
-          <motion.button
-            key={theme.id}
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            onClick={() => handleSelectTheme(theme)}
-            disabled={isSaving}
-            className={`relative h-14 w-full rounded-xl border-2 overflow-hidden transition-all hover:scale-105 hover:shadow-md ${
-              currentTheme === theme.id
-                ? "border-primary ring-2 ring-primary shadow-lg shadow-primary/20"
-                : "border-border hover:border-muted-foreground/50"
-            }`}
+          {THEMES.map((theme) => (
+            <button
+              key={theme.id}
+              onClick={() => handleSelectTheme(theme)}
+              disabled={isSaving}
+              className={`relative h-14 w-full rounded-xl border-2 overflow-hidden transition-all hover:shadow-md ${
+                currentTheme === theme.id
+                  ? "border-primary ring-2 ring-primary shadow-lg shadow-primary/20"
+                  : "border-border hover:border-muted-foreground/50"
+              }`}
           >
             <div
               className="absolute inset-0 flex items-center justify-center"
@@ -128,9 +123,9 @@ export function ThemeSelector({ variant = "icon" }: ThemeSelectorProps) {
             <span className="absolute bottom-0.5 left-0 right-0 text-center text-[10px] font-medium truncate px-1">
               {theme.name}
             </span>
-          </motion.button>
-        ))}
-      </div>
+            </button>
+          ))}
+        </div>
       {isSaving && (
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />

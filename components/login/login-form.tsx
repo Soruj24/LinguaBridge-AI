@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, AlertTriangle, Loader2, ChevronRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -82,7 +81,7 @@ export function LoginForm({
           </span>
         </label>
         {showResendVerification && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+          <div>
             <div className="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/15 border border-amber-200/60 dark:border-amber-800/40">
               <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
@@ -92,7 +91,7 @@ export function LoginForm({
                 </button>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
         <Button className={cn("w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all", isLoading && "opacity-90")} type="submit" disabled={isLoading}>
           {isLoading ? (

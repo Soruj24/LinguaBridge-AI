@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { Smartphone, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,9 +38,9 @@ export function Security2FASection(props: Security2FASectionProps) {
   };
 
   return (
-    <AnimatePresence>
+    <>
       {props.show2FASetup && (
-        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
+        <div>
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
@@ -99,8 +98,8 @@ export function Security2FASection(props: Security2FASectionProps) {
               )}
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }

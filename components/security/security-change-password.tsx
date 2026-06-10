@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Key, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,9 +47,7 @@ export function SecurityChangePassword({
             Change Password
           </Button>
         ) : (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
+          <div
             className="space-y-4"
           >
             <div className="space-y-2">
@@ -109,7 +106,7 @@ export function SecurityChangePassword({
                 Cancel
               </Button>
             </div>
-          </motion.div>
+          </div>
         )}
       </CardContent>
     </Card>

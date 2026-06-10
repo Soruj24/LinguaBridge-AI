@@ -16,7 +16,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
 import { useAnalyticsChart } from "./analytics-chart/use-analytics-chart";
 
@@ -26,11 +25,7 @@ export function AnalyticsChart() {
   const maxValue = Math.max(...data.map((d) => d.messages), 1);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
-    >
+    <div>
       <Card className="h-full bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg hover:shadow-xl transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -135,6 +130,6 @@ export function AnalyticsChart() {
           )}
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

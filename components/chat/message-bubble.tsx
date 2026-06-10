@@ -1,11 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
-import { Volume2, Check, Globe } from "lucide-react";
+import { Globe, Volume2 } from "lucide-react";
 import { useChatMessageBubble } from "./use-chat-message-bubble";
 
 export interface MessageBubbleProps {
@@ -16,59 +14,42 @@ export interface MessageBubbleProps {
     voiceUrl?: string;
     createdAt: string;
     senderId: { _id: string; name: string; avatar?: string };
+    readBy?: string[];
   };
   isOwn: boolean;
   showAvatar?: boolean;
   onReact?: (messageId: string, emoji: string) => void;
-  onCopy?: (text: string) => void;
   className?: string;
 }
-
-const REACTIONS = ["👍", "👎", "❤️", "😂", "😮", "😢"];
 
 export function MessageBubble({
   message,
   isOwn,
   showAvatar = true,
   onReact,
-  onCopy,
   className,
 }: MessageBubbleProps) {
-  const { showActions, setShowActions, showTranslation, setShowTranslation, copied, handleCopy } = useChatMessageBubble();
-
-  const doCopy = () => {
-    const text = showTranslation && message.translatedText
-      ? message.translatedText
-      : message.originalText;
-    handleCopy(text);
-    onCopy?.(text);
-  };
+  const { showTranslation, setShowTranslation } = useChatMessageBubble();
 
   const displayText = showTranslation && message.translatedText
     ? message.translatedText
     : message.originalText;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={cn("flex gap-2 max-w-[80%]", isOwn ? "ml-auto flex-row-reverse" : "mr-auto", className)}
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
-    >
+    <div className={cn("flex gap-2 max-w-[75%]", isOwn ? "ml-auto flex-row-reverse" : "mr-auto", className)}>
       {!isOwn && showAvatar && (
-        <Avatar className="h-8 w-8 mt-auto">
+        <Avatar className="h-7 w-7 mt-auto">
           <AvatarImage src={message.senderId.avatar} />
-          <AvatarFallback>{message.senderId.name?.[0]}</AvatarFallback>
+          <AvatarFallback className="text-xs">{message.senderId.name?.[0]}</AvatarFallback>
         </Avatar>
       )}
 
-      <div className="relative">
-        <div className={cn("rounded-2xl px-4 py-2", isOwn ? "bg-primary text-primary-foreground" : "bg-muted")}>
+      <div>
+        <div className={cn("rounded-2xl px-3.5 py-2", isOwn ? "bg-primary text-primary-foreground" : "bg-muted")}>
           {message.translatedText && !isOwn && (
             <button
               onClick={() => setShowTranslation(!showTranslation)}
-              className={cn("flex items-center gap-1 text-xs mb-1", showTranslation ? "text-primary font-medium" : "text-muted-foreground")}
+              className={cn("flex items-center gap-1 text-[10px] mb-1", showTranslation ? "text-primary font-medium" : "text-muted-foreground")}
             >
               <Globe className="h-3 w-3" />
               {showTranslation ? "Translated" : "Show translation"}
@@ -78,40 +59,20 @@ export function MessageBubble({
           <p className="text-sm whitespace-pre-wrap">{displayText}</p>
 
           {message.voiceUrl && (
-            <div className="mt-2 flex items-center gap-2">
-              <Button size="sm" variant="ghost" className="h-8">
-                <Volume2 className="h-4 w-4" />
-              </Button>
+            <div className="mt-2">
+              <Volume2 className="h-4 w-4" />
             </div>
           )}
 
-          <div className={cn("text-xs mt-1 flex items-center gap-1", isOwn ? "text-primary-foreground/70 justify-end" : "text-muted-foreground")}>
-            <span>{formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}</span>
+          <div className={cn("text-[10px] mt-1 flex items-center gap-1", isOwn ? "text-primary-foreground/70 text-right justify-end" : "text-muted-foreground")}>
             {isOwn && (
-              <span className="flex items-center">
-                <Check className="h-3 w-3" />
-              </span>
+              <span>{message.readBy && message.readBy.length > 0 ? "Seen" : "Sent"}</span>
             )}
+            <span>{formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}</span>
           </div>
         </div>
-
-        {showActions && (
-          <div className={cn(
-            "absolute top-1/2 -translate-y-1/2 flex items-center gap-1 bg-background rounded-full shadow-md border p-1",
-            isOwn ? "right-full mr-2" : "left-full ml-2"
-          )}>
-            {REACTIONS.map((emoji) => (
-              <button key={emoji} onClick={() => onReact?.(message._id, emoji)} className="p-1 hover:bg-muted rounded-full text-sm">
-                {emoji}
-              </button>
-            ))}
-            <button onClick={doCopy} className="p-1 hover:bg-muted rounded-full">
-              {copied ? <Check className="h-3 w-3 text-green-500" /> : <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>}
-            </button>
-          </div>
-        )}
       </div>
-    </motion.div>
+    </div>
   );
 }
 

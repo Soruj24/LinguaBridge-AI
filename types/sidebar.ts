@@ -31,7 +31,11 @@ export interface ChatItem {
     senderId: string;
   };
   unreadCount?: number;
+  markedUnreadBy?: string[];
   updatedAt: string;
+  folderId?: string | null;
+  isArchived?: boolean;
+  archivedAt?: string | null;
 }
 
 export interface SidebarProps {

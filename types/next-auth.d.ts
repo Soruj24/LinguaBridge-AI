@@ -8,6 +8,8 @@ declare module "next-auth" {
       role?: "user" | "admin"
       preferredLanguage?: string
       avatar?: string
+      showTypingIndicator?: boolean
+      showReadReceipts?: boolean
       preferences?: {
         lowBandwidth: boolean
         reduceMotion: boolean
@@ -15,6 +17,13 @@ declare module "next-auth" {
         autoPlayAudio: boolean
       }
       isEmailVerified?: boolean
+      notificationPreferences?: {
+        enabledTypes: string[]
+        doNotDisturb: { enabled: boolean; startTime: string; endTime: string }
+        sound: string
+        vibration: boolean
+        showPreview: boolean
+      }
     } & DefaultSession["user"]
   }
 
@@ -23,6 +32,8 @@ declare module "next-auth" {
     preferredLanguage?: string
     avatar?: string
     _id?: string
+    showTypingIndicator?: boolean
+    showReadReceipts?: boolean
     preferences?: {
       lowBandwidth: boolean
       reduceMotion: boolean
@@ -30,6 +41,13 @@ declare module "next-auth" {
       autoPlayAudio: boolean
     }
     isEmailVerified?: boolean
+    notificationPreferences?: {
+      enabledTypes: string[]
+      doNotDisturb: { enabled: boolean; startTime: string; endTime: string }
+      sound: string
+      vibration: boolean
+      showPreview: boolean
+    }
   }
 }
 
@@ -39,6 +57,8 @@ declare module "next-auth/jwt" {
     role?: "user" | "admin"
     preferredLanguage?: string
     avatar?: string
+    showTypingIndicator?: boolean
+    showReadReceipts?: boolean
     preferences?: {
       lowBandwidth: boolean
       reduceMotion: boolean
@@ -46,5 +66,12 @@ declare module "next-auth/jwt" {
       autoPlayAudio: boolean
     }
     isEmailVerified?: boolean
+    notificationPreferences?: {
+      enabledTypes: string[]
+      doNotDisturb: { enabled: boolean; startTime: string; endTime: string }
+      sound: string
+      vibration: boolean
+      showPreview: boolean
+    }
   }
 }

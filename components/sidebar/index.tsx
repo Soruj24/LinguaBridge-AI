@@ -8,6 +8,7 @@ import { SidebarContent } from "./sidebar-content";
 import { SidebarFooter } from "./sidebar-footer";
 import { LanguageModal } from "@/components/language-modal";
 import { AddFriendDialog } from "@/components/add-friend-dialog";
+import { ContactImportDialog } from "@/components/contact-import-dialog";
 import type { SidebarProps } from "@/types/sidebar";
 
 export function Sidebar({ className, onClose }: SidebarProps) {
@@ -31,15 +32,23 @@ export function Sidebar({ className, onClose }: SidebarProps) {
     cancelRequest,
     handleUnfriend,
     handleFriendClick,
+    folders,
+    createFolder,
+    deleteFolder,
+    assignChatToFolder,
+    getFolderForChat,
+    archiveChat,
+    unarchiveChat,
   } = useSidebar();
 
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
+  const [showContactDialog, setShowContactDialog] = useState(false);
 
   return (
     <div
       className={cn(
-        "flex flex-col h-screen w-80 border-r border-border/50 bg-gradient-to-b from-background to-muted/20 shadow-xl z-50",
+        "flex flex-col h-screen w-80 border-r bg-background z-50",
         className,
       )}
     >
@@ -49,6 +58,9 @@ export function Sidebar({ className, onClose }: SidebarProps) {
         onOpenAddFriend={() => setShowAddFriend(true)}
         onGroupChatCreated={fetchData}
         onClose={onClose}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        totalPending={totalPending}
       />
 
       <SidebarContent
@@ -71,9 +83,18 @@ export function Sidebar({ className, onClose }: SidebarProps) {
         }}
         onUnfriend={handleUnfriend}
         onOpenAddFriend={() => setShowAddFriend(true)}
+        folders={folders}
+        onCreateFolder={createFolder}
+        onDeleteFolder={deleteFolder}
+        onAssignChatToFolder={assignChatToFolder}
+        getFolderForChat={getFolderForChat}
+        onUnarchiveChat={unarchiveChat}
       />
 
-      <SidebarFooter onOpenLanguageModal={() => setShowLanguageModal(true)} />
+      <SidebarFooter
+        onOpenLanguageModal={() => setShowLanguageModal(true)}
+        onOpenContacts={() => setShowContactDialog(true)}
+      />
 
       <LanguageModal
         open={showLanguageModal}
@@ -83,6 +104,10 @@ export function Sidebar({ className, onClose }: SidebarProps) {
         open={showAddFriend}
         onOpenChange={setShowAddFriend}
         onAdded={fetchData}
+      />
+      <ContactImportDialog
+        open={showContactDialog}
+        onOpenChange={setShowContactDialog}
       />
     </div>
   );

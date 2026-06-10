@@ -10,11 +10,15 @@ const updateSchema = z.object({
   name: z.string().min(2).optional(),
   preferredLanguage: z.string().min(2).optional(),
   avatar: z.string().url().optional().or(z.literal("")),
+  bio: z.string().max(500).optional(),
   role: z.enum(["user", "admin"]).optional(),
   isActive: z.boolean().optional(),
   targetUserId: z.string().optional(),
   targetEmail: z.string().email().optional(),
   deleteUser: z.boolean().optional(),
+  showLastSeen: z.boolean().optional(),
+  showTypingIndicator: z.boolean().optional(),
+  showReadReceipts: z.boolean().optional(),
   preferences: z
     .object({
       lowBandwidth: z.boolean().optional(),
@@ -43,11 +47,15 @@ export async function PUT(req: Request) {
       name,
       preferredLanguage,
       avatar,
+      bio,
       role,
       isActive,
       targetUserId,
       targetEmail,
       deleteUser,
+      showLastSeen,
+      showTypingIndicator,
+      showReadReceipts,
       preferences,
       emailPreferences,
     } =
@@ -59,6 +67,10 @@ export async function PUT(req: Request) {
     if (name) updateData.name = name;
     if (preferredLanguage) updateData.preferredLanguage = preferredLanguage;
     if (avatar !== undefined) updateData.avatar = avatar;
+    if (bio !== undefined) updateData.bio = bio;
+    if (typeof showLastSeen === "boolean") updateData.showLastSeen = showLastSeen;
+    if (typeof showTypingIndicator === "boolean") updateData.showTypingIndicator = showTypingIndicator;
+    if (typeof showReadReceipts === "boolean") updateData.showReadReceipts = showReadReceipts;
     // Only admin can change role
     const isAdmin = session.user.role === "admin";
     if (isAdmin && role) {

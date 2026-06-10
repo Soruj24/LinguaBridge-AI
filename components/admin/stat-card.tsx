@@ -1,7 +1,6 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface StatCardProps {
@@ -24,11 +23,9 @@ export function AdminStatCard({
   className,
 }: StatCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className={cn(
-        "bg-gradient-to-br rounded-2xl p-6 shadow-lg",
+        "rounded-2xl p-6 shadow-lg",
         color,
         className
       )}
@@ -54,7 +51,7 @@ export function AdminStatCard({
           <Icon className="h-6 w-6 text-white" />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 

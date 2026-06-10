@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Eye, EyeOff, Loader2, CheckCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,45 +26,31 @@ export function ResetPasswordForm({
   showPassword, setShowPassword, showConfirmPassword, setShowConfirmPassword,
 }: ResetPasswordFormProps) {
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: "easeOut" }}>
+    <div>
       <Card className="w-full border border-border/50 bg-card/50 backdrop-blur-sm shadow-xl shadow-primary/5">
         <CardHeader className="space-y-1 pb-6">
           <CardTitle className="text-2xl font-bold tracking-tight">
-            <AnimatePresence mode="wait">
-              {isSuccess ? (
-                <motion.span key="success" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}>
-                  Password Reset Successful
-                </motion.span>
-              ) : (
-                <motion.span key="form" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}>
-                  Reset Password
-                </motion.span>
-              )}
-            </AnimatePresence>
+            {isSuccess ? "Password Reset Successful" : "Reset Password"}
           </CardTitle>
           <CardDescription className="text-sm">
             {isSuccess ? "Your password has been reset successfully." : "Enter your new password below"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <AnimatePresence mode="wait">
-            {isSuccess ? (
-              <motion.div
-                key="success"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center justify-center py-6 text-center"
-              >
-                <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
-                  <CheckCircle className="h-8 w-8 text-green-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Password changed!</h3>
-                <p className="text-muted-foreground text-sm max-w-[300px]">Redirecting to login...</p>
-                <div className="mt-3"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
-              </motion.div>
-            ) : (
-              <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <Form {...form}>
+          {isSuccess ? (
+            <div
+              className="flex flex-col items-center justify-center py-6 text-center"
+            >
+              <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Password changed!</h3>
+              <p className="text-muted-foreground text-sm max-w-[300px]">Redirecting to login...</p>
+              <div className="mt-3"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
+            </div>
+          ) : (
+            <div>
+              <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
                       control={form.control}
@@ -110,9 +95,8 @@ export function ResetPasswordForm({
                     </Button>
                   </form>
                 </Form>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            </div>
+          )}
         </CardContent>
         <CardFooter className="pb-6">
           <Link href="/login" className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full">
@@ -120,6 +104,6 @@ export function ResetPasswordForm({
           </Link>
         </CardFooter>
       </Card>
-    </motion.div>
+    </div>
   );
 }

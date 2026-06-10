@@ -11,27 +11,41 @@ import {
   ChatInfoDialog,
   ClearChatDialog,
 } from "@/components/chat";
+import { ForwardDialog } from "@/components/chat/forward-dialog";
+import { PhrasebookDrawer } from "@/components/phrasebook/phrasebook-drawer";
+import axios from "axios";
+import { toast } from "sonner";
+import { useSidebar } from "@/hooks/use-sidebar";
+import type { MessageBubbleMessage } from "@/components/message-bubble/types";
 
 export function ChatWindow({ chatId }: { chatId: string }) {
   const {
-    messages, chat, newMessage, setNewMessage, setSelectedFile,
+    messages, chat, setChat, newMessage, setNewMessage, setSelectedFile,
     isTyping, typingUser, hasMore, isLoading, isLoadingMore,
-    suggestions, isRewriting, selectedFile, isUploading, isRecording,
+    suggestions, selectedFile, isUploading, isRecording,
     searchResults, isSearching,
     scrollRef, viewportRef,
-    currentUserId, otherParticipant,
+    currentUserId, otherParticipant, replyingTo, setReplyingTo,
     sendMessage, sendFileMessage,
-    handleDeleteMessage, handleRewrite, handleSearch,
-    handleClearChat, handleInputChange, handleSuggestionClick,
-    handleFileSelect, startRecording, stopRecording,
+    handleDeleteMessage, handleEditMessage, handlePinMessage, handleUnpinMessage,
+    pinnedMessages, handleSearch,
+    handleClearChat, handleForwardMessage, handleInputChange, handleSuggestionClick,
+    handleFileSelect, handleGifSelect, startRecording, stopRecording,
     scrollToBottom, scrollToMessage, onScroll,
+    handleSchedule, handleCancelScheduled, scheduledMessages,
+    exportChat,
+    alwaysTranslate, autoTranslateLanguage, updateTranslateSettings,
   } = useChat(chatId);
+
+  const { chats } = useSidebar();
 
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showChatInfo, setShowChatInfo] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showPhrasebook, setShowPhrasebook] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [forwardMessage, setForwardMessage] = useState<MessageBubbleMessage | null>(null);
 
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     onScroll(e);
@@ -55,15 +69,35 @@ export function ChatWindow({ chatId }: { chatId: string }) {
     setIsSearchOpen(false);
   };
 
+  const handleArchiveToggle = useCallback(async () => {
+    const action = chat?.isArchived ? "unarchive" : "archive";
+    try {
+      await axios.post(`/api/chat/${chatId}/archive`, { action });
+      setChat((prev) => prev ? { ...prev, isArchived: !prev.isArchived } : null);
+      toast.success(action === "archive" ? "Chat archived" : "Chat moved to inbox");
+    } catch {
+      toast.error("Failed to update chat");
+    }
+  }, [chatId, chat?.isArchived]);
+
   return (
-    <div className="relative flex flex-col h-full bg-gradient-to-b from-background to-muted/20">
+    <div className="relative flex flex-col h-full">
       <ChatBackground />
 
       <ChatWindowHeader
+        chatId={chatId}
         otherParticipant={otherParticipant}
         onToggleSearch={() => setIsSearchOpen((v) => !v)}
         onOpenChatInfo={() => setShowChatInfo(true)}
         onOpenClearConfirm={() => setShowClearConfirm(true)}
+        onOpenPhrasebook={() => setShowPhrasebook(true)}
+        scheduledMessages={scheduledMessages}
+        onCancelScheduled={handleCancelScheduled}
+        exportChat={exportChat}
+        isArchived={chat?.isArchived}
+        onArchiveToggle={handleArchiveToggle}
+        pinnedMessages={pinnedMessages}
+        onUnpinMessage={handleUnpinMessage}
       />
 
       <ChatSearch
@@ -87,9 +121,14 @@ export function ChatWindow({ chatId }: { chatId: string }) {
         showScrollButton={showScrollButton}
         onScroll={handleScroll}
         onDelete={handleDeleteMessage}
+        onEdit={handleEditMessage}
         onScrollToBottom={scrollToBottom}
         scrollRef={scrollRef}
         viewportRef={viewportRef}
+        onReply={setReplyingTo}
+        onPin={handlePinMessage}
+        onUnpin={handleUnpinMessage}
+        onForward={setForwardMessage}
       />
 
       <ChatInputArea
@@ -106,9 +145,11 @@ export function ChatWindow({ chatId }: { chatId: string }) {
         isRecording={isRecording}
         onStartRecording={startRecording}
         onStopRecording={stopRecording}
-        onRewrite={handleRewrite}
-        isRewriting={isRewriting}
         onStickerSelect={(emoji: string) => setNewMessage((prev: string) => prev + emoji)}
+        onGifSelect={handleGifSelect}
+        replyingTo={replyingTo}
+        onCancelReply={() => setReplyingTo(null)}
+        onSchedule={(scheduledAt) => handleSchedule(newMessage, scheduledAt)}
       />
 
       <ChatInfoDialog
@@ -116,12 +157,28 @@ export function ChatWindow({ chatId }: { chatId: string }) {
         onOpenChange={setShowChatInfo}
         chat={chat}
         messages={messages}
+        alwaysTranslate={alwaysTranslate}
+        autoTranslateLanguage={autoTranslateLanguage}
+        onToggleAlwaysTranslate={updateTranslateSettings}
       />
 
       <ClearChatDialog
         open={showClearConfirm}
         onOpenChange={setShowClearConfirm}
         onConfirm={handleClearChat}
+      />
+
+      <PhrasebookDrawer
+        open={showPhrasebook}
+        onOpenChange={setShowPhrasebook}
+      />
+
+      <ForwardDialog
+        open={forwardMessage !== null}
+        onOpenChange={(open) => { if (!open) setForwardMessage(null); }}
+        message={forwardMessage}
+        chats={chats}
+        onForward={handleForwardMessage}
       />
     </div>
   );

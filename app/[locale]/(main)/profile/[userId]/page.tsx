@@ -7,6 +7,7 @@ import { Globe, MessageSquare, Languages, ArrowLeft, CalendarDays, Activity } fr
 import { notFound } from "next/navigation";
 import { ProfileActions } from "@/components/profile-actions";
 import { getProfileData } from "@/lib/profile-service";
+import { ProfileStatusBadge } from "@/components/profile-status-badge";
 
 interface PageProps {
   params: Promise<{ locale: string; userId: string }>;
@@ -23,7 +24,7 @@ export default async function ProfilePage({ params }: PageProps) {
     notFound();
   }
 
-  const { user, isOwnProfile, friendStatus, friendshipId, chatCount, messageCount } = data;
+  const { user, isOwnProfile, friendStatus, friendshipId, chatCount, messageCount, hasBlocked, blockId } = data;
 
   return (
     <div className="min-h-full flex items-center justify-center p-4 pb-20 md:pb-6">
@@ -53,12 +54,12 @@ export default async function ProfilePage({ params }: PageProps) {
                 <Globe className="h-3 w-3 text-primary" />
                 {user.preferredLanguage || "English"}
               </Badge>
-              {user.isOnline && (
-                <Badge variant="outline" className="gap-1.5 rounded-full px-3 py-1 text-green-600 border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-900">
-                  <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                  Online
-                </Badge>
-              )}
+              <ProfileStatusBadge
+                userId={userId}
+                initialIsOnline={user.isOnline ?? false}
+                initialLastSeen={user.lastSeen ?? null}
+                initialShowLastSeen={user.showLastSeen ?? true}
+              />
             </div>
           </CardHeader>
           <CardContent className="space-y-5 pt-6">
@@ -117,6 +118,9 @@ export default async function ProfilePage({ params }: PageProps) {
                 initialFriendStatus={friendStatus}
                 isOwnProfile={isOwnProfile}
                 friendshipId={friendshipId}
+                isBlocked={hasBlocked}
+                blockId={blockId}
+                username={user.name}
               />
             </div>
           </CardContent>

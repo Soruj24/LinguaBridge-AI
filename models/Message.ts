@@ -65,9 +65,31 @@ const MessageSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    replyTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+      default: null,
+    },
     isDeleted: {
       type: Boolean,
       default: false,
+    },
+    editedAt: {
+      type: Date,
+      default: null,
+    },
+    isPinned: {
+      type: Boolean,
+      default: false,
+    },
+    scheduledAt: {
+      type: Date,
+      default: null,
+    },
+    status: {
+      type: String,
+      enum: ["scheduled", "sent", "failed"],
+      default: "sent",
     },
   },
   { timestamps: true }

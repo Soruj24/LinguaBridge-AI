@@ -16,6 +16,7 @@ export async function processMessage({
   fileType,
   fileSize,
   isImage,
+  replyTo,
 }: {
   senderId: string;
   receiverId: string;
@@ -28,6 +29,7 @@ export async function processMessage({
   fileType?: string;
   fileSize?: number;
   isImage?: boolean;
+  replyTo?: string;
 }) {
   await connectDB();
 
@@ -66,6 +68,7 @@ export async function processMessage({
     fileType,
     fileSize,
     isImage,
+    replyTo,
   });
 
   await Chat.findByIdAndUpdate(chatId, {
@@ -75,5 +78,9 @@ export async function processMessage({
 
   return await Message.findById(message._id)
     .populate("senderId", "name email avatar")
-    .populate("receiverId", "name email avatar");
+    .populate("receiverId", "name email avatar")
+    .populate({
+      path: "replyTo",
+      populate: { path: "senderId", select: "name" },
+    });
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,54 +23,29 @@ export function VoiceRecorderUI({
 }: VoiceRecorderUIProps) {
   return (
     <div className="relative flex items-center justify-end min-w-[50px]">
-      <AnimatePresence>
-        {isRecording && (
-          <motion.div
-            initial={{ opacity: 0, x: 20, width: 0 }}
-            animate={{ opacity: 1, x: 0, width: "auto" }}
-            exit={{ opacity: 0, x: 20, width: 0 }}
-            className="absolute right-0 flex items-center bg-background/80 backdrop-blur-xl border shadow-lg rounded-full pr-14 pl-4 py-1 h-12 w-[300px] z-10 overflow-hidden"
-          >
-            <div className="flex items-center gap-2 text-red-500 mr-4 shrink-0">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-              <span className="font-mono font-medium">
-                {formatDuration(duration)}
-              </span>
-            </div>
-            <div className="flex-1 flex items-center justify-center text-xs text-muted-foreground uppercase tracking-wider animate-pulse whitespace-nowrap">
-              <ArrowLeft className="h-3 w-3 mr-1" />
-              Slide to cancel
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isRecording && (
+        <div className="absolute right-0 flex items-center bg-background/80 border shadow-lg rounded-full pr-14 pl-4 py-1 h-12 w-[300px] z-10 overflow-hidden">
+          <div className="flex items-center gap-2 text-red-500 mr-4 shrink-0">
+            <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+            <span className="font-mono font-medium">
+              {formatDuration(duration)}
+            </span>
+          </div>
+          <div className="flex-1 flex items-center justify-center text-xs text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+            <ArrowLeft className="h-3 w-3 mr-1" />
+            Cancel
+          </div>
+        </div>
+      )}
 
-      <motion.div
-        drag="x"
-        dragConstraints={{ left: -150, right: 0 }}
-        dragElastic={0.05}
-        onDragEnd={(e, info) => {
-          if (isRecording) {
-            if (info.offset.x < -80) {
-              onStop(false);
-            } else {
-              onStop(true);
-            }
-          }
-        }}
-        onPointerDown={(e) => {
-          if (!isSending) onStart();
-        }}
-        className="z-20 touch-none cursor-pointer"
-        whileTap={{ scale: 1.1 }}
-      >
+      <div className="z-20 touch-none cursor-pointer">
         <Button
           size="icon"
           className={cn(
             "rounded-full h-14 w-14 transition-all duration-200 shadow-xl border-0",
             isRecording
-              ? "bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-red-500/20 text-white"
-              : "bg-gradient-to-br from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-primary/20 text-primary-foreground",
+              ? "bg-red-500 hover:bg-red-600 text-white"
+              : "bg-primary hover:bg-primary/90 text-primary-foreground",
           )}
           onClick={() => {
             if (isRecording) {
@@ -97,7 +71,7 @@ export function VoiceRecorderUI({
             Sending...
           </div>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }

@@ -8,13 +8,13 @@ export function FooterSection() {
   const t = useTranslations("Landing");
 
   return (
-    <footer className="border-t bg-gradient-to-b from-background to-muted/20">
+    <footer className="border-t">
       <div className="mx-auto max-w-7xl px-4 lg:px-8 py-16">
         <div className="grid gap-12 md:grid-cols-4">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
-                <Globe className="h-4 w-4 text-primary-foreground" />
+              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Globe className="h-4 w-4 text-primary" />
               </div>
               <span className="font-bold text-lg">LinguaBridge AI</span>
             </div>

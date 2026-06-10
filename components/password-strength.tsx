@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 
 interface PasswordStrengthProps {
   password: string;
@@ -51,14 +50,11 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
     <div className="space-y-2">
       <div className="flex gap-1">
         {[0, 1, 2, 3, 4].map((index) => (
-          <motion.div
+          <div
             key={index}
             className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
               index <= strength.score ? strength.bgColor : "bg-muted"
             }`}
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.2, delay: index * 0.05 }}
           />
         ))}
       </div>

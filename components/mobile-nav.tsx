@@ -61,14 +61,7 @@ function TabButton({
       >
         <Icon className="h-5 w-5" />
       </div>
-      <span className={cn(
-        isActive ? "font-semibold" : "",
-      )}>
-        {label}
-      </span>
-      {isActive && (
-        <span className="h-0.5 w-4 rounded-full bg-primary mt-0.5" />
-      )}
+      <span>{label}</span>
     </button>
   );
 }
@@ -83,9 +76,8 @@ export function MobileNav() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden pb-[env(safe-area-inset-bottom)]">
-      <div className="absolute inset-0 border-t border-border/40 bg-background/85 backdrop-blur-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.08)]" />
-      <div className="relative flex items-center justify-around h-[4.25rem] px-4">
+    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden border-t bg-background pb-[env(safe-area-inset-bottom)]">
+      <div className="flex items-center justify-around h-14 px-4">
         {tabs.map((tab) => {
           if (tab.isSheet) {
             const isActive = pathname?.startsWith("/chat");

@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
 import Friendship from "@/models/Friendship";
+import { isBlocked } from "@/lib/block-check";
 import { processMessage } from "@/lib/chat-service";
 
 export async function POST(req: Request) {
@@ -12,7 +13,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { chatId, receiverId, text, voiceUrl } = await req.json();
+    const { chatId, receiverId, text, voiceUrl, replyToId } = await req.json();
 
     if (!text || !receiverId || !chatId) {
       return NextResponse.json(
@@ -25,6 +26,14 @@ export async function POST(req: Request) {
     const currentUser = await User.findById(session.user.id);
     if (!currentUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const blocked = await isBlocked(currentUser._id.toString(), receiverId);
+    if (blocked) {
+      return NextResponse.json(
+        { error: "You cannot send messages to this user" },
+        { status: 403 }
+      );
     }
 
     const areFriends = await Friendship.findOne({
@@ -46,6 +55,7 @@ export async function POST(req: Request) {
       text,
       chatId,
       voiceUrl,
+      replyTo: replyToId,
     });
 
     return NextResponse.json(message);

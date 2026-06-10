@@ -7,11 +7,14 @@ import {
   MessageSquare,
   Search,
   UserPlus,
-  Users, 
+  Users,
+  UserCheck,
+  UserRound,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { NotificationBell } from "@/components/notification-bell";
 import { GroupChatDialog } from "@/components/group-chat-dialog";
+import { cn } from "@/lib/utils";
 
 interface SidebarHeaderProps {
   searchQuery: string;
@@ -19,6 +22,9 @@ interface SidebarHeaderProps {
   onOpenAddFriend: () => void;
   onGroupChatCreated: () => void;
   onClose?: () => void;
+  activeTab: "friends" | "requests";
+  onTabChange: (tab: "friends" | "requests") => void;
+  totalPending: number;
 }
 
 export function SidebarHeader({
@@ -27,55 +33,81 @@ export function SidebarHeader({
   onOpenAddFriend,
   onGroupChatCreated,
   onClose,
+  activeTab,
+  onTabChange,
+  totalPending,
 }: SidebarHeaderProps) {
   const t = useTranslations("Sidebar");
 
   return (
-    <div className="px-4 pt-4 pb-3 space-y-3 border-b border-border/40 bg-gradient-to-b from-primary/[0.04] to-transparent">
+    <div className="px-4 pt-4 pb-3 space-y-3 border-b">
       <div className="flex items-center justify-between">
         <Link
           href="/dashboard"
           onClick={onClose}
-          className="flex items-center gap-2.5 group"
+          className="flex items-center gap-2"
         >
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-primary/30 transition-all group-hover:scale-105">
-            <MessageSquare className="h-4.5 w-4.5 text-primary-foreground" />
+          <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <MessageSquare className="h-4 w-4 text-primary" />
           </div>
-          <span className="font-bold text-lg bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
-            LinguaBridge
-          </span>
+          <span className="font-semibold text-base">LinguaBridge</span>
         </Link>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <NotificationBell />
           <GroupChatDialog onChatCreated={onGroupChatCreated}>
-            <Button
-              size="icon"
-              variant="outline"
-              className="h-8 w-8 rounded-lg border-border/50 hover:bg-primary/10 hover:border-primary/30 transition-all"
-            >
+            <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg">
               <Users className="h-4 w-4" />
             </Button>
           </GroupChatDialog>
-          <Button
-            size="icon"
-            variant="outline"
-            className="h-8 w-8 rounded-lg border-border/50 hover:bg-primary/10 hover:border-primary/30 transition-all"
-            onClick={onOpenAddFriend}
-          >
+          <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" onClick={onOpenAddFriend}>
             <UserPlus className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      <div className="relative group">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-primary transition-colors" />
-        <Input
-          placeholder={t("search")}
-          className="pl-10 h-9 bg-muted/40 border-border/30 focus:border-primary/40 focus:ring-primary/20 rounded-xl text-sm transition-all placeholder:text-muted-foreground/50"
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
+      <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+        <button
+          onClick={() => onTabChange("friends")}
+          className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all flex-1 justify-center",
+            activeTab === "friends"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          <UserRound className="h-3.5 w-3.5" />
+          Friends
+        </button>
+        <button
+          onClick={() => onTabChange("requests")}
+          className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all flex-1 justify-center",
+            activeTab === "requests"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          <UserCheck className="h-3.5 w-3.5" />
+          Requests
+          {totalPending > 0 && (
+            <span className="flex items-center justify-center h-4 min-w-[16px] px-1 rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
+              {totalPending}
+            </span>
+          )}
+        </button>
       </div>
+
+      {activeTab === "friends" && (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t("search")}
+            className="pl-9 h-9 rounded-lg text-sm"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+          />
+        </div>
+      )}
     </div>
   );
 }

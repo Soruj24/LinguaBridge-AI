@@ -8,3 +8,5 @@ export { ChatMessageList } from "./chat-message-list";
 export { ChatInputArea } from "./chat-input-area";
 export { ChatInfoDialog } from "./chat-info-dialog";
 export { ClearChatDialog } from "./clear-chat-dialog";
+export { SchedulePicker } from "./schedule-picker";
+export { ChatTranslateSettings } from "./chat-translate-settings";

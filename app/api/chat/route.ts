@@ -5,6 +5,8 @@ import Chat from "@/models/Chat";
 import User from "@/models/User";
 import Message from "@/models/Message";
 import Friendship from "@/models/Friendship";
+import Block from "@/models/Block";
+import { isBlocked } from "@/lib/block-check";
 
 export async function GET(req: Request) {
   try {
@@ -28,12 +30,41 @@ export async function GET(req: Request) {
         : { participants: currentUser._id };
 
     const total = await Chat.countDocuments(baseQuery);
-    const chats = await Chat.find(baseQuery)
+    let chats = await Chat.find(baseQuery)
       .populate("participants", "name email avatar preferredLanguage")
       .populate("lastMessage")
       .sort({ [sortBy]: sortOrder })
       .skip((page - 1) * limit)
       .limit(limit);
+
+    // Filter out chats with blocked users
+    if (session.user.role !== "admin") {
+      const blockedUsers = await Block.find({
+        $or: [
+          { blocker: currentUser._id },
+          { blocked: currentUser._id },
+        ],
+      }).lean();
+      const blockedIds = new Set(
+        blockedUsers.map((b) => {
+          const other =
+            b.blocker.toString() === currentUser._id.toString()
+              ? b.blocked.toString()
+              : b.blocker.toString();
+          return other;
+        }),
+      );
+      chats = chats.filter((chat) => {
+        const otherParticipants = chat.participants.filter(
+          (p: { _id: { toString(): string } }) =>
+            p._id.toString() !== currentUser._id.toString(),
+        );
+        return !otherParticipants.some(
+          (p: { _id: { toString(): string } }) =>
+            blockedIds.has(p._id.toString()),
+        );
+      });
+    }
 
     const chatIds = chats.map((c) => c._id);
     const unreadCounts = await Message.aggregate([
@@ -91,6 +122,14 @@ export async function POST(req: Request) {
 
     await connectDB();
     const currentUser = await User.findOne({ email: session.user.email });
+
+    const blocked = await isBlocked(currentUser._id.toString(), receiverId);
+    if (blocked) {
+      return NextResponse.json(
+        { error: "Cannot start a chat with this user" },
+        { status: 403 }
+      );
+    }
 
     const areFriends = await Friendship.findOne({
       $or: [

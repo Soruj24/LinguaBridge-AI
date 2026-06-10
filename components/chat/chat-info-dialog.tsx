@@ -5,15 +5,22 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Chat, Message } from "@/types/chat";
+import { ChatTranslateSettings } from "./chat-translate-settings";
 
 interface ChatInfoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   chat: Chat | null;
   messages: Message[];
+  alwaysTranslate: boolean;
+  autoTranslateLanguage: string | null;
+  onToggleAlwaysTranslate: (enabled: boolean, language?: string | null) => void;
 }
 
-export function ChatInfoDialog({ open, onOpenChange, chat, messages }: ChatInfoDialogProps) {
+export function ChatInfoDialog({
+  open, onOpenChange, chat, messages,
+  alwaysTranslate, autoTranslateLanguage, onToggleAlwaysTranslate,
+}: ChatInfoDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -44,6 +51,11 @@ export function ChatInfoDialog({ open, onOpenChange, chat, messages }: ChatInfoD
               <span className="text-muted-foreground">Messages</span>
               <span className="font-medium">{messages.length}</span>
             </div>
+            <ChatTranslateSettings
+              alwaysTranslate={alwaysTranslate}
+              autoTranslateLanguage={autoTranslateLanguage}
+              onToggle={onToggleAlwaysTranslate}
+            />
           </div>
         )}
       </DialogContent>
