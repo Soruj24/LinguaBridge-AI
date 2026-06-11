@@ -23,8 +23,13 @@ export const authConfig: NextAuthConfig = {
         return false; // Redirect unauthenticated users to login page
       } else if (isLoggedIn) {
         // Redirect logged-in users away from auth pages
-        if (nextUrl.pathname === "/login" || nextUrl.pathname === "/register") {
-            return Response.redirect(new URL("/dashboard", nextUrl));
+        const path = nextUrl.pathname;
+        const isLoginOrRegister = path.endsWith("/login") || path.endsWith("/register");
+        if (isLoginOrRegister) {
+            // Extract locale from path (e.g. /en/login -> en)
+            const segments = path.split("/");
+            const locale = segments.length > 2 ? segments[1] : "en";
+            return Response.redirect(new URL(`/${locale}/dashboard`, nextUrl.origin));
         }
       }
       return true;
