@@ -15,25 +15,34 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    if (session?.user) {
-      // Connect to the same origin
-      const socketInstance = io();
+    if (!session?.user) return;
 
-      socketInstance.on("connect", () => {
-        console.log("Socket connected:", socketInstance.id);
-        // Join user-specific room for notifications
-        if (session.user.id) {
-          socketInstance.emit("join_user", session.user.id);
-        }
-      });
+    // Skip socket connection if server doesn't support it (e.g. Vercel)
+    if (typeof window === "undefined") return;
 
-      // eslint-disable-next-line
-      setSocket(socketInstance);
+    const socketInstance = io({
+      reconnectionAttempts: 3,
+      reconnectionDelay: 2000,
+      timeout: 5000,
+      transports: ["websocket", "polling"],
+    });
 
-      return () => {
-        socketInstance.disconnect();
-      };
-    }
+    socketInstance.on("connect", () => {
+      if (session.user.id) {
+        socketInstance.emit("join_user", session.user.id);
+      }
+    });
+
+    socketInstance.on("connect_error", () => {
+      // Silently stop reconnecting — serverless environments don't support sockets
+      socketInstance.disconnect();
+    });
+
+    setSocket(socketInstance);
+
+    return () => {
+      socketInstance.disconnect();
+    };
   }, [session]);
 
   return (
