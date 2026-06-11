@@ -10,18 +10,20 @@ export const useSocket = () => {
   return useContext(SocketContext);
 };
 
+function isVercel(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.location.hostname.endsWith(".vercel.app");
+}
+
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: session } = useSession();
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    if (!session?.user) return;
-
-    // Skip socket connection if server doesn't support it (e.g. Vercel)
-    if (typeof window === "undefined") return;
+    if (!session?.user || isVercel()) return;
 
     const socketInstance = io({
-      reconnectionAttempts: 3,
+      reconnectionAttempts: 5,
       reconnectionDelay: 2000,
       timeout: 5000,
       transports: ["websocket", "polling"],
@@ -34,7 +36,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     socketInstance.on("connect_error", () => {
-      // Silently stop reconnecting — serverless environments don't support sockets
       socketInstance.disconnect();
     });
 
