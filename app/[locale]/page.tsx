@@ -34,7 +34,7 @@ export default function Home() {
       <PageHeader scrolled={scrolled} />
 
       <main className="flex-1">
-        <HeroSection heroOpacity={1} heroScale={1} />
+        <HeroSection />
         <FeatureDetailSection />
         <FeaturesGridSection />
         <HowItWorksSection />

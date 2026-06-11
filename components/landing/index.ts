@@ -11,3 +11,4 @@ export { CtaSection } from "./cta-section";
 export { FooterSection } from "./footer-section";
 export { ChatMockup } from "./chat-mockup";
 export { FaqItem } from "./faq-item";
+export { FadeIn, StaggerChildren, StaggerItem } from "./fade-in";

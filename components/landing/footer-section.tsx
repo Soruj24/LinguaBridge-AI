@@ -1,22 +1,22 @@
 "use client";
 
 import { Link } from "@/navigation";
-import { Globe } from "lucide-react";
+import { Globe, Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export function FooterSection() {
   const t = useTranslations("Landing");
 
   return (
-    <footer className="border-t">
+    <footer className="relative border-t bg-gradient-to-b from-background to-muted/30">
       <div className="mx-auto max-w-7xl px-4 lg:px-8 py-16">
         <div className="grid gap-12 md:grid-cols-4">
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-lg bg-primary/10 border border-primary/15 flex items-center justify-center">
                 <Globe className="h-4 w-4 text-primary" />
               </div>
-              <span className="font-bold text-lg">LinguaBridge AI</span>
+              <span className="font-bold text-lg tracking-tight">LinguaBridge <span className="text-primary">AI</span></span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">{t("footer.description")}</p>
           </div>
@@ -44,10 +44,11 @@ export function FooterSection() {
           </div>
         </div>
         <div className="border-t border-border/50 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} LinguaBridge AI. {t("footer.rights")}</p>
-          <div className="flex gap-4 text-xs text-muted-foreground">
-            <span className="hover:text-foreground transition-colors cursor-pointer">{t("footer.terms")}</span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">{t("footer.privacy")}</span>
+          <p className="text-xs text-muted-foreground">
+            &copy; {new Date().getFullYear()} LinguaBridge AI. {t("footer.rights")}
+          </p>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            Made with <Heart className="h-3 w-3 fill-red-500 text-red-500 mx-0.5" /> for global communication
           </div>
         </div>
       </div>
