@@ -95,22 +95,41 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         token.isEmailVerified = u.isEmailVerified || false;
         token.showTypingIndicator = u.showTypingIndicator ?? true;
         token.showReadReceipts = u.showReadReceipts ?? true;
-        token.preferences = u.preferences;
-        token.emailPreferences = u.emailPreferences;
-        token.notificationPreferences = u.notificationPreferences;
+        token.preferences = u.preferences ? { ...u.preferences } : undefined;
+        token.emailPreferences = u.emailPreferences ? { ...u.emailPreferences } : undefined;
+        token.notificationPreferences = u.notificationPreferences
+          ? {
+              ...u.notificationPreferences,
+              enabledTypes: Array.isArray(u.notificationPreferences.enabledTypes)
+                ? [...u.notificationPreferences.enabledTypes]
+                : [],
+              doNotDisturb: u.notificationPreferences.doNotDisturb
+                ? { ...u.notificationPreferences.doNotDisturb }
+                : { enabled: false, startTime: "", endTime: "" },
+            }
+          : undefined;
       }
 
       if (trigger === "update" && session) {
         token.preferredLanguage = session.preferredLanguage;
         token.avatar = session.avatar;
         if (session.user?.preferences) {
-          token.preferences = session.user.preferences;
+          token.preferences = { ...session.user.preferences };
         }
         if (session.user?.emailPreferences) {
-          token.emailPreferences = session.user.emailPreferences;
+          token.emailPreferences = { ...session.user.emailPreferences };
         }
         if (session.user?.notificationPreferences) {
-          token.notificationPreferences = session.user.notificationPreferences;
+          const np = session.user.notificationPreferences as Record<string, unknown>;
+          token.notificationPreferences = {
+            enabledTypes: Array.isArray(np.enabledTypes) ? [...(np.enabledTypes as string[])] : [],
+            doNotDisturb: np.doNotDisturb && typeof np.doNotDisturb === "object"
+              ? { enabled: Boolean((np.doNotDisturb as Record<string, unknown>).enabled), startTime: String((np.doNotDisturb as Record<string, unknown>).startTime || ""), endTime: String((np.doNotDisturb as Record<string, unknown>).endTime || "") }
+              : { enabled: false, startTime: "", endTime: "" },
+            sound: typeof np.sound === "string" ? np.sound : "default",
+            vibration: typeof np.vibration === "boolean" ? np.vibration : true,
+            showPreview: typeof np.showPreview === "boolean" ? np.showPreview : true,
+          };
         }
         if (typeof session.showTypingIndicator === "boolean") {
           token.showTypingIndicator = session.showTypingIndicator;
