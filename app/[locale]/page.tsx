@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Sparkles } from "lucide-react";
 import { FeedbackDialog } from "@/components/feedback-dialog";
@@ -23,10 +23,12 @@ export default function Home() {
   const t = useTranslations("Landing");
   const [scrolled, setScrolled] = useState(false);
 
-  if (typeof window !== "undefined") {
+  useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
-    if (!scrolled && window.scrollY > 50) setScrolled(true);
-  }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
