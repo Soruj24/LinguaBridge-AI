@@ -2,7 +2,12 @@ import Stripe from "stripe";
 import SubscriptionPlan from "../models/SubscriptionPlan";
 import { STRIPE_SECRET_KEY } from "../secret";
 
-const stripe = new Stripe(STRIPE_SECRET_KEY!);
+const _stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
+
+export const getStripe = (): Stripe => {
+  if (!_stripe) throw new Error("Stripe is not configured. Provide a valid STRIPE_SECRET_KEY.");
+  return _stripe;
+};
 
 export const sanitizeBillingData = (data: any) => {
   if (!data) return data;
@@ -15,6 +20,7 @@ export const sanitizeBillingData = (data: any) => {
 };
 
 export const getOrCreatePriceId = async (plan: any): Promise<string> => {
+  const stripe = getStripe();
   if (plan.stripePriceId) return plan.stripePriceId;
   const prices = await stripe.prices.list({ product: plan.stripeProductId, recurring: { interval: plan.interval }, active: true });
   if (prices.data.length > 0) return prices.data[0].id;

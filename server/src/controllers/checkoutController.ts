@@ -1,5 +1,4 @@
 import { Response, NextFunction } from "express";
-import Stripe from "stripe";
 import createError from "http-errors";
 import { successResponse } from "./responsControllers";
 import { AuthRequest } from "../types";
@@ -8,9 +7,7 @@ import SubscriptionPlan from "../models/SubscriptionPlan";
 import UserActivity from "../models/UserActivity";
 import { getClientIP } from "../utils";
 import { asyncHandler } from "../middleware/asyncHandler";
-import { STRIPE_SECRET_KEY } from "../secret";
-
-const stripe = new Stripe(STRIPE_SECRET_KEY!);
+import { getStripe } from "./billingHelpers";
 
 const handleCreateCheckoutSession = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -20,6 +17,7 @@ const handleCreateCheckoutSession = asyncHandler(async (req: AuthRequest, res: R
     const [plan, user] = await Promise.all([SubscriptionPlan.findById(planId), User.findById(userId)]);
     if (!plan?.isActive) return next(createError(404, "Plan not found"));
     if (!user) return next(createError(404, "User not found"));
+    const stripe = getStripe();
     let scid = (user as any).stripeCustomerId;
     if (!scid) { const c = await stripe.customers.create({ email: user.email, name: `${user.firstName} ${user.lastName}`.trim(), metadata: { userId: user._id.toString() } }); scid = c.id; (user as any).stripeCustomerId = scid; await user.save(); }
     const session = await stripe.checkout.sessions.create({

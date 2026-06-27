@@ -1,14 +1,10 @@
 import { Response, NextFunction } from "express";
-import Stripe from "stripe";
 import createError from "http-errors";
 import { successResponse } from "./responsControllers";
 import { AuthRequest } from "../types";
 import Invoice from "../models/Invoice";
 import { asyncHandler } from "../middleware/asyncHandler";
-import { sanitizeBillingData } from "./billingHelpers";
-import { STRIPE_SECRET_KEY } from "../secret";
-
-const stripe = new Stripe(STRIPE_SECRET_KEY!);
+import { sanitizeBillingData, getStripe } from "./billingHelpers";
 
 const handleGetInvoices = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -27,6 +23,7 @@ const handleDownloadInvoice = asyncHandler(async (req: AuthRequest, res: Respons
     const invoice = await Invoice.findOne({ _id: invoiceId, userId });
     if (!invoice) return next(createError(404, "Invoice not found"));
     if ((invoice as any).stripeInvoiceId) {
+      const stripe = getStripe();
       const si = await stripe.invoices.retrieve((invoice as any).stripeInvoiceId);
       if (si.invoice_pdf) return res.redirect(si.invoice_pdf);
     }

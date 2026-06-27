@@ -13,24 +13,29 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    return [
-      {
-        source: "/api/friends/sync-user",
-        destination: "http://localhost:5000/api/friends/sync-user",
-      },
-      {
-        source: "/api/friends/auth-sync",
-        destination: "http://localhost:5000/api/friends/auth-sync",
-      },
-      {
-        source: "/api/friends/refresh-token",
-        destination: "http://localhost:5000/api/friends/refresh-token",
-      },
-      {
-        source: "/api/:path*",
-        destination: "http://localhost:5000/api/:path*",
-      },
-    ];
+    return {
+      beforeFiles: [
+        {
+          source: "/api/friends/sync-user",
+          destination: "http://localhost:4000/api/friends/sync-user",
+        },
+        {
+          source: "/api/friends/auth-sync",
+          destination: "http://localhost:4000/api/friends/auth-sync",
+        },
+        {
+          source: "/api/friends/refresh-token",
+          destination: "http://localhost:4000/api/friends/refresh-token",
+        },
+      ],
+      afterFiles: [],
+      fallback: [
+        {
+          source: "/api/:path*",
+          destination: "http://localhost:4000/api/:path*",
+        },
+      ],
+    };
   },
 };
 

@@ -9,10 +9,13 @@ import { Link } from "@/navigation";
 import { RegisterStepIndicator, RegisterFormFields, RegisterSuccess } from "@/components/register";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { registerSchema, type RegisterFormValues } from "@/lib/schemas/register";
 import { toast } from "sonner";
 import { registerAction } from "@/app/actions/auth.action";
+import { languageMap } from "@/lib/utils/languages";
+
+const ALL_LANGUAGES = Object.entries(languageMap).map(([code, name]) => ({ code, name }));
 
 export default function RegisterPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -22,7 +25,20 @@ export default function RegisterPage() {
   const [showRequirements, setShowRequirements] = useState(false);
   const [passwordValue, setPasswordValue] = useState("");
   const [langSearch, setLangSearch] = useState("");
-  const [filteredLanguages, setFilteredLanguages] = useState<{ code: string; name: string }[]>([]);
+  const [filteredLanguages, setFilteredLanguages] = useState<{ code: string; name: string }[]>(ALL_LANGUAGES);
+
+  useEffect(() => {
+    if (!langSearch) {
+      setFilteredLanguages(ALL_LANGUAGES);
+      return;
+    }
+    const q = langSearch.toLowerCase();
+    setFilteredLanguages(
+      ALL_LANGUAGES.filter(
+        (l) => l.code.toLowerCase().includes(q) || l.name.toLowerCase().includes(q)
+      )
+    );
+  }, [langSearch]);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),

@@ -5,9 +5,7 @@ import User from "../models/schemas/User";
 import Subscription from "../models/Subscription";
 import Invoice from "../models/Invoice";
 import PaymentMethod from "../models/PaymentMethod";
-import { STRIPE_SECRET_KEY } from "../secret";
-
-const stripe = new Stripe(STRIPE_SECRET_KEY!);
+import { getStripe } from "./billingHelpers";
 
 const handleSubscriptionEvent = async (sub: Stripe.Subscription) => {
   const customerId = sub.customer as string;
@@ -43,7 +41,7 @@ const handleStripeWebhook = async (req: Request, res: Response, next: NextFuncti
     const sig = req.headers["stripe-signature"] as string;
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
     let event: Stripe.Event;
-    try { event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret); }
+    try { event = getStripe().webhooks.constructEvent(req.body, sig, endpointSecret); }
     catch (err: any) { return next(createError(400, `Webhook Error: ${err.message}`)); }
     switch (event.type) {
       case "customer.subscription.created": case "customer.subscription.updated": case "customer.subscription.deleted": await handleSubscriptionEvent(event.data.object as Stripe.Subscription); break;

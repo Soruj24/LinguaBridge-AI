@@ -17,7 +17,13 @@ import { sendVerificationEmail, sendWelcomeEmail } from "../helper/email";
 import { notificationService } from "../services/notificationService";
 
 const handleCreateUser = asyncHandler(async (req: Request<{}, {}, CreateUserBody>, res: Response, next: NextFunction) => {
-  const { username, email, password, userLanguage, firstName, lastName } = req.body;
+  const body = req.body as any;
+  const { email, password, firstName, lastName } = body;
+  const username = body.username || (body.name || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 30);
+  const preferredLanguage = body.preferredLanguage || body.userLanguage || "en";
+  if (!username || username.length < 3) {
+    return next(createError(400, "A valid name or username (min 3 characters) is required"));
+  }
   const existingUser = await User.findOne({ $or: [{ username: username.toLowerCase() }, { email: email.toLowerCase() }] });
   if (existingUser) {
     let msg = "User already exists";
@@ -28,7 +34,7 @@ const handleCreateUser = asyncHandler(async (req: Request<{}, {}, CreateUserBody
   const userIP = getClientIP(req);
   const t = Math.floor(100000 + Math.random() * 900000).toString();
   const user = await User.create({
-    username: username.toLowerCase(), email: email.toLowerCase(), password, userLanguage, firstName, lastName,
+    username: username.toLowerCase(), email: email.toLowerCase(), password, preferredLanguage, firstName, lastName,
     role: "user", emailVerified: false, emailVerificationToken: t, emailVerificationExpires: new Date(Date.now() + 86400000),
     status: "pending", registrationIP: userIP, detectedCountry: (req.headers["cf-ipcountry"] as string) || undefined,
     metadata: { userAgent: req.get("User-Agent"), ipAddress: userIP, signupFlow: "standard" },

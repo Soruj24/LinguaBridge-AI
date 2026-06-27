@@ -36,14 +36,16 @@ export function useVerifyEmail() {
 
   useEffect(() => {
     if (status !== "success") return;
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) { clearInterval(timer); router.push("/dashboard"); return 0; }
-        return prev - 1;
-      });
-    }, 1000);
+    let timer: ReturnType<typeof setInterval>;
+    if (countdown > 0) {
+      timer = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+    } else {
+      router.push("/en/dashboard");
+    }
     return () => clearInterval(timer);
-  }, [status, router]);
+  }, [status, countdown, router]);
 
   return { status, countdown };
 }

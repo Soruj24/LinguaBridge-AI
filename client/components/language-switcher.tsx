@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Globe } from "lucide-react";
 import { useUserSettings } from "@/hooks/use-user-settings";
+import { useSession } from "next-auth/react";
 
 const UI_LANGUAGES = [
   { code: "en", name: "English", flag: "🇺🇸" },
@@ -35,6 +36,7 @@ export function LanguageSwitcher({ variant = "select", className }: LanguageSwit
   const router = useRouter();
   const pathname = usePathname();
   const { updateLanguage } = useUserSettings();
+  const { update } = useSession();
   const [isChanging, setIsChanging] = useState(false);
 
   const handleChange = async (newLocale: string) => {
@@ -43,6 +45,7 @@ export function LanguageSwitcher({ variant = "select", className }: LanguageSwit
     setIsChanging(true);
     const success = await updateLanguage(newLocale);
     if (success) {
+      await update({ preferredLanguage: newLocale });
       router.replace(pathname, { locale: newLocale });
     }
     setIsChanging(false);

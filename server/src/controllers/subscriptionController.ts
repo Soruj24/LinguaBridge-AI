@@ -10,10 +10,7 @@ import Invoice from "../models/Invoice";
 import UserActivity from "../models/UserActivity";
 import { getClientIP } from "../utils";
 import { asyncHandler } from "../middleware/asyncHandler";
-import { sanitizeBillingData, getOrCreatePriceId } from "./billingHelpers";
-import { STRIPE_SECRET_KEY } from "../secret";
-
-const stripe = new Stripe(STRIPE_SECRET_KEY!);
+import { sanitizeBillingData, getOrCreatePriceId, getStripe } from "./billingHelpers";
 
 const handleGetCurrentSubscription = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -33,6 +30,7 @@ const handleCreateSubscription = asyncHandler(async (req: AuthRequest, res: Resp
     if (!user) return next(createError(404, "User not found"));
     if (!plan?.isActive) return next(createError(404, "Plan not found"));
     if (await Subscription.findOne({ userId, status: { $in: ["active", "trialing"] } })) return next(createError(400, "You already have an active subscription"));
+    const stripe = getStripe();
     let scid = (user as any).stripeCustomerId;
     if (!scid) { const c = await stripe.customers.create({ email: user.email, name: `${user.firstName} ${user.lastName}`.trim(), metadata: { userId: user._id.toString() } }); scid = c.id; (user as any).stripeCustomerId = scid; await user.save(); }
     const priceId = await getOrCreatePriceId(plan);
@@ -57,6 +55,7 @@ const handleUpdateSubscription = asyncHandler(async (req: AuthRequest, res: Resp
     const newPlan = await SubscriptionPlan.findById(planId);
     if (!newPlan?.isActive) return next(createError(404, "Plan not found"));
     if (subscription.planId?.toString() === planId) return next(createError(400, "Already on this plan"));
+    const stripe = getStripe();
     const ss = await stripe.subscriptions.retrieve((subscription as any).stripeSubscriptionId as string);
     const np = await getOrCreatePriceId(newPlan);
     const us = await stripe.subscriptions.update((subscription as any).stripeSubscriptionId as string, { items: [{ id: ss.items.data[0].id, price: np }], proration_behavior: "create_prorations" });
@@ -76,6 +75,7 @@ const handleCancelSubscription = asyncHandler(async (req: AuthRequest, res: Resp
     const { cancelAtPeriodEnd = true, reason } = req.body;
     const subscription = await Subscription.findOne({ userId, status: "active" });
     if (!subscription || !(subscription as any).stripeSubscriptionId) return next(createError(404, "No active subscription"));
+    const stripe = getStripe();
     if (cancelAtPeriodEnd) {
       await stripe.subscriptions.update((subscription as any).stripeSubscriptionId as string, { cancel_at_period_end: true });
       subscription.cancelAtPeriodEnd = true;
