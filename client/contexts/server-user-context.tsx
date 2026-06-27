@@ -101,6 +101,9 @@ export function ServerUserProvider({ children }: { children: React.ReactNode }) 
   }, [session, status, syncAuth]);
 
   // Axios interceptor: auto-refresh on 401
+  const tokensRef = useRef<TokenPair | null>(null);
+  tokensRef.current = tokens;
+
   useEffect(() => {
     const interceptor = axios.interceptors.response.use(
       (response) => response,
@@ -121,11 +124,12 @@ export function ServerUserProvider({ children }: { children: React.ReactNode }) 
           isRefreshing = true;
 
           try {
-            if (!tokens?.refreshToken) throw new Error("No refresh token");
+            const currentTokens = tokensRef.current;
+            if (!currentTokens?.refreshToken) throw new Error("No refresh token");
             const res = await fetch("/api/friends/refresh-token", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ refreshToken: tokens.refreshToken }),
+              body: JSON.stringify({ refreshToken: currentTokens.refreshToken }),
             });
             const data = await res.json();
             if (data.accessToken) {
@@ -151,7 +155,7 @@ export function ServerUserProvider({ children }: { children: React.ReactNode }) 
     return () => {
       axios.interceptors.response.eject(interceptor);
     };
-  }, [tokens]);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ serverUser, isLoading, tokens }}>

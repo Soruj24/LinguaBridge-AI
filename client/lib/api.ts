@@ -56,9 +56,6 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError as AxiosError, null);
-        if (typeof window !== "undefined") {
-          window.location.href = "/en/login";
-        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

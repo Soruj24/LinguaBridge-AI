@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useSession } from "next-auth/react";
 
@@ -13,21 +13,24 @@ export const useSocket = () => {
 function getSocketUrl(): string {
   if (typeof window === "undefined") return "";
 
-  // In production (Vercel), use the dedicated socket server URL
   if (process.env.NEXT_PUBLIC_SOCKET_URL) {
     return process.env.NEXT_PUBLIC_SOCKET_URL;
   }
 
-  // In local dev, connect to the Express server (port 5000)
   return `http://localhost:${process.env.NEXT_PUBLIC_SOCKET_PORT || "5000"}`;
 }
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: session } = useSession();
   const [socket, setSocket] = useState<Socket | null>(null);
+  const userIdRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    if (!session?.user) return;
+    const userId = session?.user?.id;
+    if (!userId) return;
+
+    if (userIdRef.current === userId) return;
+    userIdRef.current = userId;
 
     const url = getSocketUrl();
     if (!url) return;
@@ -40,9 +43,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     socketInstance.on("connect", () => {
-      if (session.user.id) {
-        socketInstance.emit("join_user", session.user.id);
-      }
+      socketInstance.emit("join_user", userId);
     });
 
     socketInstance.on("connect_error", () => {
@@ -53,8 +54,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => {
       socketInstance.disconnect();
+      userIdRef.current = undefined;
     };
-  }, [session]);
+  }, [session?.user?.id]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

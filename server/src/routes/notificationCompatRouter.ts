@@ -6,13 +6,18 @@ import Notification from "../models/schemas/Notification";
 const router = Router();
 
 router.get("/", async (req: Request, res: Response) => {
-  await connectDB();
-  const user = extractTokenUser(req);
-  if (!user) { res.status(401).json({ error: "Unauthorized" }); return; }
+  try {
+    await connectDB();
+    const user = extractTokenUser(req);
+    if (!user) { res.status(401).json({ error: "Unauthorized" }); return; }
 
-  const notifications = await Notification.find({ userId: user._id }).sort({ createdAt: -1 }).limit(50).lean();
-  const unreadCount = await Notification.countDocuments({ userId: user._id, isRead: false });
-  res.json({ notifications, unreadCount });
+    const notifications = await Notification.find({ userId: user._id }).sort({ createdAt: -1 }).limit(50).lean();
+    const unreadCount = await Notification.countDocuments({ userId: user._id, isRead: false });
+    res.json({ notifications, unreadCount });
+  } catch (error) {
+    console.error("Notifications fetch error:", error);
+    res.status(500).json({ error: "Failed to fetch notifications" });
+  }
 });
 
 router.patch("/", async (req: Request, res: Response) => {

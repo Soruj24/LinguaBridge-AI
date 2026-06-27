@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { UserPlus, UserCheck, UserX, Loader2, Inbox } from "lucide-react";
-import axios from "axios";
+import api from "@/lib/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useServerUser } from "@/contexts/server-user-context";
 
 interface PendingRequest {
   _id: string;
@@ -15,15 +16,16 @@ interface PendingRequest {
 }
 
 export function FriendRequestsCard() {
+  const { isLoading: authLoading } = useServerUser();
   const [requests, setRequests] = useState<PendingRequest[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [acceptingIds, setAcceptingIds] = useState<Set<string>>(new Set());
   const [rejectingIds, setRejectingIds] = useState<Set<string>>(new Set());
 
   const fetchRequests = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get("/api/friends/requests");
+      const res = await api.get("/api/friends/requests");
       setRequests(res.data.incoming ?? []);
     } catch {
       setRequests([]);
@@ -33,13 +35,13 @@ export function FriendRequestsCard() {
   };
 
   useEffect(() => {
-    fetchRequests();
-  }, []);
+    if (!authLoading) fetchRequests();
+  }, [authLoading]);
 
   const handleAccept = async (id: string) => {
     setAcceptingIds((p) => new Set(p).add(id));
     try {
-      await axios.patch(`/api/friends/${id}`, { action: "accept" });
+      await api.patch(`/api/friends/${id}`, { action: "accept" });
       toast.success("Friend request accepted");
       setRequests((prev) => prev.filter((r) => r._id !== id));
     } catch {
@@ -52,7 +54,7 @@ export function FriendRequestsCard() {
   const handleReject = async (id: string) => {
     setRejectingIds((p) => new Set(p).add(id));
     try {
-      await axios.patch(`/api/friends/${id}`, { action: "reject" });
+      await api.patch(`/api/friends/${id}`, { action: "reject" });
       toast.success("Request declined");
       setRequests((prev) => prev.filter((r) => r._id !== id));
     } catch {

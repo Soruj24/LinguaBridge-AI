@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "@/navigation";
-import axios from "axios";
+import api from "@/lib/api";
+import { useServerUser } from "@/contexts/server-user-context";
 
 interface Notification {
   _id: string;
@@ -16,15 +17,16 @@ interface Notification {
 
 export function useNotifications() {
   const router = useRouter();
+  const { isLoading: authLoading } = useServerUser();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchNotifications = async () => {
     try {
       setIsLoading(true);
-      const { data } = await axios.get("/api/notifications");
+      const { data } = await api.get("/api/notifications");
       setNotifications(data.notifications || []);
       setUnreadCount(data.unreadCount || 0);
     } catch (error) {
@@ -35,8 +37,8 @@ export function useNotifications() {
   };
 
   useEffect(() => {
-    fetchNotifications();
-  }, []);
+    if (!authLoading) fetchNotifications();
+  }, [authLoading]);
 
   const markAsRead = async (id?: string) => {
     try {
@@ -44,7 +46,7 @@ export function useNotifications() {
       if (id) params.set("id", id);
       else params.set("all", "true");
 
-      await axios.patch(`/api/notifications?${params.toString()}`);
+      await api.patch(`/api/notifications?${params.toString()}`);
 
       if (id) {
         setNotifications((prev) =>

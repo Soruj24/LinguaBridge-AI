@@ -9,6 +9,7 @@ import { generateAuthTokens } from "../utils/auth";
 import { sanitizeUser } from "../utils";
 import { IUser } from "../types";
 import { extractTokenUser } from "../middleware/auth/tokenAuth";
+import { setAccessTokenCookie, setRefreshTokenCookie } from "../helper/cookie";
 
 const friendsRouter = Router();
 
@@ -43,6 +44,9 @@ friendsRouter.post("/auth-sync", async (req: Request, res: Response) => {
 
     // Also sync ChatUser
     await findOrCreateChatUser({ email, name, avatar });
+
+    setAccessTokenCookie(res, tokens.accessToken);
+    setRefreshTokenCookie(res, tokens.refreshToken);
 
     res.json({
       accessToken: tokens.accessToken,
@@ -146,20 +150,25 @@ friendsRouter.get("/search", async (req: Request, res: Response) => {
 
 // ── Get pending requests (compat: uses token auth) ──
 friendsRouter.get("/requests", async (req: Request, res: Response) => {
-  await connectDB();
-  const tokenUser = extractTokenUser(req);
-  if (!tokenUser) { res.status(401).json({ error: "Unauthorized" }); return; }
+  try {
+    await connectDB();
+    const tokenUser = extractTokenUser(req);
+    if (!tokenUser) { res.status(401).json({ error: "Unauthorized" }); return; }
 
-  const user = await ChatUser.findOne({ email: tokenUser.email.toLowerCase() });
-  if (!user) { res.status(404).json({ error: "User not found" }); return; }
+    const user = await ChatUser.findOne({ email: tokenUser.email.toLowerCase() });
+    if (!user) { res.status(404).json({ error: "User not found" }); return; }
 
-  const requests = await Friendship.find({ recipient: user._id, status: "pending" })
-    .populate("requester", "name email avatar preferredLanguage")
-    .sort({ createdAt: -1 })
-    .lean();
+    const requests = await Friendship.find({ recipient: user._id, status: "pending" })
+      .populate("requester", "name email avatar preferredLanguage")
+      .sort({ createdAt: -1 })
+      .lean();
 
-  const incoming = requests.map((r) => ({ _id: r._id, user: r.requester, createdAt: r.createdAt }));
-  res.json({ incoming });
+    const incoming = requests.map((r) => ({ _id: r._id, user: r.requester, createdAt: r.createdAt }));
+    res.json({ incoming });
+  } catch (error) {
+    console.error("Friend requests fetch error:", error);
+    res.status(500).json({ error: "Failed to fetch friend requests" });
+  }
 });
 
 // ── Send friend request (compat: uses token auth) ──

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useLocale } from "next-intl";
+import api from "@/lib/api";
 
 interface Chat {
   _id: string;
@@ -25,11 +25,15 @@ export function useRecentConversations() {
   const locale = useLocale();
   const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
+    if (!session?.user || fetchedRef.current) return;
+    fetchedRef.current = true;
+
     async function fetchChats() {
       try {
-        const res = await axios.get("/api/chat");
+        const res = await api.get("/api/chat");
         const data = Array.isArray(res.data) ? res.data : res.data?.data || [];
         const sorted = data.sort(
           (a: Chat, b: Chat) =>
@@ -42,10 +46,9 @@ export function useRecentConversations() {
         setIsLoading(false);
       }
     }
-    if (session?.user && axios.defaults.headers.common["Authorization"]) {
-      fetchChats();
-    }
-  }, [session, axios.defaults.headers.common["Authorization"]]);
+
+    fetchChats();
+  }, [session?.user?.email]);
 
   const getOtherParticipant = (chat: Chat) => {
     return chat.participants.find((p) => p.email !== session?.user?.email);

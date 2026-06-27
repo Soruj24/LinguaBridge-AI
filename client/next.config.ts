@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         {
+          source: "/api/auth/refresh",
+          destination: "http://localhost:4000/api/auth/refresh-token",
+        },
+        {
           source: "/api/friends/sync-user",
           destination: "http://localhost:4000/api/friends/sync-user",
         },

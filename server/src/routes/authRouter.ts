@@ -98,6 +98,9 @@ authRouter.get("/health", rateLimitConfig.general, (req, res) => {
   res.status(200).json({ status: "OK", timestamp: new Date().toISOString(), uptime: process.uptime(), service: "Authentication Service" });
 });
 
+// POST /refresh (alias for /refresh-token — client interceptor calls this)
+authRouter.post("/refresh", handleRefreshToken);
+
 // ==================== CLIENT COMPAT ALIASES ====================
 import { extractTokenUser } from "../middleware/auth/tokenAuth";
 import { Request, Response } from "express";

@@ -18,10 +18,17 @@ declare global {
 
 export function extractTokenUser(req: Request): TokenUser | null {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
+    let token: string | undefined;
 
-    const token = authHeader.split(" ")[1];
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
+    }
+
+    if (!token && (req as any).cookies?.accessToken) {
+      token = (req as any).cookies.accessToken;
+    }
+
     if (!token || !jwtAccessKey) return null;
 
     const decoded = jwt.verify(token, jwtAccessKey) as { id: string; email: string; role: string };
