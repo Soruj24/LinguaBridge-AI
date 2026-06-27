@@ -1,9 +1,10 @@
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
+import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "./auth.config";
-import { authorizeCredentials, getOrCreateUser, logLoginActivity } from "@/lib/auth-service";
+
+const SERVER_URL = process.env.SERVER_URL || "http://localhost:5000";
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
@@ -20,139 +21,67 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
-      async authorize(credentials, req) {
-        return authorizeCredentials(
-          credentials as Record<string, unknown> | undefined,
-          req?.headers?.get("user-agent") ?? undefined,
-        );
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+
+        try {
+          const res = await fetch(`${SERVER_URL}/api/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok || !data?.payload?.user) return null;
+
+          const user = data.payload.user;
+          return {
+            id: user._id || user.id,
+            email: user.email,
+            name: user.firstName || user.username || user.displayName,
+            image: user.avatar?.url || user.avatar || undefined,
+            role: user.role || "user",
+            preferredLanguage: user.preferredLanguage || "en",
+            accessToken: user.accessToken,
+            refreshToken: user.refreshToken,
+          };
+        } catch (error) {
+          console.error("Auth provider error:", error);
+          return null;
+        }
       },
     }),
   ],
-  events: {
-    async signIn({ user, account }) {
-      if (account?.provider === "google" || account?.provider === "github") {
-        try {
-          const authUser = await getOrCreateUser({
-            email: user.email!,
-            name: user.name,
-            image: user.image,
-          });
-
-          user._id = authUser._id.toString();
-          user.role = authUser.role;
-          user.preferredLanguage = authUser.preferredLanguage;
-          user.avatar = authUser.avatar;
-
-          await logLoginActivity({
-            userId: authUser._id.toString(),
-            email: user.email!,
-            type: "login",
-            success: true,
-            provider: account.provider,
-          });
-        } catch (error) {
-          console.error("Error in signIn event:", error);
-        }
-      }
-    },
-    async signOut() {},
-  },
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user }) {
       if (user) {
-        const u = user as {
-          _id?: string | { toString(): string };
-          id?: string;
-          role?: "user" | "admin";
-          preferredLanguage?: string;
-          avatar?: string;
-          isEmailVerified?: boolean;
-          showTypingIndicator?: boolean;
-          showReadReceipts?: boolean;
-          preferences?: {
-            lowBandwidth: boolean;
-            reduceMotion: boolean;
-            highContrast: boolean;
-            autoPlayAudio: boolean;
-          };
-          emailPreferences?: {
-            marketing: boolean;
-            security: boolean;
-          };
-          notificationPreferences?: {
-            enabledTypes: string[];
-            doNotDisturb: { enabled: boolean; startTime: string; endTime: string };
-            sound: string;
-            vibration: boolean;
-            showPreview: boolean;
-          };
-        };
-
-        token.id = String(u._id?.toString() || u.id || "");
-        token.role = (u.role ?? "user") as "user" | "admin";
-        token.preferredLanguage = u.preferredLanguage || "en";
-        token.avatar = u.avatar || undefined;
-        token.isEmailVerified = u.isEmailVerified || false;
-        token.showTypingIndicator = u.showTypingIndicator ?? true;
-        token.showReadReceipts = u.showReadReceipts ?? true;
-        token.preferences = u.preferences ? { ...u.preferences } : undefined;
-        token.emailPreferences = u.emailPreferences ? { ...u.emailPreferences } : undefined;
-        token.notificationPreferences = u.notificationPreferences
-          ? {
-              ...u.notificationPreferences,
-              enabledTypes: Array.isArray(u.notificationPreferences.enabledTypes)
-                ? [...u.notificationPreferences.enabledTypes]
-                : [],
-              doNotDisturb: u.notificationPreferences.doNotDisturb
-                ? { ...u.notificationPreferences.doNotDisturb }
-                : { enabled: false, startTime: "", endTime: "" },
-            }
-          : undefined;
-      }
-
-      if (trigger === "update" && session) {
-        token.preferredLanguage = session.preferredLanguage;
-        token.avatar = session.avatar;
-        if (session.user?.preferences) {
-          token.preferences = { ...session.user.preferences };
-        }
-        if (session.user?.emailPreferences) {
-          token.emailPreferences = { ...session.user.emailPreferences };
-        }
-        if (session.user?.notificationPreferences) {
-          const np = session.user.notificationPreferences as Record<string, unknown>;
-          token.notificationPreferences = {
-            enabledTypes: Array.isArray(np.enabledTypes) ? [...(np.enabledTypes as string[])] : [],
-            doNotDisturb: np.doNotDisturb && typeof np.doNotDisturb === "object"
-              ? { enabled: Boolean((np.doNotDisturb as Record<string, unknown>).enabled), startTime: String((np.doNotDisturb as Record<string, unknown>).startTime || ""), endTime: String((np.doNotDisturb as Record<string, unknown>).endTime || "") }
-              : { enabled: false, startTime: "", endTime: "" },
-            sound: typeof np.sound === "string" ? np.sound : "default",
-            vibration: typeof np.vibration === "boolean" ? np.vibration : true,
-            showPreview: typeof np.showPreview === "boolean" ? np.showPreview : true,
-          };
-        }
-        if (typeof session.showTypingIndicator === "boolean") {
-          token.showTypingIndicator = session.showTypingIndicator;
-        }
-        if (typeof session.showReadReceipts === "boolean") {
-          token.showReadReceipts = session.showReadReceipts;
-        }
+        token.id = user.id!;
+        token.role = (((user as Record<string, unknown>).role as string) || "user") as "user" | "admin";
+        token.preferredLanguage = ((user as Record<string, unknown>).preferredLanguage as string) || "en";
+        token.avatar = user.image || undefined;
+        token.accessToken = ((user as Record<string, unknown>).accessToken as string) || undefined;
+        token.refreshToken = ((user as Record<string, unknown>).refreshToken as string) || undefined;
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
-        session.user.role = (token.role as "user" | "admin" | undefined) ?? "user";
-        session.user.preferredLanguage = token.preferredLanguage;
-        session.user.avatar = token.avatar;
-        session.user.image = token.avatar || session.user.image;
-        session.user.showTypingIndicator = token.showTypingIndicator;
-        session.user.showReadReceipts = token.showReadReceipts;
-        session.user.preferences = token.preferences;
-        session.user.emailPreferences = token.emailPreferences;
-        session.user.notificationPreferences = token.notificationPreferences;
-        session.user.isEmailVerified = token.isEmailVerified;
+        session.user.role = (token.role as "user" | "admin") || "user";
+        session.user.preferredLanguage = token.preferredLanguage as string;
+        session.user.avatar = token.avatar as string;
+        session.user.image = (token.avatar as string) || session.user.image;
+        (session as any).accessToken = token.accessToken;
+        (session as any).refreshToken = token.refreshToken;
       }
       return session;
     },

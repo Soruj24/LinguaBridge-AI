@@ -2,44 +2,41 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { useSidebar } from "@/hooks/use-sidebar";
 import { SidebarHeader } from "./sidebar-header";
 import { SidebarContent } from "./sidebar-content";
 import { SidebarFooter } from "./sidebar-footer";
 import { LanguageModal } from "@/components/language-modal";
 import { AddFriendDialog } from "@/components/add-friend-dialog";
 import { ContactImportDialog } from "@/components/contact-import-dialog";
-import type { SidebarProps } from "@/types/sidebar";
+import type { SidebarProps, Friend, PendingRequest, ChatItem } from "@/types/sidebar";
+import type { Folder } from "@/types/folders";
 
 export function Sidebar({ className, onClose }: SidebarProps) {
-  const {
-    incomingRequests,
-    outgoingRequests,
-    isLoading,
-    searchQuery,
-    setSearchQuery,
-    acceptingIds,
-    rejectingIds,
-    activeTab,
-    setActiveTab,
-    onlineUsers,
-    chatMap,
-    filteredFriends,
-    totalPending,
-    fetchData,
-    handleAccept,
-    handleReject,
-    cancelRequest,
-    handleUnfriend,
-    handleFriendClick,
-    folders,
-    createFolder,
-    deleteFolder,
-    assignChatToFolder,
-    getFolderForChat,
-    archiveChat,
-    unarchiveChat,
-  } = useSidebar();
+  const [incomingRequests, setIncomingRequests] = useState<PendingRequest[]>([]);
+  const [outgoingRequests, setOutgoingRequests] = useState<PendingRequest[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [acceptingIds, setAcceptingIds] = useState<Set<string>>(new Set());
+  const [rejectingIds, setRejectingIds] = useState<Set<string>>(new Set());
+  const [activeTab, setActiveTab] = useState<"chats" | "friends" | "requests">("chats");
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [chatMap, setChatMap] = useState<Map<string, ChatItem>>(new Map());
+  const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
+  const [totalPending, setTotalPending] = useState(0);
+  const [folders, setFolders] = useState<Folder[]>([]);
+
+  const fetchData = async () => {};
+  const handleAccept = async (id: string) => {};
+  const handleReject = async (id: string) => {};
+  const cancelRequest = async (id: string) => {};
+  const handleUnfriend = async (id: string) => {};
+  const handleFriendClick = (friend: unknown) => {};
+  const createFolder = async (name: string) => {};
+  const deleteFolder = async (id: string) => {};
+  const assignChatToFolder = async (chatId: string, folderId: string | null) => {};
+  const getFolderForChat = (chatId: string) => undefined;
+  const archiveChat = async (chatId: string, action: "archive" | "unarchive") => {};
+  const unarchiveChat = async (chatId: string) => {};
 
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);

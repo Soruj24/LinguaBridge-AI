@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Reply, BookmarkPlus, Clock, Pencil, Pin, PinOff, Forward } from "lucide-react";
-import axios from "axios";
-import { toast } from "sonner";
 import type { MessageBubbleProps } from "./message-bubble/types";
 import { MessageBubbleContent } from "./message-bubble/message-bubble-content";
 import { useMessageBubble } from "./message-bubble/use-message-bubble";
@@ -12,6 +10,7 @@ import { MessageSenderAvatar } from "./message-bubble/message-sender-avatar";
 import { MessageTimestamp } from "./message-bubble/message-timestamp";
 import { MessageReactionsDisplay } from "./message-bubble/message-reactions-display";
 import { MessageToolbar } from "./message-bubble/message-toolbar";
+import { useChatApi } from "@/hooks/use-chat-api";
 
 const EDIT_TIMEOUT_MS = 10 * 60 * 1000;
 
@@ -28,6 +27,7 @@ export function MessageBubble({
   onForward,
 }: MessageBubbleProps) {
   const { viewMode, groupedReactions, handleReaction } = useMessageBubble(message, isMe, currentUserId);
+  const { editMessage, saveToPhrasebook } = useChatApi();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(message.originalText);
@@ -57,12 +57,8 @@ export function MessageBubble({
     if (onEdit) {
       onEdit(message._id, trimmed);
     } else {
-      try {
-        await axios.patch(`/api/chat/message/${message._id}`, { text: trimmed });
-      } catch {
-        toast.error("Failed to edit message");
-        return;
-      }
+      const success = await editMessage(message._id, trimmed);
+      if (!success) return;
     }
     setIsEditing(false);
   };
@@ -79,16 +75,12 @@ export function MessageBubble({
 
   const handleSaveToPhrasebook = () => {
     if (!message.translatedText) return;
-    axios.post("/api/phrasebook", {
+    saveToPhrasebook({
       originalText: message.originalText,
       translatedText: message.translatedText,
       languageFrom: message.languageFrom || "en",
       languageTo: message.languageTo || "en",
       sourceMessageId: message._id,
-    }).then(() => {
-      toast.success("Saved to phrasebook");
-    }).catch(() => {
-      toast.error("Failed to save to phrasebook");
     });
   };
 

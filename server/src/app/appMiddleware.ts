@@ -1,3 +1,4 @@
+/// <reference path="../types/xss-clean.d.ts" />
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -8,7 +9,11 @@ import hpp from "hpp";
 import xss from "xss-clean";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import { CLIENT_URL, NODE_ENV } from "../secret";
+import { env } from "../shared/env";
+import { logger } from "../shared/logger";
+
+const CLIENT_URL = env.CLIENT_URL;
+const NODE_ENV = env.NODE_ENV;
 
 const app = express();
 
@@ -36,7 +41,7 @@ app.use(
       if (isAllowed) {
         callback(null, true);
       } else {
-        console.warn(`CORS Blocked: ${origin}`);
+        logger.warn(`CORS Blocked: ${origin}`);
         callback(new Error("Not allowed by CORS"));
       }
     },

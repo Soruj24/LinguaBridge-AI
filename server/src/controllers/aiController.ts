@@ -1,9 +1,11 @@
 import { Response, NextFunction } from "express";
 import asyncHandler from "express-async-handler";
-import { aiService } from "../services/ai";
+import { AiService } from "../services/ai";
 import { AuthRequest } from "../types";
 import { successResponse } from "./responsControllers";
 import createHttpError from "http-errors";
+
+const aiService = new AiService();
 
 /**
  * Handle AI assistant chat requests

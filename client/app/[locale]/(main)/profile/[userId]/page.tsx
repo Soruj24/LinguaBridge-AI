@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 import { Globe, MessageSquare, Languages, ArrowLeft, CalendarDays, Activity } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProfileActions } from "@/components/profile-actions";
-import { getProfileData } from "@/lib/profile-service";
+import { getProfileData } from "@/lib/services/profile.service";
 import { ProfileStatusBadge } from "@/components/profile-status-badge";
 
 interface PageProps {
@@ -19,7 +19,7 @@ export default async function ProfilePage({ params }: PageProps) {
 
   let data;
   try {
-    data = await getProfileData(userId, session?.user?.email);
+    data = await getProfileData(userId, session?.user?.email ?? undefined);
   } catch {
     notFound();
   }
@@ -56,9 +56,9 @@ export default async function ProfilePage({ params }: PageProps) {
               </Badge>
               <ProfileStatusBadge
                 userId={userId}
-                initialIsOnline={user.isOnline ?? false}
-                initialLastSeen={user.lastSeen ?? null}
-                initialShowLastSeen={user.showLastSeen ?? true}
+                initialIsOnline={user.isOnline}
+                initialLastSeen={user.lastSeen}
+                initialShowLastSeen={user.showLastSeen}
               />
             </div>
           </CardHeader>

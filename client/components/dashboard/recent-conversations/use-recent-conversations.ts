@@ -42,10 +42,10 @@ export function useRecentConversations() {
         setIsLoading(false);
       }
     }
-    if (session?.user) {
+    if (session?.user && axios.defaults.headers.common["Authorization"]) {
       fetchChats();
     }
-  }, [session]);
+  }, [session, axios.defaults.headers.common["Authorization"]]);
 
   const getOtherParticipant = (chat: Chat) => {
     return chat.participants.find((p) => p.email !== session?.user?.email);

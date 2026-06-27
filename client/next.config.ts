@@ -12,7 +12,26 @@ if (process.env.AUTH_URL) {
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return [
+      {
+        source: "/api/friends/sync-user",
+        destination: "http://localhost:5000/api/friends/sync-user",
+      },
+      {
+        source: "/api/friends/auth-sync",
+        destination: "http://localhost:5000/api/friends/auth-sync",
+      },
+      {
+        source: "/api/friends/refresh-token",
+        destination: "http://localhost:5000/api/friends/refresh-token",
+      },
+      {
+        source: "/api/:path*",
+        destination: "http://localhost:5000/api/:path*",
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

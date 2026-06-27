@@ -12,9 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Globe, Languages } from "lucide-react";
-import axios from "axios";
-import { toast } from "sonner";
+import { Globe } from "lucide-react";
+import { useUserSettings } from "@/hooks/use-user-settings";
 
 const UI_LANGUAGES = [
   { code: "en", name: "English", flag: "🇺🇸" },
@@ -35,25 +34,18 @@ export function LanguageSwitcher({ variant = "select", className }: LanguageSwit
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const { updateLanguage } = useUserSettings();
   const [isChanging, setIsChanging] = useState(false);
 
   const handleChange = async (newLocale: string) => {
     if (newLocale === locale) return;
 
     setIsChanging(true);
-    try {
-      await axios.put("/api/user/update", {
-        preferredLanguage: newLocale,
-      });
-
+    const success = await updateLanguage(newLocale);
+    if (success) {
       router.replace(pathname, { locale: newLocale });
-      toast.success("Language changed");
-    } catch (error) {
-      console.error("Failed to change language:", error);
-      toast.error("Failed to change language");
-    } finally {
-      setIsChanging(false);
     }
+    setIsChanging(false);
   };
 
   if (variant === "button") {

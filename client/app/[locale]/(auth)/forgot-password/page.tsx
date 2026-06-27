@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
 import {
   Form,
   FormControl,
@@ -27,6 +26,7 @@ import {
 import { toast } from "sonner";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { forgotPasswordAction } from "@/app/actions/auth.action";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -45,15 +45,14 @@ export default function ForgotPasswordPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    try {
-      await axios.post("/api/auth/forgot-password", { email: values.email });
+    const result = await forgotPasswordAction(values.email);
+    if (result.success) {
       setIsSuccess(true);
       toast.success("If an account exists, a reset link has been sent to your email.");
-    } catch {
-      toast.error("Failed to process request");
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast.error(result.error || "Failed to process request");
     }
+    setIsLoading(false);
   }
 
   return (

@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "@/navigation";
 import { useLocale } from "next-intl";
 import { toast } from "sonner";
+import api from "@/lib/api";
 import type { UserItem, ChatItem } from "@/components/admin";
 import type { AdminStats, TabType } from "@/types/admin";
 
@@ -34,9 +35,8 @@ export function useAdmin() {
   const fetchStats = useCallback(async () => {
     try {
       setStatsLoading(true);
-      const res = await fetch("/api/admin/stats");
-      const data = await res.json();
-      if (res.ok) setAdminStats(data);
+      const { data } = await api.get("/api/admin/stats");
+      setAdminStats(data);
     } catch {
       console.error("Failed to fetch stats");
     } finally {
@@ -53,15 +53,12 @@ export function useAdmin() {
       if (search) params.set("q", search);
       if (roleFilter !== "all") params.set("role", roleFilter);
       if (statusFilter !== "all") params.set("isActive", statusFilter === "active" ? "true" : "false");
-      const res = await fetch(`/api/admin/users?${params.toString()}`);
-      const data = await res.json();
-      if (!res.ok) {
-        setUsers([]);
-        setTotalPages(1);
-        return;
-      }
+      const { data } = await api.get(`/api/admin/users?${params.toString()}`);
       setUsers(data.data || []);
       setTotalPages(data.meta?.pages || 1);
+    } catch {
+      setUsers([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
@@ -70,9 +67,10 @@ export function useAdmin() {
   const fetchChats = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/chat?paginate=true&page=1&limit=50&sortBy=updatedAt");
-      const data = await res.json();
+      const { data } = await api.get("/api/chat?paginate=true&page=1&limit=50&sortBy=updatedAt");
       setChats(data.data || []);
+    } catch {
+      setChats([]);
     } finally {
       setLoading(false);
     }
@@ -95,13 +93,7 @@ export function useAdmin() {
 
   const updateUser = async (payload: Record<string, unknown>) => {
     try {
-      const res = await fetch("/api/admin/users", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      const { data } = await api.put("/api/admin/users", payload);
       toast.success(data.message);
       setEditUser(null);
       fetchUsers();
@@ -113,7 +105,7 @@ export function useAdmin() {
 
   const deleteChat = async (chatId: string) => {
     try {
-      await fetch(`/api/chat/${chatId}`, { method: "DELETE" });
+      await api.delete(`/api/chat/${chatId}`);
       fetchChats();
       toast.success("Chat deleted");
     } catch {

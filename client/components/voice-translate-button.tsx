@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Loader2, Volume2, Languages } from "lucide-react";
-import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { useChatApi } from "@/hooks/use-chat-api";
 
 interface VoiceTranslateButtonProps {
   messageId: string;
@@ -23,27 +22,24 @@ export function VoiceTranslateButton({
   targetLanguage,
 }: VoiceTranslateButtonProps) {
   const t = useTranslations("Chat");
+  const { sendVoiceTranslate } = useChatApi();
   const [isTranslating, setIsTranslating] = useState(false);
   const [hasTranslated, setHasTranslated] = useState(!!currentVoiceUrl);
 
   const handleTranslateVoice = async () => {
     setIsTranslating(true);
     try {
-      const textToTranslate = translatedText || originalText;
-      
-      const res = await axios.post("/api/chat/voice-translate", {
+      const data = {
         messageId,
         targetLanguage,
         voice: "alloy",
-      });
+      };
 
-      setHasTranslated(true);
-      toast.success(t("voiceTranslated"));
-      
-      window.location.reload();
-    } catch (error) {
-      console.error("Voice translation error:", error);
-      toast.error(t("voiceTranslationFailed"));
+      const result = await sendVoiceTranslate(data as unknown as FormData);
+      if (result) {
+        setHasTranslated(true);
+        window.location.reload();
+      }
     } finally {
       setIsTranslating(false);
     }

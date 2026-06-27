@@ -33,7 +33,7 @@ export const authValidationChains = {
 
   emailVerification: [
     body('token').isLength({ min: 1 }).withMessage('Verification token is required'),
-    body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+    body('email').optional().isEmail().normalizeEmail().withMessage('Valid email is required'),
   ],
 
   resendVerification: [

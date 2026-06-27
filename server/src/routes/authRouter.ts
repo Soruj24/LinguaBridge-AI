@@ -98,4 +98,47 @@ authRouter.get("/health", rateLimitConfig.general, (req, res) => {
   res.status(200).json({ status: "OK", timestamp: new Date().toISOString(), uptime: process.uptime(), service: "Authentication Service" });
 });
 
+// ==================== CLIENT COMPAT ALIASES ====================
+import { extractTokenUser } from "../middleware/auth/tokenAuth";
+import { Request, Response } from "express";
+import User from "../models/schemas/User";
+import bcrypt from "bcryptjs";
+
+// GET /login-activity → reuse sessions handler
+authRouter.get("/login-activity", isLoggedIn, rateLimitConfig.general, handleGetSessions);
+
+// 2FA compat aliases (client uses /2fa/*, server uses /setup-2fa etc.)
+authRouter.get("/2fa/setup", isLoggedIn, rateLimitConfig.twoFactor, handleSetupTwoFactor as any);
+authRouter.post("/2fa/setup", isLoggedIn, rateLimitConfig.twoFactor, validationRules.twoFactorSetup, runValidation, handleSetupTwoFactor as any);
+authRouter.post("/2fa/verify", isLoggedIn, rateLimitConfig.twoFactor, validationRules.twoFactorVerify, runValidation, handleVerifyTwoFactor as any);
+authRouter.post("/2fa/disable", isLoggedIn, rateLimitConfig.twoFactor, validationRules.twoFactorDisable, runValidation, handleDisableTwoFactor as any);
+
+// POST /change-password (no userId param — derives from token)
+authRouter.post("/change-password", isLoggedIn, rateLimitConfig.sensitiveAction, async (req: Request, res: Response) => {
+  try {
+    const tokenUser = extractTokenUser(req);
+    if (!tokenUser) { res.status(401).json({ error: "Unauthorized" }); return; }
+
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({ error: "currentPassword and newPassword are required" });
+      return;
+    }
+
+    const user = await User.findById(tokenUser._id);
+    if (!user) { res.status(404).json({ error: "User not found" }); return; }
+
+    const isMatch = await bcrypt.compare(currentPassword, (user as any).password);
+    if (!isMatch) { res.status(401).json({ error: "Current password is incorrect" }); return; }
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+    (user as any).password = hashed;
+    await user.save();
+
+    res.json({ message: "Password changed successfully" });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to change password" });
+  }
+});
+
 export default authRouter;

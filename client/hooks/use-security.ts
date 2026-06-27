@@ -5,6 +5,15 @@ import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 import { toast } from "sonner";
 import type { LoginActivity, TwoFactorSetupData } from "@/types/security";
+import {
+  fetchLoginActivityAction,
+  fetch2FAStatusAction,
+  setup2FAAction,
+  verify2FAAction,
+  disable2FAAction,
+  changePasswordAction,
+  deleteAccountAction,
+} from "@/app/actions/security.action";
 
 export function useSecurity() {
   const { data: session, update } = useSession();
@@ -36,26 +45,17 @@ export function useSecurity() {
 
   const fetchLoginActivity = useCallback(async () => {
     setActivitiesLoading(true);
-    try {
-      const res = await fetch("/api/auth/login-activity");
-      const data = await res.json();
-      if (res.ok) {
-        setLoginActivities(data.activities || []);
-      }
-    } catch (error) {
-      console.error("Failed to fetch login activity:", error);
-    } finally {
-      setActivitiesLoading(false);
+    const result = await fetchLoginActivityAction();
+    if (result.success) {
+      setLoginActivities(result.data);
     }
+    setActivitiesLoading(false);
   }, []);
 
   const fetch2FAStatus = useCallback(async () => {
-    try {
-      const res = await fetch("/api/auth/2fa/setup");
-      const data = await res.json();
-      setTwoFactorEnabled(data.enabled);
-    } catch (error) {
-      console.error("Failed to fetch 2FA status:", error);
+    const result = await fetch2FAStatusAction();
+    if (result.success && typeof result.data === "boolean") {
+      setTwoFactorEnabled(result.data);
     }
   }, []);
 
@@ -66,17 +66,14 @@ export function useSecurity() {
 
   async function handleSetup2FA() {
     setIsLoading(true);
-    try {
-      const res = await fetch("/api/auth/2fa/setup", { method: "POST" });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setTwoFactorSetup(data);
+    const result = await setup2FAAction();
+    if (result.success) {
+      setTwoFactorSetup(result.data as TwoFactorSetupData);
       setShow2FASetup(true);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to setup 2FA");
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast.error(result.error);
     }
+    setIsLoading(false);
   }
 
   async function handleVerify2FA() {
@@ -84,42 +81,27 @@ export function useSecurity() {
       toast.error("Please enter a 6-digit code");
       return;
     }
+    if (!twoFactorSetup?.secret) return;
     setIsLoading(true);
-    try {
-      const res = await fetch("/api/auth/2fa/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: verificationCode, secret: twoFactorSetup?.secret }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+    const result = await verify2FAAction(verificationCode, twoFactorSetup.secret);
+    if (result.success) {
+      const data = result.data as { recoveryCodes: string[] };
       setRecoveryCodes(data.recoveryCodes);
       setShowRecoveryCodes(true);
       setTwoFactorEnabled(true);
       await update();
       await fetchLoginActivity();
       toast.success("2FA enabled successfully!");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to verify 2FA");
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast.error(result.error);
     }
+    setIsLoading(false);
   }
 
   async function handleDisable2FA() {
-    if (!currentPassword) {
-      toast.error("Please enter your password");
-      return;
-    }
     setIsLoading(true);
-    try {
-      const res = await fetch("/api/auth/2fa/disable", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: currentPassword, token: verificationCode || undefined }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+    const result = await disable2FAAction(currentPassword, verificationCode || undefined);
+    if (result.success) {
       setTwoFactorEnabled(false);
       setShow2FASetup(false);
       setTwoFactorSetup(null);
@@ -128,65 +110,38 @@ export function useSecurity() {
       await update();
       await fetchLoginActivity();
       toast.success("2FA disabled successfully");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to disable 2FA");
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast.error(result.error);
     }
+    setIsLoading(false);
   }
 
   async function handleChangePassword() {
-    if (newPassword !== confirmPassword) {
-      toast.error("Passwords don't match");
-      return;
-    }
-    if (newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
     setIsLoading(true);
-    try {
-      const res = await fetch("/api/auth/change-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to change password");
+    const result = await changePasswordAction(currentPassword, newPassword, confirmPassword);
+    if (result.success) {
       toast.success("Password changed successfully");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       setShowChangePassword(false);
       await fetchLoginActivity();
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to change password");
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast.error(result.error);
     }
+    setIsLoading(false);
   }
 
   async function handleDeleteAccount() {
-    if (deleteConfirmText !== "DELETE") {
-      toast.error('Type "DELETE" to confirm');
-      return;
-    }
     setIsLoading(true);
-    try {
-      const res = await fetch("/api/auth/account", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: deletePassword, confirmText: deleteConfirmText }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+    const result = await deleteAccountAction(deletePassword, deleteConfirmText);
+    if (result.success) {
       toast.success("Account deleted. Goodbye!");
       await signOut({ callbackUrl: "/" });
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete account");
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast.error(result.error);
     }
+    setIsLoading(false);
   }
 
   function copyRecoveryCodes() {

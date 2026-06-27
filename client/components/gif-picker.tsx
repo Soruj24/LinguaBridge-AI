@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ImagePlay, Smile, Search, Sticker, Loader2 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
-import axios from "axios";
+import { useChatApi } from "@/hooks/use-chat-api";
 
 const STICKER_PACKS = [
   {
@@ -43,6 +43,7 @@ interface GifPickerProps {
 type Tab = "emoji" | "gif";
 
 export function GifPicker({ onSelect, onGifSelect }: GifPickerProps) {
+  const { searchGifs } = useChatApi();
   const [tab, setTab] = useState<Tab>("emoji");
   const [activePack, setActivePack] = useState(0);
   const [search, setSearch] = useState("");
@@ -54,14 +55,14 @@ export function GifPicker({ onSelect, onGifSelect }: GifPickerProps) {
   const fetchGifs = useCallback(async (q: string) => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`/api/chat/gifs?q=${encodeURIComponent(q)}`);
-      setGifs(res.data.gifs || []);
+      const data = await searchGifs(q);
+      setGifs(data.gifs || []);
     } catch {
       setGifs([]);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [searchGifs]);
 
   useEffect(() => {
     fetchGifs("");

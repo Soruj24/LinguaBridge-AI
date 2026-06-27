@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "@/navigation";
+import axios from "axios";
 
 interface Notification {
   _id: string;
@@ -23,12 +24,9 @@ export function useNotifications() {
   const fetchNotifications = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch("/api/notifications");
-      const data = await res.json();
-      if (res.ok) {
-        setNotifications(data.notifications || []);
-        setUnreadCount(data.unreadCount || 0);
-      }
+      const { data } = await axios.get("/api/notifications");
+      setNotifications(data.notifications || []);
+      setUnreadCount(data.unreadCount || 0);
     } catch (error) {
       console.error("Error fetching notifications:", error);
     } finally {
@@ -46,9 +44,7 @@ export function useNotifications() {
       if (id) params.set("id", id);
       else params.set("all", "true");
 
-      await fetch(`/api/notifications?${params.toString()}`, {
-        method: "PATCH",
-      });
+      await axios.patch(`/api/notifications?${params.toString()}`);
 
       if (id) {
         setNotifications((prev) =>

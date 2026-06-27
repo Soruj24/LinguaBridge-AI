@@ -5,11 +5,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import axios from "axios";
 import { toast } from "sonner";
+import { resetPasswordAction } from "@/app/actions/auth.action";
 
 const formSchema = z.object({
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .refine((p) => /[A-Z]/.test(p), { message: "Password must contain at least one uppercase letter" })
+    .refine((p) => /[a-z]/.test(p), { message: "Password must contain at least one lowercase letter" })
+    .refine((p) => /\d/.test(p), { message: "Password must contain at least one number" })
+    .refine((p) => /\W/.test(p), { message: "Password must contain at least one special character" }),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -37,19 +42,15 @@ export function useResetPassword() {
   async function onSubmit(values: FormValues) {
     if (!token) return;
     setIsLoading(true);
-    try {
-      await axios.post("/api/auth/reset-password", {
-        token,
-        password: values.password,
-      });
+    const result = await resetPasswordAction(token, values.password);
+    if (result.success) {
       setIsSuccess(true);
       toast.success("Password reset successful!");
       setTimeout(() => router.push("/login"), 3000);
-    } catch {
-      toast.error("Failed to reset password. The link may have expired.");
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast.error(result.error || "Failed to reset password. The link may have expired.");
     }
+    setIsLoading(false);
   }
 
   return {

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Bell, BellOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import axios from "axios";
 
 export function PushNotificationButton() {
   const t = useTranslations("Notifications");
@@ -46,11 +47,7 @@ export function PushNotificationButton() {
         ),
       });
 
-      await fetch("/api/notifications/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sub),
-      });
+      await axios.post("/api/notifications/subscribe", sub);
 
       setSubscription(sub);
       setPermission("granted");
@@ -69,9 +66,7 @@ export function PushNotificationButton() {
     setIsSubscribing(true);
     try {
       await subscription.unsubscribe();
-      await fetch("/api/notifications/unsubscribe", {
-        method: "POST",
-      });
+      await axios.post("/api/notifications/unsubscribe");
       setSubscription(null);
       setPermission("default");
       toast.success(t("disabled"));

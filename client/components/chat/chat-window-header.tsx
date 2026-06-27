@@ -11,7 +11,6 @@ import { ArrowLeft, User, Search, Info, Trash2, MoreVertical, Bookmark, Phone, C
 import { useTranslations } from "next-intl";
 import { getLanguageFlag } from "@/types/chat";
 import { useCall } from "@/components/call-provider";
-import { useUserStatus } from "@/hooks/use-user-status";
 import { Badge } from "@/components/ui/badge";
 import {
   Popover, PopoverContent, PopoverTrigger,
@@ -57,7 +56,6 @@ export function ChatWindowHeader({
   const router = useRouter();
   const t = useTranslations("Chat");
   const { startCall, activeCall } = useCall();
-  const { targetIsOnline, targetLastSeenText } = useUserStatus(otherParticipant?._id);
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background">
@@ -86,17 +84,10 @@ export function ChatWindowHeader({
                   <span title="Encrypted in transit" className="inline-flex"><Lock className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0" /></span>
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  {targetIsOnline ? (
-                    <span className="flex items-center gap-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-green-500 inline-block" />
-                      Online
-                    </span>
-                  ) : targetLastSeenText ? (
-                    <span className="flex items-center gap-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground inline-block" />
-                      Last seen {targetLastSeenText.toLowerCase()}
-                    </span>
-                  ) : null}
+                  <span className="flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground inline-block" />
+                    {otherParticipant.preferredLanguage === "en" ? "EN" : otherParticipant.preferredLanguage.toUpperCase()}
+                  </span>
                 </span>
               </div>
             </button>

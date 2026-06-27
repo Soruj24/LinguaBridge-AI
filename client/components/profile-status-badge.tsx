@@ -1,8 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { useUserStatus } from "@/hooks/use-user-status";
-import { formatLastSeen } from "@/lib/last-seen";
+import { formatLastSeen } from "@/lib/utils/lastSeen";
 
 interface ProfileStatusBadgeProps {
   userId: string;
@@ -17,11 +16,9 @@ export function ProfileStatusBadge({
   initialLastSeen,
   initialShowLastSeen,
 }: ProfileStatusBadgeProps) {
-  const { targetStatus } = useUserStatus(userId);
-
-  const isOnline = targetStatus?.isOnline ?? initialIsOnline;
-  const lastSeen = targetStatus?.lastSeen ?? initialLastSeen;
-  const showLastSeen = targetStatus?.showLastSeen ?? initialShowLastSeen;
+  const isOnline = initialIsOnline;
+  const lastSeen = initialLastSeen;
+  const showLastSeen = initialShowLastSeen;
 
   const lastSeenText = formatLastSeen(lastSeen, showLastSeen, isOnline);
 

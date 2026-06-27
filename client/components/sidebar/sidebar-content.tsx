@@ -10,7 +10,7 @@ import type { Folder } from "@/types/folders";
 
 interface SidebarContentProps {
   isLoading: boolean;
-  activeTab: "friends" | "requests";
+  activeTab: "chats" | "friends" | "requests";
   searchQuery: string;
   incomingRequests: PendingRequest[];
   outgoingRequests: PendingRequest[];

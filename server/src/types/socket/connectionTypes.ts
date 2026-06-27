@@ -8,6 +8,16 @@ export interface UserData {
   sessionRestored?: boolean;
 }
 
+// New chat system types
+export interface ChatUserData {
+  userId: string;
+  name: string;
+  email: string;
+  preferredLanguage: string;
+  socketId: string;
+  joinedAt?: Date;
+}
+
 export interface ConnectedUsers {
   get(socketId: string): UserData | undefined;
   set(socketId: string, userData: UserData): void;

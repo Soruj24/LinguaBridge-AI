@@ -1,7 +1,5 @@
 export { MessageInput } from "./message-input";
-export { MessageBubble, ChatTypingIndicator } from "./message-bubble";
 export { ChatHeader } from "./chat-header";
-export { MessageList, type Message } from "./message-list";
 export { ChatWindowHeader } from "./chat-window-header";
 export { ChatSearch } from "./chat-search";
 export { ChatMessageList } from "./chat-message-list";

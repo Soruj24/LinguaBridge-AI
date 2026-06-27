@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
 import { toast } from "sonner";
+import { verifyEmailAction } from "@/app/actions/auth.action";
 
 export function useVerifyEmail() {
   const router = useRouter();
@@ -17,10 +17,15 @@ export function useVerifyEmail() {
   useEffect(() => {
     if (!token) return;
     let cancelled = false;
-    axios.post("/api/auth/verify-email", { token }).then(() => {
+    verifyEmailAction(token).then((result) => {
       if (cancelled) return;
-      setStatus("success");
-      toast.success("Email verified successfully!");
+      if (result.success) {
+        setStatus("success");
+        toast.success("Email verified successfully!");
+      } else {
+        setStatus("error");
+        toast.error(result.error || "Failed to verify email. The link may have expired.");
+      }
     }).catch(() => {
       if (cancelled) return;
       setStatus("error");

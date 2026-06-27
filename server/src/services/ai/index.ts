@@ -1,4 +1,5 @@
-import { AiService } from "./aiChat";
-
-export const aiService = new AiService();
+export { translateText, detectLanguage, processTranslationPipeline } from "./translation";
+export { transcribeAudio, textToSpeech, translateVoice } from "./audio";
+export { generateSmartReplies, summarizeChat } from "./chat";
+export { rewriteText } from "./rewrite";
 export { AiService } from "./aiChat";

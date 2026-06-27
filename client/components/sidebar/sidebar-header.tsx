@@ -22,8 +22,8 @@ interface SidebarHeaderProps {
   onOpenAddFriend: () => void;
   onGroupChatCreated: () => void;
   onClose?: () => void;
-  activeTab: "friends" | "requests";
-  onTabChange: (tab: "friends" | "requests") => void;
+  activeTab: "chats" | "friends" | "requests";
+  onTabChange: (tab: "chats" | "friends" | "requests") => void;
   totalPending: number;
 }
 

@@ -13,10 +13,9 @@ import {
 } from "@/components/chat";
 import { ForwardDialog } from "@/components/chat/forward-dialog";
 import { PhrasebookDrawer } from "@/components/phrasebook/phrasebook-drawer";
-import axios from "axios";
-import { toast } from "sonner";
-import { useSidebar } from "@/hooks/use-sidebar";
+import { useChatApi } from "@/hooks/use-chat-api";
 import type { MessageBubbleMessage } from "@/components/message-bubble/types";
+import type { ChatItem } from "@/types/sidebar";
 
 export function ChatWindow({ chatId }: { chatId: string }) {
   const {
@@ -37,7 +36,8 @@ export function ChatWindow({ chatId }: { chatId: string }) {
     alwaysTranslate, autoTranslateLanguage, updateTranslateSettings,
   } = useChat(chatId);
 
-  const { chats } = useSidebar();
+  const { archiveChat } = useChatApi();
+  const [chats] = useState<ChatItem[]>([]);
 
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -71,14 +71,11 @@ export function ChatWindow({ chatId }: { chatId: string }) {
 
   const handleArchiveToggle = useCallback(async () => {
     const action = chat?.isArchived ? "unarchive" : "archive";
-    try {
-      await axios.post(`/api/chat/${chatId}/archive`, { action });
+    const success = await archiveChat(chatId, action as "archive" | "unarchive");
+    if (success) {
       setChat((prev) => prev ? { ...prev, isArchived: !prev.isArchived } : null);
-      toast.success(action === "archive" ? "Chat archived" : "Chat moved to inbox");
-    } catch {
-      toast.error("Failed to update chat");
     }
-  }, [chatId, chat?.isArchived]);
+  }, [chatId, chat?.isArchived, archiveChat]);
 
   return (
     <div className="relative flex flex-col h-full">

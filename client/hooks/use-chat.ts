@@ -1,46 +1,46 @@
 "use client";
 
-import { useState, useEffect, useRef, useLayoutEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useSocket } from "@/components/socket-provider";
-import axios from "axios";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import type { Message, Chat } from "@/types/chat";
+import {
+  editMessageApi,
+  deleteMessageApi,
+  pinMessageApi,
+  fetchChatSuggestionsApi,
+  updateTranslateSettingsApi,
+  rewriteMessageApi,
+  sendVoiceMessageApi,
+  sendFileApi,
+  forwardMessageApi,
+  clearChatApi,
+  exportChatApi,
+} from "@/lib/repositories/chat.repository";
+import { useChatMessages } from "./use-chat-messages";
+import { useChatVoice } from "./use-chat-voice";
+import { useChatSearch } from "./use-chat-search";
+import { useChatSchedule } from "./use-chat-schedule";
 
 export function useChat(chatId: string) {
   const { data: session } = useSession();
   const socket = useSocket();
   const t = useTranslations("Chat");
 
-  const [messages, setMessages] = useState<Message[]>([]);
   const [chat, setChat] = useState<Chat | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [isRewriting, setIsRewriting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [searchResults, setSearchResults] = useState<Message[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [isRestoringScroll, setIsRestoringScroll] = useState(false);
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
-  const [scheduledMessages, setScheduledMessages] = useState<Message[]>([]);
   const [alwaysTranslate, setAlwaysTranslate] = useState(false);
   const [autoTranslateLanguage, setAutoTranslateLanguage] = useState<string | null>(null);
-
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const prevScrollHeightRef = useRef(0);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const searchResultRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   const currentUserId = chat?.participants?.find(
     (p) => p.email === session?.user?.email,
@@ -52,87 +52,55 @@ export function useChat(chatId: string) {
 
   const getReceiverId = useCallback(() => {
     const userEmail = session?.user?.email;
-    if (!chat || !userEmail) return null;
+    if (!chat || !userEmail) return undefined;
     return chat.participants.find((p) => p.email !== userEmail)?._id;
   }, [chat, session?.user?.email]);
 
   const getSenderId = useCallback(() => {
     const userEmail = session?.user?.email;
-    if (!chat || !userEmail) return null;
+    if (!chat || !userEmail) return undefined;
     return chat.participants.find((p) => p.email === userEmail)?._id;
   }, [chat, session?.user?.email]);
 
-  const scrollToBottom = useCallback(() => {
-    if (scrollRef.current) {
-      setTimeout(() => scrollRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-    }
-  }, []);
+  const {
+    messages, setMessages,
+    hasMore, setIsLoading, isLoading, isLoadingMore,
+    scrollRef, viewportRef,
+    scrollToBottom, markMessagesAsRead, fetchMessages,
+    onScroll,
+  } = useChatMessages({ chatId, currentUserId, socket });
 
-  const markMessagesAsRead = useCallback(async (messageIds: string[]) => {
-    if (messageIds.length === 0) return;
-    try {
-      await axios.post("/api/chat/read", { chatId, messageIds });
-      socket?.emit("messages_read", { chatId, messageIds, userId: currentUserId });
-    } catch {
-      // silently fail
-    }
-  }, [chatId, socket, currentUserId]);
+  const {
+    isRecording, mediaRecorderRef,
+    startRecording, stopRecording,
+  } = useChatVoice({
+    getReceiverId,
+    chatId,
+    socket,
+    onMessageSent: (msg) => setMessages((prev) => [...prev, msg]),
+    scrollToBottom,
+  });
 
-  const fetchMessages = useCallback(async (before?: string) => {
-    try {
-      if (before) {
-        setIsLoadingMore(true);
-        if (viewportRef.current) {
-          prevScrollHeightRef.current = viewportRef.current.scrollHeight;
-          setIsRestoringScroll(true);
-        }
-      }
+  const {
+    searchResults, setSearchResults,
+    isSearching,
+    searchResultRefs,
+    handleSearch,
+    scrollToMessage,
+  } = useChatSearch({ chatId });
 
-      const url = `/api/chat/${chatId}?limit=20` + (before ? `&before=${before}` : "");
-      const res = await axios.get(url);
-
-      if (before) {
-        setMessages((prev) => [...res.data.messages, ...prev]);
-      } else {
-        setMessages(res.data.messages);
-        setChat(res.data.chat);
-
-        const myId = res.data.chat?.participants?.find(
-          (p: { email: string }) => p.email === session?.user?.email,
-        )?._id ?? session?.user?.id;
-
-        const unreadIds = res.data.messages
-          .filter((m: Message) => m.senderId._id !== myId && !m.readBy?.includes(myId))
-          .map((m: Message) => m._id);
-
-        if (unreadIds.length > 0) {
-          try {
-            await axios.post("/api/chat/read", { chatId, messageIds: unreadIds });
-            socket?.emit("messages_read", { chatId, messageIds: unreadIds, userId: myId });
-          } catch {
-            // silently fail
-          }
-        }
-
-        scrollToBottom();
-      }
-      setHasMore(res.data.hasMore);
-    } catch {
-      toast.error("Failed to load chat");
-    } finally {
-      if (!before) {
-        setIsLoadingMore(false);
-        setIsLoading(false);
-      }
-    }
-  }, [chatId, scrollToBottom, session, socket]);
+  const {
+    scheduledMessages,
+    handleSchedule,
+    handleCancelScheduled,
+  } = useChatSchedule({ chatId, scrollToBottom, setNewMessage });
 
   const fetchSuggestions = useCallback(async () => {
     try {
       setIsLoadingSuggestions(true);
-      const res = await axios.post(`/api/chat/${chatId}/suggestions`);
-      if (res.data.suggestions) {
-        setSuggestions(res.data.suggestions);
+      const res = await fetchChatSuggestionsApi(chatId);
+      if (res.suggestions) {
+        setSuggestions(res.suggestions);
       }
     } catch {
       // silently fail
@@ -142,7 +110,6 @@ export function useChat(chatId: string) {
   }, [chatId]);
 
   useEffect(() => {
-    setIsLoading(true);
     fetchMessages();
     fetchSuggestions();
   }, [chatId, fetchMessages, fetchSuggestions]);
@@ -156,10 +123,7 @@ export function useChat(chatId: string) {
 
   const updateTranslateSettings = useCallback(async (enabled: boolean, language?: string | null) => {
     try {
-      await axios.patch(`/api/chat/${chatId}`, {
-        alwaysTranslate: enabled,
-        autoTranslateLanguage: language ?? null,
-      });
+      await updateTranslateSettingsApi(chatId, enabled, language ?? null);
       setAlwaysTranslate(enabled);
       setAutoTranslateLanguage(language ?? null);
       toast.success(enabled ? "Auto-translate enabled" : "Auto-translate disabled");
@@ -217,8 +181,7 @@ export function useChat(chatId: string) {
       if (sender && sender.email !== session?.user?.email) {
         setTypingUser(sender.name);
         setIsTyping(true);
-        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = setTimeout(() => {
+        setTimeout(() => {
           setIsTyping(false);
           setTypingUser(null);
         }, 3000);
@@ -258,34 +221,12 @@ export function useChat(chatId: string) {
       socket.off("message_edited");
       socket.off("message_pinned");
     };
-  }, [chatId, socket, chat, session, scrollToBottom, fetchSuggestions, getSenderId]);
-
-  useLayoutEffect(() => {
-    if (isRestoringScroll && viewportRef.current) {
-      const diff = viewportRef.current.scrollHeight - prevScrollHeightRef.current;
-      if (diff > 0) viewportRef.current.scrollTop = diff;
-      setIsRestoringScroll(false);
-      setIsLoadingMore(false);
-    }
-  }, [messages, isRestoringScroll]);
-
-  const onScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.currentTarget;
-    const distanceFromBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
-    if (distanceFromBottom > 300 && scrollRef.current) {
-      // showScrollButton state managed locally
-    }
-
-    if (target.scrollTop === 0 && hasMore && !isLoadingMore && messages.length > 0) {
-      fetchMessages(messages[0].createdAt);
-    }
-  }, [hasMore, isLoadingMore, messages, fetchMessages]);
+  }, [chatId, socket, chat, session, scrollToBottom, fetchSuggestions, getSenderId, setMessages, markMessagesAsRead]);
 
   const handleEditMessage = useCallback(async (messageId: string, newText: string) => {
     if (!newText.trim()) return;
     try {
-      const res = await axios.patch(`/api/chat/message/${messageId}`, { text: newText });
-      const updatedMessage = res.data;
+      const updatedMessage = await editMessageApi(messageId, newText);
       setMessages((prev) =>
         prev.map((m) => (m._id === messageId ? { ...m, originalText: updatedMessage.originalText, editedAt: updatedMessage.editedAt } : m)),
       );
@@ -293,23 +234,22 @@ export function useChat(chatId: string) {
     } catch {
       toast.error("Failed to edit message");
     }
-  }, [chatId, socket]);
+  }, [chatId, socket, setMessages]);
 
   const handleDeleteMessage = useCallback(async (messageId: string) => {
     try {
-      await axios.delete(`/api/chat/message/${messageId}`);
+      await deleteMessageApi(messageId);
       setMessages((prev) => prev.filter((m) => m._id !== messageId));
       socket?.emit("delete_message", { chatId, messageId });
       toast.success("Message deleted");
     } catch {
       toast.error("Failed to delete message");
     }
-  }, [chatId, socket]);
+  }, [chatId, socket, setMessages]);
 
   const handlePinMessage = useCallback(async (messageId: string) => {
     try {
-      const res = await axios.post(`/api/chat/message/${messageId}/pin`, { action: "pin" });
-      const updatedMessage = res.data;
+      await pinMessageApi(messageId, "pin");
       setMessages((prev) =>
         prev.map((m) => (m._id === messageId ? { ...m, isPinned: true } : m)),
       );
@@ -317,12 +257,11 @@ export function useChat(chatId: string) {
     } catch {
       toast.error("Failed to pin message");
     }
-  }, []);
+  }, [setMessages]);
 
   const handleUnpinMessage = useCallback(async (messageId: string) => {
     try {
-      const res = await axios.post(`/api/chat/message/${messageId}/pin`, { action: "unpin" });
-      const updatedMessage = res.data;
+      await pinMessageApi(messageId, "unpin");
       setMessages((prev) =>
         prev.map((m) => (m._id === messageId ? { ...m, isPinned: false } : m)),
       );
@@ -330,7 +269,7 @@ export function useChat(chatId: string) {
     } catch {
       toast.error("Failed to unpin message");
     }
-  }, []);
+  }, [setMessages]);
 
   const pinnedMessages = messages
     .filter((m) => m.isPinned)
@@ -354,9 +293,9 @@ export function useChat(chatId: string) {
     if (!newMessage.trim()) return;
     try {
       setIsRewriting(true);
-      const res = await axios.post("/api/chat/rewrite", { text: newMessage, tone });
-      if (res.data.rewritten) {
-        setNewMessage(res.data.rewritten);
+      const res = await rewriteMessageApi(newMessage, tone);
+      if (res.rewritten) {
+        setNewMessage(res.rewritten);
         toast.success(t("rewrittenAs", { tone }));
       }
     } catch {
@@ -397,7 +336,7 @@ export function useChat(chatId: string) {
       setMessages((prev) => [...prev, tempMessage]);
       scrollToBottom();
     }
-  }, [getReceiverId, getSenderId, socket, chatId, session, scrollToBottom, t]);
+  }, [getReceiverId, getSenderId, socket, chatId, session, scrollToBottom, t, setMessages]);
 
   const sendMessage = useCallback(async () => {
     if (!newMessage.trim()) return;
@@ -445,26 +384,7 @@ export function useChat(chatId: string) {
       setReplyingTo(null);
       scrollToBottom();
     }
-  }, [newMessage, getReceiverId, getSenderId, socket, chatId, session, scrollToBottom, t, replyingTo]);
-
-  const sendVoiceMessage = useCallback(async (audioBlob: Blob) => {
-    const receiverId = getReceiverId();
-    if (!receiverId) return;
-
-    try {
-      const formData = new FormData();
-      formData.append("file", audioBlob, "voice.webm");
-      formData.append("chatId", chatId);
-      formData.append("receiverId", receiverId);
-
-      const res = await axios.post("/api/chat/voice", formData);
-      socket?.emit("send_message", res.data);
-      setMessages((prev) => [...prev, res.data]);
-      scrollToBottom();
-    } catch {
-      toast.error("Failed to send voice message");
-    }
-  }, [getReceiverId, chatId, socket, scrollToBottom]);
+  }, [newMessage, getReceiverId, getSenderId, socket, chatId, session, scrollToBottom, t, replyingTo, setMessages]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -483,9 +403,9 @@ export function useChat(chatId: string) {
       formData.append("chatId", chatId);
       formData.append("receiverId", receiverId);
 
-      const res = await axios.post("/api/chat/file", formData);
-      socket?.emit("send_message", res.data);
-      setMessages((prev) => [...prev, res.data]);
+      const res = await sendFileApi(formData);
+      socket?.emit("send_message", res);
+      setMessages((prev) => [...prev, res]);
       setSelectedFile(null);
       scrollToBottom();
       toast.success("File sent");
@@ -494,54 +414,11 @@ export function useChat(chatId: string) {
     } finally {
       setIsUploading(false);
     }
-  }, [selectedFile, getReceiverId, chatId, socket, scrollToBottom]);
-
-  const startRecording = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      const chunks: BlobPart[] = [];
-
-      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: "audio/webm" });
-        sendVoiceMessage(blob);
-        stream.getTracks().forEach((t) => t.stop());
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-    } catch {
-      toast.error("Microphone access denied");
-    }
-  }, [sendVoiceMessage]);
-
-  const stopRecording = useCallback(() => {
-    mediaRecorderRef.current?.stop();
-    setIsRecording(false);
-  }, []);
-
-  const handleSearch = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-    try {
-      setIsSearching(true);
-      const res = await axios.get(`/api/chat/search?q=${encodeURIComponent(query)}&chatId=${chatId}`);
-      setSearchResults(res.data);
-    } catch {
-      setSearchResults([]);
-    } finally {
-      setIsSearching(false);
-    }
-  }, [chatId]);
+  }, [selectedFile, getReceiverId, chatId, socket, scrollToBottom, setMessages]);
 
   const handleForwardMessage = useCallback(async (messageId: string, targetChatId: string) => {
     try {
-      const res = await axios.post("/api/chat/forward", { messageId, targetChatId });
-      const msg = res.data;
+      const msg = await forwardMessageApi(messageId, targetChatId);
 
       if (msg.chatId === chatId) {
         setMessages((prev) => {
@@ -554,61 +431,26 @@ export function useChat(chatId: string) {
       toast.success("Message forwarded");
       return msg;
     } catch (err: unknown) {
-      const errorMsg = axios.isAxiosError(err) && err.response?.data?.error
-        ? err.response.data.error
-        : "Failed to forward message";
+      const errorMsg = err instanceof Error ? err.message : "Failed to forward message";
       toast.error(errorMsg);
       throw err;
     }
-  }, [chatId, scrollToBottom]);
+  }, [chatId, scrollToBottom, setMessages]);
 
   const handleClearChat = useCallback(async () => {
     try {
-      await axios.patch(`/api/chat/${chatId}`, { action: "clear" });
+      await clearChatApi(chatId);
       setMessages([]);
       toast.success("Chat cleared");
     } catch {
       toast.error("Failed to clear chat");
     }
-  }, [chatId]);
-
-  const fetchScheduledMessages = useCallback(async () => {
-    try {
-      const res = await axios.get(`/api/chat/scheduled?chatId=${chatId}`);
-      setScheduledMessages(res.data);
-    } catch {
-      // silently fail
-    }
-  }, [chatId]);
-
-  useEffect(() => {
-    if (chatId) fetchScheduledMessages();
-  }, [chatId, fetchScheduledMessages]);
-
-  const handleSchedule = useCallback(async (text: string, scheduledAt: string) => {
-    try {
-      const res = await axios.post("/api/chat/schedule", { chatId, text, scheduledAt });
-      const scheduledMsg = res.data;
-      setMessages((prev) => [...prev, scheduledMsg]);
-      setNewMessage("");
-      setSuggestions([]);
-      scrollToBottom();
-      fetchScheduledMessages();
-      toast.success("Message scheduled");
-    } catch (err: unknown) {
-      const msg = axios.isAxiosError(err) && err.response?.data?.error
-        ? err.response.data.error
-        : "Failed to schedule message";
-      toast.error(msg);
-    }
-  }, [chatId, scrollToBottom, fetchScheduledMessages, setNewMessage]);
+  }, [chatId, setMessages]);
 
   const exportChat = useCallback(async (chatId: string, format: "json" | "txt") => {
     try {
-      const res = await axios.get(`/api/chat/${chatId}/export?format=${format}`, {
-        responseType: "blob",
-      });
-      const blob = new Blob([res.data], {
+      const res = await exportChatApi(chatId, format);
+      const blob = new Blob([res], {
         type: format === "json" ? "application/json" : "text/plain",
       });
       const url = URL.createObjectURL(blob);
@@ -625,42 +467,41 @@ export function useChat(chatId: string) {
     }
   }, []);
 
-  const handleCancelScheduled = useCallback(async (messageId: string) => {
-    try {
-      await axios.delete(`/api/chat/scheduled/${messageId}`);
-      setScheduledMessages((prev) => prev.filter((m) => m._id !== messageId));
-      setMessages((prev) => prev.filter((m) => m._id !== messageId));
-      toast.success("Scheduled message cancelled");
-    } catch {
-      toast.error("Failed to cancel scheduled message");
-    }
-  }, []);
-
-  const scrollToMessage = useCallback((msgId: string) => {
-    const el = searchResultRefs.current.get(msgId) || document.getElementById(`message-${msgId}`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      setSearchResults([]);
-    }
-  }, []);
-
   return {
     messages, chat, setChat, newMessage, setNewMessage,
     isTyping, typingUser, hasMore, isLoading, isLoadingMore,
     suggestions, isLoadingSuggestions, isRewriting,
     selectedFile, setSelectedFile, isUploading, isRecording,
     searchResults, isSearching,
-    scrollRef, viewportRef, prevScrollHeightRef,
+    scrollRef, viewportRef,
     searchResultRefs, mediaRecorderRef,
     currentUserId, otherParticipant, replyingTo, setReplyingTo,
     fetchMessages, fetchSuggestions, markMessagesAsRead, sendMessage,
-    sendVoiceMessage, sendFileMessage,
+    sendVoiceMessage: useCallback(async (audioBlob: Blob) => {
+      const receiverId = getReceiverId();
+      if (!receiverId) return;
+
+      try {
+        const formData = new FormData();
+        formData.append("file", audioBlob, "voice.webm");
+        formData.append("chatId", chatId);
+        formData.append("receiverId", receiverId);
+
+        const res = await sendVoiceMessageApi(formData);
+        socket?.emit("send_message", res);
+        setMessages((prev) => [...prev, res]);
+        scrollToBottom();
+      } catch {
+        toast.error("Failed to send voice message");
+      }
+    }, [getReceiverId, chatId, socket, scrollToBottom, setMessages]),
+    sendFileMessage,
     handleDeleteMessage, handleEditMessage, handlePinMessage, handleUnpinMessage,
     pinnedMessages, handleRewrite, handleSearch,
     handleClearChat, handleForwardMessage, handleInputChange, handleSuggestionClick,
     handleFileSelect, handleGifSelect, startRecording, stopRecording,
     scrollToBottom, scrollToMessage, onScroll,
-    handleSchedule, handleCancelScheduled, fetchScheduledMessages, scheduledMessages,
+    handleSchedule, handleCancelScheduled, scheduledMessages,
     exportChat,
     alwaysTranslate, autoTranslateLanguage, updateTranslateSettings,
   };

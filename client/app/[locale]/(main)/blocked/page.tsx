@@ -1,18 +1,35 @@
 "use client";
 
-import { useEffect } from "react";
-import { useSidebar } from "@/hooks/use-sidebar";
+import { useEffect, useState } from "react";
 import { BlockedUsersList } from "@/components/blocked-users-list";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@/navigation";
+import api from "@/lib/api";
 
 export default function BlockedPage() {
-  const { blockedUsers, handleUnblock, fetchData } = useSidebar();
+  const [blockedUsers, setBlockedUsers] = useState<{ _id: string; blocked: { _id: string; name: string; avatar?: string }; createdAt: string }[]>([]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    api.get("/api/friends/blocked-users")
+      .then(({ data }) => {
+        const items = Array.isArray(data) ? data : data.blockedUsers || [];
+        setBlockedUsers(items.map((item: Record<string, unknown>) => {
+          const blocked = (item.blocked || item) as { _id: string; name: string; avatar?: string };
+          return {
+            _id: (item._id as string) || blocked._id,
+            blocked,
+            createdAt: (item.createdAt as string) || new Date().toISOString(),
+          };
+        }));
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleUnblock = async (userId: string) => {
+    await api.delete(`/api/friends/block/${userId}`);
+    setBlockedUsers((prev) => prev.filter((u) => u._id !== userId));
+  };
 
   return (
     <div className="flex flex-col h-full w-full">

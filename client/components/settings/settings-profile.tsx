@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { languages } from "@/lib/languages";
+import { languages } from "@/lib/utils/languages";
 import type { UseFormReturn } from "react-hook-form";
 import type { SettingsFormValues } from "@/lib/schemas/settings";
 

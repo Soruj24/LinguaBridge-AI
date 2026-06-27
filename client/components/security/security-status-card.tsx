@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { CheckCircle, AlertTriangle, ShieldCheck, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { resendVerificationAction } from "@/app/actions/auth.action";
 
 interface SecurityStatusCardProps {
   emailVerified: boolean;
@@ -49,13 +50,13 @@ export function SecurityStatusCard({
             </div>
           </div>
           {!emailVerified && (
-            <Button variant="outline" size="sm" onClick={() => {
-              fetch("/api/auth/resend-verification", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: userEmail }),
-              });
-              toast.success("Verification email sent");
+            <Button variant="outline" size="sm" onClick={async () => {
+              const result = await resendVerificationAction(userEmail);
+              if (result.success) {
+                toast.success("Verification email sent");
+              } else {
+                toast.error(result.error);
+              }
             }}>
               Verify
             </Button>

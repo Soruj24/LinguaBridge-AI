@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
-import createError, { HttpError } from "http-errors";
-import { NODE_ENV } from "../secret";
-import { errorResponse } from "../controllers/responsControllers";
+import createError from "http-errors";
+import { env } from "../shared/env";
+import { sendError } from "../shared/response";
+import { logger } from "../shared/logger";
+import { AppError } from "../shared/errors";
 import app from "./appMiddleware";
 
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -10,28 +12,32 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 const errorHandler: ErrorRequestHandler = (
-  err: HttpError,
+  err: any,
   req: Request,
   res: Response,
   _next: NextFunction
 ) => {
-  if (NODE_ENV !== "test") {
-    console.error(`Error ${err.status || 500}: ${err.message}`);
-    if (NODE_ENV === "development") {
-      console.error(err.stack);
-    }
+  const statusCode = err.statusCode || err.status || 500;
+  const isDevelopment = env.NODE_ENV === "development";
+
+  if (statusCode >= 500) {
+    logger.error(`${req.method} ${req.originalUrl} - ${err.message}`, {
+      stack: err.stack,
+      statusCode,
+    });
+  } else {
+    logger.warn(`${req.method} ${req.originalUrl} - ${err.message}`, {
+      statusCode,
+    });
   }
 
-  const isDevelopment = NODE_ENV === "development";
-  const statusCode = err.status || err.statusCode || 500;
-
-  errorResponse(res, {
+  sendError(res, {
     statusCode,
     message:
       statusCode === 500 && !isDevelopment
         ? "Internal Server Error"
         : err.message,
-    ...(isDevelopment && { stack: err.stack }),
+    ...(isDevelopment && { errors: [{ stack: err.stack }] }),
   });
 };
 

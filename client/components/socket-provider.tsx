@@ -18,8 +18,8 @@ function getSocketUrl(): string {
     return process.env.NEXT_PUBLIC_SOCKET_URL;
   }
 
-  // In local dev, connect to localhost:3001
-  return `http://localhost:${process.env.NEXT_PUBLIC_SOCKET_PORT || "3001"}`;
+  // In local dev, connect to the Express server (port 5000)
+  return `http://localhost:${process.env.NEXT_PUBLIC_SOCKET_PORT || "5000"}`;
 }
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {

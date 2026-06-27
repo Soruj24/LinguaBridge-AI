@@ -6,11 +6,55 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form } from "@/components/ui/form";
 import { SocialLogin } from "@/components/social-login";
 import { Link } from "@/navigation";
-import { useRegistration } from "@/hooks/use-registration";
 import { RegisterStepIndicator, RegisterFormFields, RegisterSuccess } from "@/components/register";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { registerSchema, type RegisterFormValues } from "@/lib/schemas/register";
+import { toast } from "sonner";
+import { registerAction } from "@/app/actions/auth.action";
 
 export default function RegisterPage() {
-  const r = useRegistration();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRequirements, setShowRequirements] = useState(false);
+  const [passwordValue, setPasswordValue] = useState("");
+  const [langSearch, setLangSearch] = useState("");
+  const [filteredLanguages, setFilteredLanguages] = useState<{ code: string; name: string }[]>([]);
+
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { name: "", email: "", password: "", preferredLanguage: "en" },
+  });
+
+  const onSubmit = async (data: RegisterFormValues) => {
+    setIsLoading(true);
+    const result = await registerAction(data);
+    if (result.success) {
+      setShowSuccess(true);
+    } else {
+      toast.error(result.error || "Registration failed");
+    }
+    setIsLoading(false);
+  };
+
+  const r = {
+    currentStep,
+    showSuccess,
+    isLoading,
+    showPassword,
+    setShowPassword,
+    showRequirements,
+    setShowRequirements,
+    passwordValue,
+    langSearch,
+    setLangSearch,
+    filteredLanguages,
+    form,
+    onSubmit,
+  };
 
   return (
     <motion.div

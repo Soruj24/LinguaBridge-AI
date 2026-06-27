@@ -3,7 +3,7 @@ import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from "@langchain/core/prompts";
-import { BaseMessage, HumanMessage, AIMessage } from "@langchain/core/messages";
+import { HumanMessage, AIMessage, type BaseMessage } from "@langchain/core/messages";
 import { getTools } from "./aiTools";
 
 export class AiService {

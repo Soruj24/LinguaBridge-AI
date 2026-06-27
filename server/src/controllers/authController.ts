@@ -38,11 +38,12 @@ const handleCreateUser = asyncHandler(async (req: Request<{}, {}, CreateUserBody
   return successResponse(res, { statusCode: 201, message: "User created. Please check your email for verification.", payload: { user: sanitizeUser(user as unknown as IUser), requiresVerification: true } });
 });
 
-const handleVerifyEmail = asyncHandler(async (req: Request<{}, {}, { token: string; email: string }>, res: Response, next: NextFunction) => {
+const handleVerifyEmail = asyncHandler(async (req: Request<{}, {}, { token: string; email?: string }>, res: Response, next: NextFunction) => {
   const { token, email } = req.body;
   if (!token) return next(createError(400, "Verification token is required"));
-  if (!email) return next(createError(400, "Email is required"));
-  const user = await User.findOne({ email: email.toLowerCase(), emailVerificationToken: token, emailVerificationExpires: { $gt: new Date() } });
+  const query: any = { emailVerificationToken: token, emailVerificationExpires: { $gt: new Date() } };
+  if (email) query.email = email.toLowerCase();
+  const user = await User.findOne(query);
   if (!user) return next(createError(400, "Invalid or expired verification token"));
   Object.assign(user, { emailVerified: true, emailVerificationToken: undefined, emailVerificationExpires: undefined, emailVerifiedAt: new Date(), status: "active" });
   await user.save();

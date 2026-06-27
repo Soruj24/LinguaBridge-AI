@@ -1,4 +1,4 @@
-export type UserRole = "user" | "admin";
+export type UserRole = "user" | "admin" | "moderator" | "super_admin" | "premium";
 
 export interface UserPreferences {
   lowBandwidth: boolean;
@@ -8,8 +8,12 @@ export interface UserPreferences {
 }
 
 export type LoginActivityType =
-  | "login" | "logout" | "signup"
-  | "password_change" | "2fa_enabled" | "2fa_disabled";
+  | "login"
+  | "logout"
+  | "signup"
+  | "password_change"
+  | "2fa_enabled"
+  | "2fa_disabled";
 
 export interface LoginActivityParams {
   userId?: string;

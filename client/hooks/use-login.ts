@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "@/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import axios from "axios";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { resendVerificationAction } from "@/app/actions/auth.action";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -52,8 +52,8 @@ export function useLogin() {
       if (result?.ok) {
         toast.success(t('success.login'));
         try {
-          const { data } = await axios.get("/api/user/me");
-          const preferredLanguage = data.preferredLanguage || "en";
+          const session = await getSession();
+          const preferredLanguage = (session?.user as any)?.preferredLanguage || "en";
           router.push("/dashboard", { locale: preferredLanguage });
           router.refresh();
         } catch {
@@ -68,10 +68,10 @@ export function useLogin() {
   }
 
   async function resendVerification() {
-    try {
-      await axios.post("/api/auth/resend-verification", { email: form.getValues("email") });
+    const result = await resendVerificationAction(form.getValues("email"));
+    if (result.success) {
       toast.success(t('verification.sent'));
-    } catch {
+    } else {
       toast.error(t('errors.generic'));
     }
   }

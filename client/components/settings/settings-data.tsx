@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import api from "@/lib/api";
 
 export function SettingsData() {
   const [isExporting, setIsExporting] = useState(false);
@@ -11,13 +12,8 @@ export function SettingsData() {
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const res = await fetch("/api/user/export");
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to export data");
-      }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
+      const res = await api.get("/api/user/export", { responseType: "blob" });
+      const url = URL.createObjectURL(new Blob([res.data]));
       const a = document.createElement("a");
       a.href = url;
       a.download = `lingualbridge-export-${new Date().toISOString().split("T")[0]}.json`;

@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { THEMES, ThemePreset, getCSSVariables } from "@/lib/themes";
 import { Palette, Check, Loader2 } from "lucide-react";
-import axios from "axios";
-import { toast } from "sonner";
+import { useUserSettings } from "@/hooks/use-user-settings";
 
 interface ThemeSelectorProps {
   variant?: "icon" | "full";
 }
 
 export function ThemeSelector({ variant = "icon" }: ThemeSelectorProps) {
+  const { updateTheme } = useUserSettings();
   const [currentTheme, setCurrentTheme] = useState("default");
   const [isSaving, setIsSaving] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -23,23 +23,13 @@ export function ThemeSelector({ variant = "icon" }: ThemeSelectorProps) {
 
   const handleSelectTheme = async (theme: ThemePreset) => {
     setIsSaving(true);
-    try {
-      await axios.put("/api/user/update", {
-        theme: theme.id,
-      });
-
+    const success = await updateTheme(theme.id);
+    if (success) {
       setCurrentTheme(theme.id);
-      
       const cssVars = getCSSVariables(theme);
       document.documentElement.style.cssText = cssVars;
-      
-      toast.success(`Theme: ${theme.name}`);
-    } catch (error) {
-      console.error("Failed to save theme:", error);
-      toast.error("Failed to save theme");
-    } finally {
-      setIsSaving(false);
     }
+    setIsSaving(false);
   };
 
   if (!mounted) {

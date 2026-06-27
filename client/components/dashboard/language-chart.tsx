@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { languageMap } from "@/lib/languages";
+import { languageMap } from "@/lib/utils/languages";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import axios from "axios";
