@@ -47,7 +47,7 @@ export function NotificationList({
         )}
       </div>
 
-      <ScrollArea className="h-[400px]">
+      <ScrollArea className="h-[400px] overflow-auto scrollbar-hide">
         {isLoading ? (
           <div className="flex items-center justify-center p-8">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />

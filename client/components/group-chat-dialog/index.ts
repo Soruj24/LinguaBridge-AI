@@ -1,1 +1,1 @@
-export { GroupChatDialog } from "../group-chat-dialog";
+export { GroupChatDialog } from "./group-chat-dialog";

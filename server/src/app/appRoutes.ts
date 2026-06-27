@@ -61,7 +61,6 @@ app.use("/api/billing", billingRouter);
 app.use("/api/support", supportRouter);
 app.use("/api/ai", aiRouter);
 app.use("/api/files", fileRouter);
-app.use("/api/notifications", notificationCompatRouter);
 app.use("/api/messages", messageRouter);
 app.use("/api/friends", friendsRouter);
 

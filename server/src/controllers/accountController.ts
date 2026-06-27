@@ -3,14 +3,14 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import createError from "http-errors";
 import { createJSONWebToken } from "../helper/jsonwebtoken";
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import { AuthRequest, PasswordChangeBody, UserParams } from "../types";
-import { jwtAccessKey } from "../secret";
+import { env } from "../shared/env";
 import User from "../models/schemas/User";
 import Session from "../models/Session";
 import UserActivity from "../models/UserActivity";
 import { findUser } from "../services/userServices";
-import { AUTH_CONSTANTS } from "../Constants";
+import { AUTH_CONSTANTS } from "../constants";
 import { getClientIP } from "../utils";
 import { asyncHandler } from "../middleware/asyncHandler";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../helper/email";
@@ -40,7 +40,7 @@ const handleForgotPassword = asyncHandler(async (req: Request<{}, {}, { email: s
   if (!email) return next(createError(400, "Email is required"));
   const user = await User.findOne({ email });
   if (!user) return successResponse(res, { statusCode: 200, message: "If the email exists, a password reset link has been sent" });
-  const resetToken = createJSONWebToken({ userId: user._id, type: "password_reset" }, jwtAccessKey, AUTH_CONSTANTS.RESET_TOKEN_EXPIRY);
+  const resetToken = createJSONWebToken({ userId: user._id, type: "password_reset" }, env.JWT_ACCESS_SECRET, AUTH_CONSTANTS.RESET_TOKEN_EXPIRY);
   Object.assign(user, { resetPasswordToken: resetToken, resetPasswordExpires: new Date(Date.now() + 3600000) });
   await user.save();
   try { await sendPasswordResetEmail(user.email!, user.firstName || user.username, resetToken); } catch (e) { console.error("Password reset email error:", e); }
@@ -51,7 +51,7 @@ const handleResetPassword = asyncHandler(async (req: Request<{}, {}, { token: st
   const { token, newPassword } = req.body;
   if (!token || !newPassword) return next(createError(400, "Token and new password are required"));
   let decoded: jwt.JwtPayload;
-  try { decoded = jwt.verify(token, jwtAccessKey) as jwt.JwtPayload; } catch (e) { return next(createError(400, "Invalid or expired reset token")); }
+  try { decoded = jwt.verify(token, env.JWT_ACCESS_SECRET) as jwt.JwtPayload; } catch (e) { return next(createError(400, "Invalid or expired reset token")); }
   if (decoded?.type !== "password_reset") return next(createError(400, "Invalid or expired reset token"));
   const user = await User.findOne({ _id: decoded.userId, resetPasswordToken: token, resetPasswordExpires: { $gt: new Date() } });
   if (!user) return next(createError(400, "Invalid or expired reset token"));

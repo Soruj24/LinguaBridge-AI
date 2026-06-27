@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { toast } from "sonner";
 
 export function useUserSettings() {
   const updateLanguage = useCallback(async (preferredLanguage: string) => {
     try {
-      await axios.put("/api/user/update", { preferredLanguage });
+      await api.put("/api/user/update", { preferredLanguage });
       toast.success("Language changed");
       return true;
     } catch {
@@ -18,7 +18,7 @@ export function useUserSettings() {
 
   const updateTheme = useCallback(async (theme: string) => {
     try {
-      await axios.put("/api/user/update", { theme });
+      await api.put("/api/user/update", { theme });
       toast.success("Theme updated");
       return true;
     } catch {

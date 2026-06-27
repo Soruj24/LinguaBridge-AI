@@ -4,7 +4,7 @@ import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "@/navigation";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@/lib/resolvers";
 import * as z from "zod";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";

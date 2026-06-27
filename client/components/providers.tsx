@@ -2,9 +2,9 @@
 
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { SocketProvider } from "./socket-provider";
-import { DirectionProvider } from "./direction-provider";
-import { CallProvider } from "./call-provider";
+import { SocketProvider } from "./providers/socket-provider";
+import { DirectionProvider } from "./providers/direction-provider";
+import { CallProvider } from "./providers/call-provider";
 import { ServerUserProvider } from "@/contexts/server-user-context";
 
 export function Providers({ children }: { children: React.ReactNode }) {

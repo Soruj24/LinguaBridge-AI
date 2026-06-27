@@ -2,7 +2,7 @@ import { Response, NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import { AiService } from "../services/ai";
 import { AuthRequest } from "../types";
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import createHttpError from "http-errors";
 
 const aiService = new AiService();

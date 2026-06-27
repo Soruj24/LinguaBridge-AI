@@ -1,1 +1,1 @@
-export { LanguageModal } from "../language-modal";
+export { LanguageModal } from "./language-modal";

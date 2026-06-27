@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 
 interface Stats {
   messages: { total: number; delta: number };
@@ -17,7 +17,7 @@ export function useAnalyticsStats() {
     let cancelled = false;
     async function fetchStats() {
       try {
-        const res = await axios.get("/api/analytics/stats");
+        const res = await api.get("/api/analytics/stats");
         if (!cancelled) setStats(res.data?.data || null);
       } catch {
         // noop

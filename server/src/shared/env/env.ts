@@ -21,8 +21,10 @@ const envSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
   GOOGLE_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_ID: z.string().optional(),
+  FACEBOOK_APP_ID: z.string().optional(),
   REDIS_URL: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
+  MONGODB_URI: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

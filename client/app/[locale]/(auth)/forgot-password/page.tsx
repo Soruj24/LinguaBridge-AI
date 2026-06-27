@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Link } from "@/navigation";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@/lib/resolvers";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {

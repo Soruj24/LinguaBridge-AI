@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import { notificationService } from "../services/notificationService";
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import createError from "http-errors";
 import { AuthenticatedRequest } from "../middleware/auth";
 

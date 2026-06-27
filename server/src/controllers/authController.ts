@@ -4,13 +4,13 @@ import jwt from "jsonwebtoken";
 import createError from "http-errors";
 import { createJSONWebToken } from "../helper/jsonwebtoken";
 import { setAccessTokenCookie, setRefreshTokenCookie } from "../helper/cookie";
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import { IUser, AuthRequest, CreateUserBody } from "../types";
-import { jwtAccessKey, jwtRefreshKey } from "../secret";
+import { env } from "../shared/env";
 import User from "../models/schemas/User";
 import Session from "../models/Session";
 import UserActivity from "../models/UserActivity";
-import { AUTH_CONSTANTS } from "../Constants";
+import { AUTH_CONSTANTS } from "../constants";
 import { checkAccountLockout, createSession, generateAuthTokens, getClientIP, resetLoginAttempts, sanitizeUser, trackFailedLoginAttempt, updateLoginHistory, validateUserStatus, verifyTwoFactorCode } from "../utils";
 import { asyncHandler } from "../middleware/asyncHandler";
 import { sendVerificationEmail, sendWelcomeEmail } from "../helper/email";
@@ -83,17 +83,17 @@ const handleLogIn = asyncHandler(async (req: Request<{}, {}, { email: string; pa
 const handleRefreshToken = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const oldRT = req.cookies.refreshToken;
   if (!oldRT) return next(createError(401, "Refresh token not found"));
-  if (!jwtRefreshKey) return next(createError(500, "JWT refresh key is not defined"));
+  if (!env.JWT_REFRESH_SECRET) return next(createError(500, "JWT refresh key is not defined"));
   try {
-    const decoded = jwt.verify(oldRT, jwtRefreshKey) as jwt.JwtPayload;
+    const decoded = jwt.verify(oldRT, env.JWT_REFRESH_SECRET) as jwt.JwtPayload;
     if (!decoded?.id) return next(createError(401, "Invalid refresh token"));
     const session = await Session.findOne({ refreshToken: oldRT, expiresAt: { $gt: new Date() }, revokedAt: { $exists: false } });
     if (!session) { res.clearCookie("accessToken"); res.clearCookie("refreshToken"); return next(createError(401, "Session expired")); }
     const user = await User.findById(decoded.id);
     if (!user) return next(createError(404, "User not found"));
     const payload = { id: user.id.toString(), email: user.email, role: user.role || "user" };
-    const at = createJSONWebToken(payload, jwtAccessKey, AUTH_CONSTANTS.ACCESS_TOKEN_EXPIRY);
-    const rt = createJSONWebToken(payload, jwtRefreshKey, AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY);
+    const at = createJSONWebToken(payload, env.JWT_ACCESS_SECRET, AUTH_CONSTANTS.ACCESS_TOKEN_EXPIRY);
+    const rt = createJSONWebToken(payload, env.JWT_REFRESH_SECRET, AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY);
     Object.assign(session, { accessToken: at, refreshToken: rt, lastActiveAt: new Date(), expiresAt: new Date(Date.now() + 604800000) });
     await session.save();
     setAccessTokenCookie(res, at); setRefreshTokenCookie(res, rt);
@@ -108,8 +108,8 @@ const handleRefreshToken = asyncHandler(async (req: Request, res: Response, next
 const handleProtected = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const at = req.cookies.accessToken || req.headers.authorization?.replace("Bearer ", "");
   if (!at) return next(createError(401, "Access token not found"));
-  if (!jwtAccessKey) return next(createError(500, "JWT access key is not defined"));
-  const decoded = jwt.verify(at, jwtAccessKey) as jwt.JwtPayload;
+  if (!env.JWT_ACCESS_SECRET) return next(createError(500, "JWT access key is not defined"));
+  const decoded = jwt.verify(at, env.JWT_ACCESS_SECRET) as jwt.JwtPayload;
   if (!decoded?.id) return next(createError(401, "Invalid access token"));
   const user = await User.findById(decoded.id).select("-password");
   if (!user) return next(createError(404, "User not found"));

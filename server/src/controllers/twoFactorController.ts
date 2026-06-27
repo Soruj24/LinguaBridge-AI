@@ -5,7 +5,7 @@ import QRCode from "qrcode";
 import crypto from "crypto";
 import createError from "http-errors";
 
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import { AuthRequest } from "../types";
 import User from "../models/schemas/User";
 import { asyncHandler } from "../middleware/asyncHandler";

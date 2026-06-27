@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BlockedUsersList } from "@/components/blocked-users-list";
+import { BlockedUsersList } from "@/components/ui/blocked-users-list";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@/navigation";

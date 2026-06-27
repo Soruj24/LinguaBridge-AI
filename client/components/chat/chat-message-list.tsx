@@ -2,7 +2,7 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { TypingIndicator } from "@/components/typing-indicator";
+import { TypingIndicator } from "@/components/ui/typing-indicator";
 import { ChevronDown } from "lucide-react";
 import type { Message } from "@/types/chat";
 import type { MessageBubbleMessage } from "@/components/message-bubble/types";

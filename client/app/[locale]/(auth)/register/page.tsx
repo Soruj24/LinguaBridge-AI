@@ -4,16 +4,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Globe } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { SocialLogin } from "@/components/social-login";
+import { SocialLogin } from "@/components/ui/social-login";
 import { Link } from "@/navigation";
 import { RegisterStepIndicator, RegisterFormFields, RegisterSuccess } from "@/components/register";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@/lib/resolvers";
 import { useState, useMemo, useEffect } from "react";
 import { registerSchema, type RegisterFormValues } from "@/lib/schemas/register";
 import { toast } from "sonner";
 import { registerAction } from "@/app/actions/auth.action";
-import { languageMap } from "@/lib/utils/languages";
+import { languageMap } from "@linguabridge/shared";
 
 const ALL_LANGUAGES = Object.entries(languageMap).map(([code, name]) => ({ code, name }));
 

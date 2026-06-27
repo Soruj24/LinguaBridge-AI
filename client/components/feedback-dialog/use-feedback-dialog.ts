@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@/lib/resolvers";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { feedbackFormSchema, type FeedbackFormValues } from "@/lib/schemas/feedback";

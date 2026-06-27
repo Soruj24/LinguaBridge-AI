@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { smtp_pass, smtp_user } from "../secret";
+import { env } from "../shared/env";
 
 interface EmailData {
   to: string | string[];
@@ -24,7 +24,7 @@ interface EmailResult {
 
 // Validate email configuration on startup
 const validateConfig = () => {
-  if (!smtp_user || !smtp_pass) {
+  if (!env.SMTP_USER || !env.SMTP_PASS) {
     throw new Error(
       "SMTP credentials are missing. Check your secret configuration.",
     );
@@ -36,8 +36,8 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: smtp_user,
-    pass: smtp_pass,
+    user: env.SMTP_USER,
+    pass: env.SMTP_PASS,
   },
   pool: true,
   maxConnections: 5,
@@ -70,7 +70,7 @@ export const sendEmail = async (emailData: EmailData): Promise<EmailResult> => {
     }
 
     const info = await transporter.sendMail({
-      from: `"Store Messenger" <${smtp_user}>`,
+      from: `"Store Messenger" <${env.SMTP_USER}>`,
       ...emailData,
     });
 
@@ -89,7 +89,7 @@ export const sendEmail = async (emailData: EmailData): Promise<EmailResult> => {
     // Check for common Gmail errors to provide better feedback
     if (errorMessage.includes("535-5.7.8")) {
       console.error(
-        "💡 TIP: This is an authentication error. Ensure your SMTP_PASS is a valid Google App Password and that 2FA is enabled on your account.",
+        "💡 TIP: This is an authentication error. Ensure your env.SMTP_PASS is a valid Google App Password and that 2FA is enabled on your account.",
       );
     }
 

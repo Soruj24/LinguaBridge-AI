@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import createHttpError from "http-errors";
-import { jwtAccessKey } from "../../secret";
+import { env } from "../../shared/env";
 import { verifyJSONWebToken, createJSONWebToken } from "../../helper/jsonwebtoken";
 import { AuthenticatedRequest, extractToken, setAuthCookie } from "./tokenUtils";
 
@@ -8,17 +8,17 @@ export const refreshTokenIfNeeded = async (req: AuthenticatedRequest, res: Respo
     try {
         const token = extractToken(req);
 
-        if (!token || !jwtAccessKey) {
+        if (!token || !env.JWT_ACCESS_SECRET) {
             return next();
         }
 
         try {
-            const decoded = verifyJSONWebToken(token, jwtAccessKey);
+            const decoded = verifyJSONWebToken(token, env.JWT_ACCESS_SECRET);
             const now = Math.floor(Date.now() / 1000);
             const tokenExp = decoded.exp;
 
             if (tokenExp && (tokenExp - now) < 1800) {
-                const newToken = createJSONWebToken({ id: decoded.id || decoded.userId }, jwtAccessKey, '7d');
+                const newToken = createJSONWebToken({ id: decoded.id || decoded.userId }, env.JWT_ACCESS_SECRET, '7d');
                 setAuthCookie(res, newToken);
             }
         } catch (error) {

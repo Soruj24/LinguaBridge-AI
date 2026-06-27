@@ -8,7 +8,7 @@ import { fetchMessagesApi, markAsReadApi } from "@/lib/repositories/chat.reposit
 interface UseChatMessagesParams {
   chatId: string;
   currentUserId?: string;
-  socket: ReturnType<typeof import("@/components/socket-provider").useSocket>;
+  socket: ReturnType<typeof import("@/components/providers/socket-provider").useSocket>;
 }
 
 export function useChatMessages({ chatId, currentUserId, socket }: UseChatMessagesParams) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { toast } from "sonner";
 import type { PhrasebookEntry } from "@/types/phrasebook";
 
@@ -17,7 +17,7 @@ export function usePhrasebook() {
       const params = new URLSearchParams();
       if (search) params.set("search", search);
       if (language) params.set("language", language);
-      const res = await axios.get(`/api/phrasebook?${params.toString()}`);
+      const res = await api.get(`/api/phrasebook?${params.toString()}`);
       setEntries(res.data.entries);
     } catch {
       toast.error("Failed to load phrasebook");
@@ -39,7 +39,7 @@ export function usePhrasebook() {
     sourceChatId?: string;
   }) => {
     try {
-      await axios.post("/api/phrasebook", data);
+      await api.post("/api/phrasebook", data);
       toast.success("Saved to phrasebook");
       fetchEntries();
     } catch {
@@ -49,7 +49,7 @@ export function usePhrasebook() {
 
   const deleteEntry = useCallback(async (id: string) => {
     try {
-      await axios.delete(`/api/phrasebook/${id}`);
+      await api.delete(`/api/phrasebook/${id}`);
       setEntries((prev) => prev.filter((e) => e._id !== id));
       toast.success("Removed from phrasebook");
     } catch {
@@ -59,7 +59,7 @@ export function usePhrasebook() {
 
   const updateEntry = useCallback(async (id: string, data: { notes?: string; tags?: string[] }) => {
     try {
-      await axios.patch(`/api/phrasebook/${id}`, data);
+      await api.patch(`/api/phrasebook/${id}`, data);
       fetchEntries();
       toast.success("Entry updated");
     } catch {

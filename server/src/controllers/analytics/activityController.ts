@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler";
 import UserActivity from "../../models/UserActivity";
 import createError from "http-errors";
-import { successResponse } from "../responsControllers";
+import { successResponse } from "../responseControllers";
 
 export const getRecentActivity = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

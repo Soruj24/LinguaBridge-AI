@@ -68,9 +68,9 @@ friendsRouter.post("/refresh-token", async (req: Request, res: Response) => {
 
     await connectDB();
     const jwt = await import("jsonwebtoken");
-    const { jwtRefreshKey, jwtAccessKey } = await import("../secret");
+    const { env } = await import("../shared/env");
 
-    const decoded = jwt.default.verify(refreshToken, jwtRefreshKey!) as { id: string; email: string; role: string };
+    const decoded = jwt.default.verify(refreshToken, env.JWT_REFRESH_SECRET) as { id: string; email: string; role: string };
 
     const user = await User.findById(decoded.id);
     if (!user) { res.status(404).json({ error: "User not found" }); return; }

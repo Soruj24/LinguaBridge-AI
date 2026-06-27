@@ -1,5 +1,5 @@
 import { Sidebar } from "@/components/sidebar";
-import { MobileNav } from "@/components/mobile-nav";
+import { MobileNav } from "@/components/ui/mobile-nav";
 
 export default function MainLayout({
   children,

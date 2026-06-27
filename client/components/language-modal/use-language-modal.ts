@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useLocale } from "next-intl";
 import { useRouter } from "@/navigation";
 import { usePathname } from "next/navigation";
-import axios from "axios";
+import api from "@/lib/api";
 import { toast } from "sonner";
 
 const LANGUAGES = [
@@ -109,7 +109,7 @@ export function useLanguageModal(
     try {
       setIsSaving(true);
 
-      await axios.put("/api/user/update", {
+      await api.put("/api/user/update", {
         preferredLanguage: selectedLanguage,
       });
 

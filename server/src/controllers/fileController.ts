@@ -4,7 +4,7 @@ import createError from "http-errors";
 import { uploadToCloudinary } from "../utils/cloudinary";
 import cloudinary from "../config/cloudinary";
 import { AuthRequest } from "../types";
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import { processFileBuffer } from "../utils/documentProcessor";
 import { UserDocument } from "../models/UserDocument";
 

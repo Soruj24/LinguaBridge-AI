@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import createError from "http-errors";
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import { AuthRequest } from "../types";
 import Invoice from "../models/Invoice";
 import { asyncHandler } from "../middleware/asyncHandler";

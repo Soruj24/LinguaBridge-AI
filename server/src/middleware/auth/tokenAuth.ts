@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { jwtAccessKey } from "../../secret";
+import { env } from "../../shared/env";
 
 export interface TokenUser {
   _id: string;
@@ -29,9 +29,9 @@ export function extractTokenUser(req: Request): TokenUser | null {
       token = (req as any).cookies.accessToken;
     }
 
-    if (!token || !jwtAccessKey) return null;
+    if (!token || !env.JWT_ACCESS_SECRET) return null;
 
-    const decoded = jwt.verify(token, jwtAccessKey) as { id: string; email: string; role: string };
+    const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET) as { id: string; email: string; role: string };
     return { _id: decoded.id, email: decoded.email, role: decoded.role };
   } catch {
     return null;

@@ -2,7 +2,7 @@
 
 import { Paperclip, Mic, StopCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GifPicker } from "@/components/gif-picker";
+import { GifPicker } from "@/components/ui/gif-picker";
 
 interface ChatInputActionsProps {
   isRecording: boolean;

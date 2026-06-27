@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import Stripe from "stripe";
 import createError from "http-errors";
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import { AuthRequest } from "../types";
 import User from "../models/schemas/User";
 import Subscription from "../models/Subscription";

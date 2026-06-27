@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import SubscriptionPlan from "../models/SubscriptionPlan";
 import { asyncHandler } from "../middleware/asyncHandler";
 import { sanitizeBillingData } from "./billingHelpers";

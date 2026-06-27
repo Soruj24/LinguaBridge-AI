@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler";
 import Invoice from "../../models/Invoice";
 import createError from "http-errors";
-import { successResponse } from "../responsControllers";
+import { successResponse } from "../responseControllers";
 
 export const getRevenueData = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

@@ -7,7 +7,7 @@ import { sendVoiceMessageApi } from "@/lib/repositories/chat.repository";
 interface UseChatVoiceParams {
   getReceiverId: () => string | undefined;
   chatId: string;
-  socket: ReturnType<typeof import("@/components/socket-provider").useSocket>;
+  socket: ReturnType<typeof import("@/components/providers/socket-provider").useSocket>;
   onMessageSent: (message: Message) => void;
   scrollToBottom: () => void;
 }

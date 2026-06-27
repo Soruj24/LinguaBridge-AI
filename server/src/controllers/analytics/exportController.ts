@@ -3,7 +3,7 @@ import { asyncHandler } from "../../middleware/asyncHandler";
 import User from "../../models/schemas/User";
 import Invoice from "../../models/Invoice";
 import createError from "http-errors";
-import { successResponse } from "../responsControllers";
+import { successResponse } from "../responseControllers";
 
 export const exportAnalyticsData = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

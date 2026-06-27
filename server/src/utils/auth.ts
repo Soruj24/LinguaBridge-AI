@@ -1,7 +1,7 @@
 import { IUser } from "../types";
 import { createJSONWebToken } from "../helper/jsonwebtoken";
-import { jwtAccessKey, jwtRefreshKey } from "../secret";
-import { AUTH_CONSTANTS } from "../Constants";
+import { env } from "../shared/env";
+import { AUTH_CONSTANTS } from "../constants";
 import speakeasy from "speakeasy";
 import bcrypt from "bcryptjs";
 import User from "../models/schemas/User";
@@ -47,7 +47,7 @@ export const verifyTwoFactorCode = async (
 export const generateAuthTokens = (
   user: IUser
 ): { accessToken: string; refreshToken: string } => {
-  if (!jwtAccessKey || !jwtRefreshKey) {
+  if (!env.JWT_ACCESS_SECRET || !env.JWT_REFRESH_SECRET) {
     throw new Error("JWT keys not configured");
   }
   const tokenPayload = {
@@ -59,12 +59,12 @@ export const generateAuthTokens = (
 
   const accessToken = createJSONWebToken(
     tokenPayload,
-    jwtAccessKey,
+    env.JWT_ACCESS_SECRET,
     AUTH_CONSTANTS.ACCESS_TOKEN_EXPIRY
   );
   const refreshToken = createJSONWebToken(
     tokenPayload,
-    jwtRefreshKey,
+    env.JWT_REFRESH_SECRET,
     AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY
   );
 

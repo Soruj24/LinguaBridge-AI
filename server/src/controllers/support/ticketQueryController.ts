@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import createError from "http-errors";
 import { SupportTicket } from "../../models/SupportTicket";
-import { successResponse } from "../responsControllers";
+import { successResponse } from "../responseControllers";
 import { AuthRequest } from "../../types";
 
 export const handleGetAllTickets = asyncHandler(

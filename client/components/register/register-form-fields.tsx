@@ -4,7 +4,7 @@ import { User, Mail, Lock, Eye, EyeOff, ChevronRight, Loader2 } from "lucide-rea
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PasswordStrength, PasswordRequirements } from "@/components/password-strength";
+import { PasswordStrength, PasswordRequirements } from "@/components/ui/password-strength";
 import { RegisterLanguageSelect } from "./register-language-select";
 import { cn } from "@/lib/utils";
 import type { UseFormReturn } from "react-hook-form";

@@ -10,7 +10,7 @@ import { formatTimestamp, type Friend, type ChatItem } from "@/types/sidebar";
 import type { Folder } from "@/types/folders";
 import { FolderSection } from "./folder-section";
 import { FolderAssignPopover } from "./folder-assign-popover";
-import { useCall } from "@/components/call-provider";
+import { useCall } from "@/components/providers/call-provider";
 import { useState, useMemo } from "react";
 import { Archive, ArchiveRestore, ChevronDown, ChevronRight, MoreVertical, MessageCircleOff, MessageCircle } from "lucide-react";
 import {

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import { AuthRequest } from "../types";
 import Session from "../models/Session";
 import { asyncHandler } from "../middleware/asyncHandler";

@@ -7,7 +7,7 @@ import { SidebarContent } from "./sidebar-content";
 import { SidebarFooter } from "./sidebar-footer";
 import { LanguageModal } from "@/components/language-modal";
 import { AddFriendDialog } from "@/components/add-friend-dialog";
-import { ContactImportDialog } from "@/components/contact-import-dialog";
+import { ContactImportDialog } from "@/components/ui/contact-import-dialog";
 import type { SidebarProps, Friend, PendingRequest, ChatItem } from "@/types/sidebar";
 import type { Folder } from "@/types/folders";
 

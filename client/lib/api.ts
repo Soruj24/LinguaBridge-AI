@@ -1,5 +1,4 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { ApiError } from "./errors";
 
 const api = axios.create({
   baseURL: "",
@@ -65,9 +64,5 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export function handleApiError(error: unknown): never {
-  throw ApiError.fromResponse(error);
-}
 
 export default api;

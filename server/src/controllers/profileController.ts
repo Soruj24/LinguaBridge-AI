@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import createError from "http-errors";
 
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import { IUser, AuthRequest } from "../types";
 import User from "../models/schemas/User";
 import { sanitizeUser } from "../utils";

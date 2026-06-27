@@ -2,10 +2,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { languageMap } from "@/lib/utils/languages";
+import { languageMap } from "@linguabridge/shared";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { Globe2 } from "lucide-react";
 
 type UsageItem = { code: string; count: number };
@@ -18,7 +18,7 @@ export function LanguageChart() {
   useEffect(() => {
     async function fetchUsage() {
       try {
-        const res = await axios.get("/api/analytics/language-usage?limit=8");
+        const res = await api.get("/api/analytics/language-usage?limit=8");
         const data = Array.isArray(res.data?.data) ? res.data.data : [];
         setItems(data);
       } catch (error) {

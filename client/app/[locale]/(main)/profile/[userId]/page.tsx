@@ -7,7 +7,7 @@ import { Globe, MessageSquare, Languages, ArrowLeft, CalendarDays, Activity } fr
 import { notFound } from "next/navigation";
 import { ProfileActions } from "@/components/profile-actions";
 import { getProfileData } from "@/lib/services/profile.service";
-import { ProfileStatusBadge } from "@/components/profile-status-badge";
+import { ProfileStatusBadge } from "@/components/ui/profile-status-badge";
 
 interface PageProps {
   params: Promise<{ locale: string; userId: string }>;

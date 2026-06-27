@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { useSocket } from "@/components/socket-provider";
+import { useSocket } from "@/components/providers/socket-provider";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import type { Message, Chat } from "@/types/chat";

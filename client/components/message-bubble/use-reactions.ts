@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import type { Reaction } from "./types";
 
 export function useReactions(
@@ -43,7 +43,7 @@ export function useReactions(
     setLocalReactions(newReactions);
 
     try {
-      await axios.post(`/api/chat/message/${messageId}/react`, { emoji });
+      await api.post(`/api/chat/message/${messageId}/react`, { emoji });
     } catch (error) {
       console.error("Failed to react", error);
       setLocalReactions(reactions || []);

@@ -1,11 +1,11 @@
 import Stripe from "stripe";
 import SubscriptionPlan from "../models/SubscriptionPlan";
-import { STRIPE_SECRET_KEY } from "../secret";
+import { env } from "../shared/env";
 
-const _stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
+const _stripe = env.STRIPE_SECRET_KEY ? new Stripe(env.STRIPE_SECRET_KEY) : null;
 
 export const getStripe = (): Stripe => {
-  if (!_stripe) throw new Error("Stripe is not configured. Provide a valid STRIPE_SECRET_KEY.");
+  if (!_stripe) throw new Error("Stripe is not configured. Provide a valid env.STRIPE_SECRET_KEY.");
   return _stripe;
 };
 

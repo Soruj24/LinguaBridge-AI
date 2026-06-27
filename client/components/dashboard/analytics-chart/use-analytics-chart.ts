@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { useTranslations } from "next-intl";
 
 interface DayData {
@@ -17,7 +17,7 @@ export function useAnalyticsChart() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await axios.get("/api/analytics/stats");
+        const res = await api.get("/api/analytics/stats");
         const stats = res.data?.data;
         if (stats?.dailyActivity) {
           setData(stats.dailyActivity);

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import createError from "http-errors";
 import { SupportTicket } from "../../models/SupportTicket";
-import { successResponse } from "../responsControllers";
+import { successResponse } from "../responseControllers";
 import { uploadToCloudinary } from "../../utils/cloudinary";
 import { AuthRequest } from "../../types";
 import Notification from "../../models/Notification";

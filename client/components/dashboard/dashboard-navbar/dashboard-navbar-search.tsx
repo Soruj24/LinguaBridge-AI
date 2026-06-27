@@ -5,7 +5,7 @@ import { useRouter } from "@/navigation";
 import { useSession } from "next-auth/react";
 import { Search, ArrowRight, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import axios from "axios";
+import api from "@/lib/api";
 
 interface SearchChat {
   _id: string;
@@ -35,7 +35,7 @@ export function DashboardNavbarSearch() {
     }
     try {
       setIsSearching(true);
-      const res = await axios.get(
+      const res = await api.get(
         `/api/chat?search=${encodeURIComponent(query)}`,
       );
       const data = Array.isArray(res.data) ? res.data : res.data?.data || [];

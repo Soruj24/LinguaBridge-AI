@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "@/navigation";
-import axios from "axios";
+import api from "@/lib/api";
 import { toast } from "sonner";
 
 interface SearchUser {
@@ -33,7 +33,7 @@ export function useGroupChat(onChatCreated?: () => void) {
     debounceRef.current = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const res = await axios.get(
+        const res = await api.get(
           `/api/friends/search?query=${encodeURIComponent(query)}`,
         );
         setUsers(
@@ -70,7 +70,7 @@ export function useGroupChat(onChatCreated?: () => void) {
       formData.append("groupDescription", groupDescription);
       selectedUsers.forEach((id) => formData.append("participantIds", id));
 
-      const res = await axios.post("/api/chat/group", formData);
+      const res = await api.post("/api/chat/group", formData);
       onChatCreated?.();
       router.push(`/chat/${res.data._id}`);
       router.refresh();

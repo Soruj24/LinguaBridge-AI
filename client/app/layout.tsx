@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { NetworkStatus } from "@/components/network-status";
+import { NetworkStatus } from "@/components/ui/network-status";
 import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({

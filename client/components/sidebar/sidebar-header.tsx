@@ -52,7 +52,7 @@ export function SidebarHeader({
           </div>
           <span className="font-semibold text-base">LinguaBridge</span>
         </Link>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 ">
           <NotificationBell />
           <GroupChatDialog onChatCreated={onGroupChatCreated}>
             <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg">

@@ -22,8 +22,8 @@ import {
   UserCog,
   Bell,
 } from "lucide-react";
-import { ThemeSelector } from "@/components/theme-selector";
-import { ModeToggle } from "@/components/mode-toggle";
+import { ThemeSelector } from "@/components/ui/theme-selector";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 export function DashboardNavbarActions() {
   const t = useTranslations("Dashboard");

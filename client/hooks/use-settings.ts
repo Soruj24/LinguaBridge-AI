@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+import { zodResolver } from "@/lib/resolvers";
+import api from "@/lib/api";
 import { toast } from "sonner";
 import { settingsSchema, type SettingsFormValues } from "@/lib/schemas/settings";
 
@@ -40,7 +40,7 @@ export function useSettings() {
 
   const fetchNotificationPreferences = useCallback(async () => {
     try {
-      const res = await axios.get("/api/user/notification-preferences");
+      const res = await api.get("/api/user/notification-preferences");
       setNotificationPrefs(res.data);
     } catch {
       // Use defaults if fetch fails
@@ -116,7 +116,7 @@ export function useSettings() {
   async function updateNotificationPreferences(data: Partial<NotificationPreferences>) {
     setIsNotifLoading(true);
     try {
-      const res = await axios.put("/api/user/notification-preferences", data);
+      const res = await api.put("/api/user/notification-preferences", data);
       setNotificationPrefs(res.data);
       await update({
         ...session,
@@ -139,7 +139,7 @@ export function useSettings() {
   async function onSubmit(values: SettingsFormValues) {
     setIsLoading(true);
     try {
-      await axios.put("/api/user/update", values);
+      await api.put("/api/user/update", values);
       await update({
         ...session,
         user: {

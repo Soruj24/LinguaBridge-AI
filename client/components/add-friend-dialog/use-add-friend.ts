@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import api from "@/lib/api";
+import { isAxiosError } from "axios";
 import { toast } from "sonner";
 
 interface SearchUser {
@@ -29,7 +30,7 @@ export function useAddFriend(onAdded: () => void) {
     debounceRef.current = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const res = await axios.get(
+        const res = await api.get(
           `/api/friends/search?query=${encodeURIComponent(query)}`,
         );
         setUsers(res.data.users ?? []);
@@ -48,7 +49,7 @@ export function useAddFriend(onAdded: () => void) {
   const handleSendRequest = async (recipientId: string) => {
     setSendingIds((prev) => new Set(prev).add(recipientId));
     try {
-      await axios.post("/api/friends/request", { recipientId });
+      await api.post("/api/friends/request", { recipientId });
       toast.success("Friend request sent");
       setUsers((prev) =>
         prev.map((u) =>
@@ -59,7 +60,7 @@ export function useAddFriend(onAdded: () => void) {
       );
       onAdded();
     } catch (error: unknown) {
-      const msg = axios.isAxiosError(error) && error.response?.data?.error;
+      const msg = isAxiosError(error) && error.response?.data?.error;
       toast.error(msg || "Failed to send request");
     } finally {
       setSendingIds((prev) => {

@@ -5,7 +5,7 @@ interface CustomJWTPayload extends JwtPayload {
     id: string;
     email: string;
     role?: string;
-    userId?: string; // Add userId for backward compatibility
+    userId?: string;
 }
 
 export const createJSONWebToken = (
@@ -34,7 +34,7 @@ export const createJSONWebToken = (
 
 export const verifyJSONWebToken = (
     token: string,
-    jwtAccessKey: string
+    secretKey: string
 ): CustomJWTPayload => {
     if (!token) {
         throw createHttpError(401, "Token is required");
@@ -46,20 +46,16 @@ export const verifyJSONWebToken = (
         throw createHttpError(401, "Invalid token format");
     }
 
-
     try {
-        const decoded = jwt.verify(cleanToken, jwtAccessKey) as any;
+        const decoded = jwt.verify(cleanToken, secretKey) as any;
 
-
-        // Handle both "id" and "userId" for backward compatibility
         if (!decoded.id && !decoded.userId) {
             throw createHttpError(401, "Invalid token payload: missing user identifier");
         }
 
-        // Normalize the payload to always use "id"
         const normalizedPayload: CustomJWTPayload = {
             ...decoded,
-            id: decoded.id || decoded.userId, // Use id if present, otherwise fallback to userId
+            id: decoded.id || decoded.userId,
             email: decoded.email || '',
             role: decoded.role || 'user'
         };

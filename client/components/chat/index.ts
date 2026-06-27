@@ -1,5 +1,6 @@
 export { MessageInput } from "./message-input";
 export { ChatHeader } from "./chat-header";
+export { ChatWindow } from "./chat-window";
 export { ChatWindowHeader } from "./chat-window-header";
 export { ChatSearch } from "./chat-search";
 export { ChatMessageList } from "./chat-message-list";

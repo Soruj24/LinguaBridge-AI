@@ -1,4 +1,4 @@
-import { ChatWindow } from "@/components/chat-window";
+import { ChatWindow } from "@/components/chat/chat-window";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 

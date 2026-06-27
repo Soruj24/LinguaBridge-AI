@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler";
 import createError from "http-errors";
-import { successResponse } from "../responsControllers";
+import { successResponse } from "../responseControllers";
 
 export const getUserAnalytics = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

@@ -10,7 +10,7 @@ import {
 import { ArrowLeft, User, Search, Info, Trash2, MoreVertical, Bookmark, Phone, Clock, X, Download, Archive, ArchiveRestore, Pin, PinOff, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { getLanguageFlag } from "@/types/chat";
-import { useCall } from "@/components/call-provider";
+import { useCall } from "@/components/providers/call-provider";
 import { Badge } from "@/components/ui/badge";
 import {
   Popover, PopoverContent, PopoverTrigger,

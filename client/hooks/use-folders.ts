@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import axios from "axios";
+import api from "@/lib/api";
 import { toast } from "sonner";
 import type { Folder } from "@/types/folders";
 
@@ -15,7 +15,7 @@ export function useFolders() {
     if (!session?.user?.email) return;
     try {
       setIsLoading(true);
-      const res = await axios.get("/api/folders");
+      const res = await api.get("/api/folders");
       setFolders(res.data.folders ?? []);
     } catch {
       console.error("Failed to load folders");
@@ -30,7 +30,7 @@ export function useFolders() {
 
   const createFolder = useCallback(async (name: string, color?: string) => {
     try {
-      const res = await axios.post("/api/folders", { name, color });
+      const res = await api.post("/api/folders", { name, color });
       const folder = res.data.folder;
       setFolders((prev) => [...prev, folder]);
       toast.success(`Folder "${name}" created`);
@@ -43,7 +43,7 @@ export function useFolders() {
 
   const deleteFolder = useCallback(async (folderId: string) => {
     try {
-      await axios.delete(`/api/folders/${folderId}`);
+      await api.delete(`/api/folders/${folderId}`);
       setFolders((prev) => prev.filter((f) => f._id !== folderId));
       toast.success("Folder deleted");
     } catch {
@@ -53,7 +53,7 @@ export function useFolders() {
 
   const updateFolder = useCallback(async (folderId: string, data: { name?: string; color?: string }) => {
     try {
-      const res = await axios.patch(`/api/folders/${folderId}`, data);
+      const res = await api.patch(`/api/folders/${folderId}`, data);
       const updated = res.data.folder;
       setFolders((prev) => prev.map((f) => (f._id === folderId ? updated : f)));
       return updated;
@@ -66,11 +66,11 @@ export function useFolders() {
   const assignChatToFolder = useCallback(async (chatId: string, folderId: string | null) => {
     try {
       if (folderId) {
-        await axios.post(`/api/folders/${folderId}/chats`, { chatId });
+        await api.post(`/api/folders/${folderId}/chats`, { chatId });
       } else {
         const currentFolder = folders.find((f) => f.chatIds.includes(chatId));
         if (currentFolder) {
-          await axios.delete(`/api/folders/${currentFolder._id}/chats`, { data: { chatId } });
+          await api.delete(`/api/folders/${currentFolder._id}/chats`, { data: { chatId } });
         }
       }
       await fetchFolders();

@@ -2,7 +2,7 @@
 
 import { Globe } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { SocialLogin } from "@/components/social-login";
+import { SocialLogin } from "@/components/ui/social-login";
 import { Link } from "@/navigation";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";

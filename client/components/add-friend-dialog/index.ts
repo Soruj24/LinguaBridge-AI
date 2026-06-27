@@ -1,1 +1,1 @@
-export { AddFriendDialog } from "../add-friend-dialog";
+export { AddFriendDialog } from "./add-friend-dialog";

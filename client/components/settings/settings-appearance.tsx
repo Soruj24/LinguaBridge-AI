@@ -1,8 +1,8 @@
 "use client";
 
 import { Palette, Languages } from "lucide-react";
-import { ThemeSelector } from "@/components/theme-selector";
-import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeSelector } from "@/components/ui/theme-selector";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 
 export function SettingsAppearance() {
   return (

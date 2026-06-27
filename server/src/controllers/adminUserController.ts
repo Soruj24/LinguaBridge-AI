@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
-import { successResponse } from "./responsControllers";
+import { successResponse } from "./responseControllers";
 import { IUser, AuthRequest, GetUsersQuery } from "../types";
 import { UserRole } from "../models/interfaces/IUser";
 import User from "../models/schemas/User";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 
 export function useTTS() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -30,7 +30,7 @@ export function useTTS() {
       setIsLoading(true);
       cleanup();
 
-      const res = await axios.post(
+      const res = await api.post(
         "/api/chat/tts",
         { text, language },
         { responseType: "blob" },

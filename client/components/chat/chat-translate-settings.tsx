@@ -4,7 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { languages } from "@/lib/utils/languages";
+import { languages } from "@linguabridge/shared";
 
 interface ChatTranslateSettingsProps {
   alwaysTranslate: boolean;

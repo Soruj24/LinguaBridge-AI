@@ -1,7 +1,7 @@
 import http from "http";
 import { Server } from "socket.io";
 
-import { connectDatabase } from "./config/db";
+import connectDB from "./config/connectDB";
 import app from "./app";
 import { env } from "./shared/env";
 import { logger } from "./shared/logger";
@@ -29,7 +29,7 @@ setIO(io);
 startScheduler(io);
 setupSocketHandlers(io);
 
-connectDatabase();
+connectDB();
 server.listen(env.PORT, () =>
   logger.info(`Server running on http://localhost:${env.PORT}`)
 );

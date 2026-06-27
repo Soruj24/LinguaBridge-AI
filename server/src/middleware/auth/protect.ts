@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import createHttpError from "http-errors";
-import { jwtAccessKey } from "../../secret";
+import { env } from "../../shared/env";
 import { verifyJSONWebToken } from "../../helper/jsonwebtoken";
 import User from "../../models/schemas/User";
 import { UserRole } from "../../models/interfaces/IUser";
@@ -14,11 +14,11 @@ export const protect = async (req: AuthenticatedRequest, res: Response, next: Ne
             throw createHttpError(401, "Unauthorized access, please login first");
         }
 
-        if (!jwtAccessKey) {
+        if (!env.JWT_ACCESS_SECRET) {
             throw createHttpError(500, "JWT secret key is not configured");
         }
 
-        const decoded = verifyJSONWebToken(token, jwtAccessKey);
+        const decoded = verifyJSONWebToken(token, env.JWT_ACCESS_SECRET);
 
         const userId = decoded.id || decoded.userId;
         if (!userId) {

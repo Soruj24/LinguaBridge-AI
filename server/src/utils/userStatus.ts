@@ -1,5 +1,5 @@
 import { IUser } from "../types";
-import { AUTH_CONSTANTS } from "../Constants";
+import { AUTH_CONSTANTS } from "../constants";
 import createError from "http-errors";
 import User from "../models/schemas/User";
 

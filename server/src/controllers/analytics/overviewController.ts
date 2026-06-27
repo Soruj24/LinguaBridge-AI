@@ -4,7 +4,7 @@ import Invoice from "../../models/Invoice";
 import User from "../../models/schemas/User";
 import { SupportTicket } from "../../models/SupportTicket";
 import createError from "http-errors";
-import { successResponse } from "../responsControllers";
+import { successResponse } from "../responseControllers";
 
 export const getOverviewStats = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
