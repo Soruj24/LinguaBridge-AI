@@ -1,8 +1,8 @@
-import { Router, Request, Response } from "express";
+﻿import { Router, Request, Response } from "express";
 import connectDB from "../config/connectDB";
-import { extractTokenUser } from "../middleware/auth/tokenAuth";
-import Folder from "../models/schemas/Folder";
-import Chat from "../models/chat/Chat";
+import { extractTokenUser } from "../middleware/tokenAuth";
+import Folder from "../models/Folder";
+import Chat from "../models/Chat";
 
 const router = Router();
 
@@ -100,3 +100,4 @@ router.delete("/:folderId/chats", async (req: Request, res: Response) => {
 });
 
 export default router;
+

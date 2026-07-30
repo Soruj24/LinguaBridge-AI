@@ -3,7 +3,7 @@ import {
   fetchChatList,
   fetchMessageCount,
 } from "@/lib/repositories/profile.repository";
-import type { ProfileData, FriendStatus } from "@/types/profile";
+import type { ProfileData, FriendStatus } from "@/types/shared";
 
 export async function getProfileData(
   userId: string,

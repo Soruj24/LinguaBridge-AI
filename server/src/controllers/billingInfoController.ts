@@ -1,8 +1,8 @@
-import { Response, NextFunction } from "express";
+﻿import { Response, NextFunction } from "express";
 import createError from "http-errors";
 import { successResponse } from "./responseControllers";
 import { AuthRequest } from "../types";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import Subscription from "../models/Subscription";
 import PaymentMethod from "../models/PaymentMethod";
 import UserActivity from "../models/UserActivity";
@@ -33,3 +33,4 @@ const handleGetBillingInfo = asyncHandler(async (req: AuthRequest, res: Response
 });
 
 export { handleGetBillingInfo };
+

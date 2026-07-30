@@ -6,14 +6,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form } from "@/components/ui/form";
 import { SocialLogin } from "@/components/ui/social-login";
 import { Link } from "@/navigation";
-import { RegisterStepIndicator, RegisterFormFields, RegisterSuccess } from "@/components/register";
+import { RegisterStepIndicator, RegisterFormFields, RegisterSuccess } from "@/components/features/auth/components";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@/lib/resolvers";
 import { useState, useMemo, useEffect } from "react";
-import { registerSchema, type RegisterFormValues } from "@/lib/schemas/register";
+import { registerSchema, type RegisterFormValues } from "@/schemas/register";
 import { toast } from "sonner";
 import { registerAction } from "@/app/actions/auth.action";
-import { languageMap } from "@linguabridge/shared";
+import { languageMap } from "@/utils";
 
 const ALL_LANGUAGES = Object.entries(languageMap).map(([code, name]) => ({ code, name }));
 

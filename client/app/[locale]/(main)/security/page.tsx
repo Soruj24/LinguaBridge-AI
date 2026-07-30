@@ -1,14 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useSecurity } from "@/hooks/use-security";
+import { useSecurity } from "@/components/features/security/hooks/use-security";
 import {
   SecurityStatusCard,
   SecurityActivityList,
   Security2FASection,
   SecurityChangePassword,
   SecurityDeleteAccount,
-} from "@/components/security";
+} from "@/components/features/security/components";
 
 export default function SecurityPage() {
   const s = useSecurity();

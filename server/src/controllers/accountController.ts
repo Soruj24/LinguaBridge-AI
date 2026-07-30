@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+﻿import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import createError from "http-errors";
@@ -6,7 +6,7 @@ import { createJSONWebToken } from "../helper/jsonwebtoken";
 import { successResponse } from "./responseControllers";
 import { AuthRequest, PasswordChangeBody, UserParams } from "../types";
 import { env } from "../shared/env";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import Session from "../models/Session";
 import UserActivity from "../models/UserActivity";
 import { findUser } from "../services/userServices";
@@ -154,3 +154,4 @@ const handleCheckEmailAvailability = asyncHandler(async (req: Request<{}, {}, {}
 });
 
 export { handleChangedPassword, handleForgotPassword, handleResetPassword, handleSendVerificationEmail, handleResendVerificationEmail, handleDeleteAccount, handleDeactivateAccount, handleReactivateAccount, handleUpdateEmail, handleCheckUsernameAvailability, handleCheckEmailAvailability };
+

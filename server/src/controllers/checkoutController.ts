@@ -1,8 +1,8 @@
-import { Response, NextFunction } from "express";
+﻿import { Response, NextFunction } from "express";
 import createError from "http-errors";
 import { successResponse } from "./responseControllers";
 import { AuthRequest } from "../types";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import SubscriptionPlan from "../models/SubscriptionPlan";
 import UserActivity from "../models/UserActivity";
 import { getClientIP } from "../utils";
@@ -32,3 +32,4 @@ const handleCreateCheckoutSession = asyncHandler(async (req: AuthRequest, res: R
 });
 
 export { handleCreateCheckoutSession };
+

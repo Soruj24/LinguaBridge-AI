@@ -1,5 +1,5 @@
-import { DynamicTool } from "@langchain/core/tools";
-import User from "../../models/schemas/User";
+﻿import { DynamicTool } from "@langchain/core/tools";
+import User from "../../models/User";
 import { SupportTicket } from "../../models/SupportTicket";
 import { UserDocument } from "../../models/UserDocument";
 
@@ -49,3 +49,4 @@ export function getTools(userId: string) {
     }),
   ];
 }
+

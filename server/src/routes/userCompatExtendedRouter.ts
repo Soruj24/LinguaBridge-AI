@@ -1,7 +1,7 @@
-import { Router, Request, Response } from "express";
+﻿import { Router, Request, Response } from "express";
 import connectDB from "../config/connectDB";
-import { extractTokenUser } from "../middleware/auth/tokenAuth";
-import User from "../models/schemas/User";
+import { extractTokenUser } from "../middleware/tokenAuth";
+import User from "../models/User";
 
 const router = Router();
 
@@ -47,3 +47,4 @@ router.get("/export", async (req: Request, res: Response) => {
 });
 
 export default router;
+

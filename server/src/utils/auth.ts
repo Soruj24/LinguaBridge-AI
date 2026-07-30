@@ -1,10 +1,10 @@
-import { IUser } from "../types";
+﻿import { IUser } from "../types";
 import { createJSONWebToken } from "../helper/jsonwebtoken";
 import { env } from "../shared/env";
 import { AUTH_CONSTANTS } from "../constants";
 import speakeasy from "speakeasy";
 import bcrypt from "bcryptjs";
-import User from "../models/schemas/User";
+import User from "../models/User";
 
 export const verifyTwoFactorCode = async (
   user: IUser,
@@ -70,3 +70,4 @@ export const generateAuthTokens = (
 
   return { accessToken, refreshToken };
 };
+

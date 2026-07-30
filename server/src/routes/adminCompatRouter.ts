@@ -1,9 +1,9 @@
-import { Router, Request, Response } from "express";
+﻿import { Router, Request, Response } from "express";
 import connectDB from "../config/connectDB";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import { UserStatus } from "../types/enums";
 import { ChatMessage, Chat } from "../models/chat";
-import { extractTokenUser } from "../middleware/auth/tokenAuth";
+import { extractTokenUser } from "../middleware/tokenAuth";
 
 const router = Router();
 
@@ -72,3 +72,4 @@ router.put("/users", async (req: Request, res: Response) => {
 });
 
 export default router;
+

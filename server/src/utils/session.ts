@@ -1,6 +1,6 @@
-import { Request } from "express";
+﻿import { Request } from "express";
 import Session from "../models/Session";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import { IUser } from "../types";
 import { getClientIP } from "./ip";
 import { getDeviceInfo } from "./device";
@@ -54,3 +54,4 @@ export const generateSixDigitToken = (): string => {
   }
   return token;
 };
+

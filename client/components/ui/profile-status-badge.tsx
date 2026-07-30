@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { formatLastSeen } from "@linguabridge/shared";
+import { formatLastSeen } from "@/utils/formatting";
 
 interface ProfileStatusBadgeProps {
   userId: string;

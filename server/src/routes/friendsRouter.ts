@@ -1,19 +1,19 @@
-import { Router, Request, Response } from "express";
+﻿import { Router, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import * as friendsController from "../controllers/friendsController";
 import connectDB from "../config/connectDB";
 import { ChatUser, Friendship, Block } from "../models/chat";
 import { findOrCreateChatUser } from "../utils/syncUser";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import { generateAuthTokens } from "../utils/auth";
 import { sanitizeUser } from "../utils";
 import { IUser } from "../types";
-import { extractTokenUser } from "../middleware/auth/tokenAuth";
+import { extractTokenUser } from "../middleware/tokenAuth";
 import { setAccessTokenCookie, setRefreshTokenCookie } from "../helper/cookie";
 
 const friendsRouter = Router();
 
-// ── Auth sync: get accessToken + refreshToken for NextAuth users ──
+// â”€â”€ Auth sync: get accessToken + refreshToken for NextAuth users â”€â”€
 friendsRouter.post("/auth-sync", async (req: Request, res: Response) => {
   try {
     const { email, name, avatar, provider, providerId } = req.body;
@@ -60,7 +60,7 @@ friendsRouter.post("/auth-sync", async (req: Request, res: Response) => {
   }
 });
 
-// ── Refresh token endpoint ──
+// â”€â”€ Refresh token endpoint â”€â”€
 friendsRouter.post("/refresh-token", async (req: Request, res: Response) => {
   try {
     const { refreshToken } = req.body;
@@ -86,7 +86,7 @@ friendsRouter.post("/refresh-token", async (req: Request, res: Response) => {
   }
 });
 
-// ── Sync user (create/find ChatUser from NextAuth) ──
+// â”€â”€ Sync user (create/find ChatUser from NextAuth) â”€â”€
 friendsRouter.post("/sync-user", async (req: Request, res: Response) => {
   try {
     const { email, name, avatar } = req.body;
@@ -99,7 +99,7 @@ friendsRouter.post("/sync-user", async (req: Request, res: Response) => {
   }
 });
 
-// ── Search users ──
+// â”€â”€ Search users â”€â”€
 friendsRouter.get("/search", async (req: Request, res: Response) => {
   await connectDB();
   const tokenUser = extractTokenUser(req);
@@ -148,7 +148,7 @@ friendsRouter.get("/search", async (req: Request, res: Response) => {
   res.json({ users: usersWithStatus });
 });
 
-// ── Get pending requests (compat: uses token auth) ──
+// â”€â”€ Get pending requests (compat: uses token auth) â”€â”€
 friendsRouter.get("/requests", async (req: Request, res: Response) => {
   try {
     await connectDB();
@@ -171,7 +171,7 @@ friendsRouter.get("/requests", async (req: Request, res: Response) => {
   }
 });
 
-// ── Send friend request (compat: uses token auth) ──
+// â”€â”€ Send friend request (compat: uses token auth) â”€â”€
 friendsRouter.post("/request", async (req: Request, res: Response) => {
   await connectDB();
   const tokenUser = extractTokenUser(req);
@@ -188,7 +188,7 @@ friendsRouter.post("/request", async (req: Request, res: Response) => {
   friendsController.sendFriendRequest(req, res);
 });
 
-// ── Accept/reject friend request (compat: PATCH /:id with {action}) ──
+// â”€â”€ Accept/reject friend request (compat: PATCH /:id with {action}) â”€â”€
 friendsRouter.patch("/:id", async (req: Request, res: Response) => {
   const { action } = req.body;
   if (action === "accept") {
@@ -205,7 +205,7 @@ friendsRouter.patch("/:id", async (req: Request, res: Response) => {
 friendsRouter.get("/status/:userId1/:userId2", asyncHandler(friendsController.getFriendStatus));
 friendsRouter.get("/block/:blockId", asyncHandler(friendsController.unblockUser));
 
-// ── Compat routes (must be before /:userId parametric routes) ──
+// â”€â”€ Compat routes (must be before /:userId parametric routes) â”€â”€
 friendsRouter.get("/blocked-users", extractTokenUser ? async (req: Request, res: Response) => {
   await connectDB();
   const tokenUser = extractTokenUser(req);
@@ -288,3 +288,4 @@ friendsRouter.delete("/:friendshipId", asyncHandler(friendsController.removeFrie
 friendsRouter.delete("/block/:blockId", asyncHandler(friendsController.unblockUser));
 
 export default friendsRouter;
+

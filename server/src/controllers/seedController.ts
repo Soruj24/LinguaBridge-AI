@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+﻿import { Request, Response, NextFunction } from "express";
 import generateMockData from "../config/data";
-import User from "../models/schemas/User";
+import User from "../models/User";
 
 export const seedUsers = async (
   req: Request,
@@ -42,3 +42,4 @@ export const getSeedStats = async (
     next(error);
   }
 };
+

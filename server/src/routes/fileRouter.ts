@@ -1,11 +1,11 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { 
   handleUploadFile, 
   handleUploadMultipleFiles, 
   handleDeleteFile,
   handleGetUserDocuments
 } from "../controllers/fileController";
-import { isLoggedIn } from "../middleware/auth";
+import { isLoggedIn } from "../middleware";
 import upload from "../config/multer.config";
 
 const fileRouter = Router();
@@ -38,3 +38,4 @@ fileRouter.post("/upload-multiple", upload.array("files", 10), handleUploadMulti
 fileRouter.delete("/:public_id", handleDeleteFile);
 
 export default fileRouter;
+

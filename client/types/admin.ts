@@ -1,4 +1,4 @@
-import type { UserItem, ActivityItem } from "@/components/admin";
+import type { UserItem, ActivityItem } from "@/components/features/admin/components";
 
 export interface AdminStats {
   stats: {

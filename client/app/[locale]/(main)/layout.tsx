@@ -1,4 +1,4 @@
-import { Sidebar } from "@/components/sidebar";
+import { Sidebar } from "@/components/features/chat/components/sidebar";
 import { MobileNav } from "@/components/ui/mobile-nav";
 
 export default function MainLayout({

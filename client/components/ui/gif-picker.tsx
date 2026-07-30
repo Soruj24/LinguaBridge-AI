@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ImagePlay, Smile, Search, Sticker, Loader2 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useChatApi } from "@/hooks/use-chat-api";
+import { useChatApi } from "@/components/features/chat/hooks/use-chat-api";
 
 const STICKER_PACKS = [
   {

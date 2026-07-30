@@ -1,7 +1,7 @@
 "use client";
 
-import { useResetPassword } from "@/hooks/use-reset-password";
-import { ResetPasswordForm, ResetPasswordInvalid } from "@/components/reset-password";
+import { useResetPassword } from "@/components/features/auth/hooks/use-reset-password";
+import { ResetPasswordForm, ResetPasswordInvalid } from "@/components/features/auth/components/reset-index";
 
 export default function ResetPasswordPage() {
   const r = useResetPassword();

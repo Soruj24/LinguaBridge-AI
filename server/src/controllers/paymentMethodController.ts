@@ -1,8 +1,8 @@
-import { Response, NextFunction } from "express";
+﻿import { Response, NextFunction } from "express";
 import createError from "http-errors";
 import { successResponse } from "./responseControllers";
 import { AuthRequest } from "../types";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import PaymentMethod from "../models/PaymentMethod";
 import UserActivity from "../models/UserActivity";
 import { getClientIP } from "../utils";
@@ -71,3 +71,4 @@ const handleRemovePaymentMethod = asyncHandler(async (req: AuthRequest, res: Res
 });
 
 export { handleGetPaymentMethods, handleAddPaymentMethod, handleSetDefaultPaymentMethod, handleRemovePaymentMethod };
+

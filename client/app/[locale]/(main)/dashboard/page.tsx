@@ -1,11 +1,11 @@
-import { DashboardNavbarWrapper } from "@/components/dashboard/dashboard-navbar-wrapper";
-import { StatsCards } from "@/components/dashboard/stats-cards";
-import { AnalyticsChart } from "@/components/dashboard/analytics-chart";
-import { LanguageChart } from "@/components/dashboard/language-chart";
-import { RecentConversations } from "@/components/dashboard/recent-conversations";
-import { PremiumCard } from "@/components/dashboard/premium-card";
-import { WelcomeBanner } from "@/components/dashboard/welcome-banner";
-import { FriendRequestsCard } from "@/components/dashboard/friend-requests-card";
+import { DashboardNavbarWrapper } from "@/components/features/dashboard/components/dashboard-navbar-wrapper";
+import { StatsCards } from "@/components/features/dashboard/components/stats-cards";
+import { AnalyticsChart } from "@/components/features/dashboard/components/analytics-chart";
+import { LanguageChart } from "@/components/features/dashboard/components/language-chart";
+import { RecentConversations } from "@/components/features/dashboard/components/recent-conversations";
+import { PremiumCard } from "@/components/features/dashboard/components/premium-card";
+import { WelcomeBanner } from "@/components/features/dashboard/components/welcome-banner";
+import { FriendRequestsCard } from "@/components/features/dashboard/components/friend-requests-card";
 
 export default function DashboardPage() {
   return (

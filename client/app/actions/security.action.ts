@@ -9,7 +9,7 @@ import {
   handleChangePassword,
   handleDeleteAccount,
 } from "@/lib/services/security.service";
-import type { LoginActivity } from "@/types/security";
+import type { LoginActivity } from "@/types/shared";
 
 interface TwoFASetupData {
   qrCode: string;

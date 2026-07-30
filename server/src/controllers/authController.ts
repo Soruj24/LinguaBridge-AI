@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+﻿import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import createError from "http-errors";
@@ -7,7 +7,7 @@ import { setAccessTokenCookie, setRefreshTokenCookie } from "../helper/cookie";
 import { successResponse } from "./responseControllers";
 import { IUser, AuthRequest, CreateUserBody } from "../types";
 import { env } from "../shared/env";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import Session from "../models/Session";
 import UserActivity from "../models/UserActivity";
 import { AUTH_CONSTANTS } from "../constants";
@@ -163,3 +163,4 @@ const handleGetMe = asyncHandler(async (req: AuthRequest, res: Response, next: N
 });
 
 export { handleCreateUser, handleVerifyEmail, handleLogIn, handleLogOut, handleSocialLogin, handleRefreshToken, handleProtected, handleGetMe };
+

@@ -19,8 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*", "./src/*"],
-      "@linguabridge/shared": ["../packages/shared/src"]
+      "@/*": ["./*", "./src/*"]
     }
   },
   "include": [

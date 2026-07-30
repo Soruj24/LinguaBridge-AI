@@ -1,7 +1,7 @@
-import { Router, Request, Response } from "express";
+﻿import { Router, Request, Response } from "express";
 import connectDB from "../config/connectDB";
-import { extractTokenUser } from "../middleware/auth/tokenAuth";
-import Notification from "../models/schemas/Notification";
+import { extractTokenUser } from "../middleware/tokenAuth";
+import Notification from "../models/Notification";
 
 const router = Router();
 
@@ -70,3 +70,4 @@ router.post("/unsubscribe", async (req: Request, res: Response) => {
 });
 
 export default router;
+

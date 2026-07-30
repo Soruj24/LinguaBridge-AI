@@ -1,7 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { seedUsers, getSeedStats } from "../controllers/seedController";
-import { isLoggedIn, hasPermission } from "../middleware/auth";
-import { Permission } from "../models/interfaces/IUser";
+import { isLoggedIn, hasPermission } from "../middleware";
+import { Permission } from "../models/User";
 
 const seedRouter = Router();
 
@@ -16,3 +16,5 @@ seedRouter.get("/stats", getSeedStats);
 seedRouter.get("/", seedUsers); // or seedAllData depending on your needs
 
 export default seedRouter;
+
+

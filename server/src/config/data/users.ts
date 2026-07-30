@@ -1,6 +1,6 @@
-import { faker } from "@faker-js/faker";
+﻿import { faker } from "@faker-js/faker";
 import mongoose from "mongoose";
-import { Gender, UserRole, UserStatus, Permission } from "../../models/interfaces/IUser";
+import { Gender, UserRole, UserStatus, Permission } from "../../models/User";
 import { getUnsplashAvatar, generateValidPhoneNumber, generateValidUsername, generateHashedPassword } from "./helpers";
 
 const DEFAULT_PREFERENCES = {
@@ -155,3 +155,4 @@ export async function generateMockUsers() {
 
   return users;
 }
+

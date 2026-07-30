@@ -1,0 +1,14 @@
+export { PageHeader } from "./page-header";
+export { HeroSection } from "./hero-section";
+export { FeatureDetailSection } from "./feature-detail-section";
+export { FeaturesGridSection } from "./features-grid-section";
+export { HowItWorksSection } from "./how-it-works-section";
+export { StatsSection } from "./stats-section";
+export { TestimonialsSection } from "./testimonials-section";
+export { LanguagesSection } from "./languages-section";
+export { FaqSection } from "./faq-section";
+export { CtaSection } from "./cta-section";
+export { FooterSection } from "./footer-section";
+export { ChatMockup } from "./animations/chat-mockup";
+export { FaqItem } from "./animations/faq-item";
+export { FadeIn, StaggerChildren, StaggerItem } from "./animations/fade-in";

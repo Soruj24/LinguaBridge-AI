@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { auth } from "@/auth";
 import { Globe, MessageSquare, Languages, ArrowLeft, CalendarDays, Activity } from "lucide-react";
 import { notFound } from "next/navigation";
-import { ProfileActions } from "@/components/profile-actions";
+import { ProfileActions } from "@/components/features/profile/components";
 import { getProfileData } from "@/lib/services/profile.service";
 import { ProfileStatusBadge } from "@/components/ui/profile-status-badge";
 

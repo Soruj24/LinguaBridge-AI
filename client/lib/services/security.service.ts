@@ -7,7 +7,7 @@ import {
   changePassword,
   deleteAccount,
 } from "@/lib/repositories/security.repository";
-import type { LoginActivity } from "@/types/security";
+import type { LoginActivity } from "@/types/shared";
 
 interface LoginActivityResponse {
   payload?: { sessions?: LoginActivity[] };

@@ -1,6 +1,6 @@
-import { Router, Request, Response } from "express";
+﻿import { Router, Request, Response } from "express";
 import connectDB from "../config/connectDB";
-import { extractTokenUser } from "../middleware/auth/tokenAuth";
+import { extractTokenUser } from "../middleware/tokenAuth";
 
 const router = Router();
 
@@ -25,3 +25,4 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 export default router;
+

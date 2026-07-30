@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+﻿import { Request, Response, NextFunction } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler";
-import User from "../../models/schemas/User";
+import User from "../../models/User";
 import Invoice from "../../models/Invoice";
 import createError from "http-errors";
 import { successResponse } from "../responseControllers";
@@ -56,3 +56,4 @@ export const exportAnalyticsData = asyncHandler(
     }
   }
 );
+

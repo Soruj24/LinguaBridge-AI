@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+﻿import { Request, Response, NextFunction } from "express";
 import Stripe from "stripe";
 import createError from "http-errors";
 import { successResponse } from "./responseControllers";
 import { AuthRequest } from "../types";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import Subscription from "../models/Subscription";
 import SubscriptionPlan from "../models/SubscriptionPlan";
 import Invoice from "../models/Invoice";
@@ -83,7 +83,7 @@ const handleCancelSubscription = asyncHandler(async (req: AuthRequest, res: Resp
       await UserActivity.create({ userId, activityType: "subscription_canceled_at_period_end", description: "Scheduled cancellation", ipAddress: getClientIP(req), userAgent: req.get("User-Agent"), metadata: { reason }, status: "success" });
       return successResponse(res, { statusCode: 200, message: "Cancels at period end", payload: { subscription: sanitizeBillingData(subscription.toObject()), cancelAtPeriodEnd: true } });
     } else {
-      await subscription.cancel(reason, userId.toString());
+      await subscription.cancel(reason, userId);
       await stripe.subscriptions.cancel((subscription as any).stripeSubscriptionId as string);
       await UserActivity.create({ userId, activityType: "subscription_canceled_immediately", description: "Immediate cancellation", ipAddress: getClientIP(req), userAgent: req.get("User-Agent"), metadata: { reason }, status: "success" });
       return successResponse(res, { statusCode: 200, message: "Canceled immediately", payload: { subscription: sanitizeBillingData(subscription.toObject()), cancelAtPeriodEnd: false } });
@@ -92,3 +92,4 @@ const handleCancelSubscription = asyncHandler(async (req: AuthRequest, res: Resp
 });
 
 export { handleGetCurrentSubscription, handleCreateSubscription, handleUpdateSubscription, handleCancelSubscription };
+

@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Sparkles } from "lucide-react";
-import { FeedbackDialog } from "@/components/feedback-dialog";
-import { PricingPlans } from "@/components/subscription/pricing-plans";
+import { FeedbackDialog } from "@/components/features/settings/components/feedback-index";
+import { PricingPlans } from "@/components/features/subscription/components/pricing-plans";
 import {
   PageHeader,
   HeroSection,
@@ -17,7 +17,7 @@ import {
   FaqSection,
   CtaSection,
   FooterSection,
-} from "@/components/landing";
+} from "@/components/features/landing/components";
 
 export default function Home() {
   const t = useTranslations("Landing");

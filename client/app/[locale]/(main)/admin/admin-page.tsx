@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import {
   AdminStatCard, AdminStatCardSkeleton, AdminAreaChart, AdminPieChart,
   AdminUserTable, AdminChatList, AdminActivityLog, AdminActivityListCompact,
-} from "@/components/admin";
-import { useAdmin } from "@/hooks/use-admin";
+} from "@/components/features/admin/components";
+import { useAdmin } from "@/components/features/admin/hooks/use-admin";
 
 const tabs = [
   { key: "overview" as const, label: "Overview" },

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { THEMES, ThemePreset, getCSSVariables } from "@/lib/themes";
 import { Palette, Check, Loader2 } from "lucide-react";
-import { useUserSettings } from "@/hooks/use-user-settings";
+import { useUserSettings } from "@/components/features/settings/hooks/use-user-settings";
 
 interface ThemeSelectorProps {
   variant?: "icon" | "full";

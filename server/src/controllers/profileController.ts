@@ -1,9 +1,9 @@
-import { Response, NextFunction } from "express";
+﻿import { Response, NextFunction } from "express";
 import createError from "http-errors";
 
 import { successResponse } from "./responseControllers";
 import { IUser, AuthRequest } from "../types";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import { sanitizeUser } from "../utils";
 import { asyncHandler } from "../middleware/asyncHandler";
 import { uploadToCloudinary } from "../utils/cloudinary";
@@ -108,3 +108,4 @@ export {
   handleGetUserPreferences, handleUpdateUserPreferences,
   handleGetAccountStatus,
 };
+

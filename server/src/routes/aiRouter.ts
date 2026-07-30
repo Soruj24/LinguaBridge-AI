@@ -1,6 +1,6 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { handleAiChat } from "../controllers/aiController";
-import { isLoggedIn } from "../middleware/auth";
+import { isLoggedIn } from "../middleware";
 
 const aiRouter = Router();
 
@@ -8,3 +8,4 @@ const aiRouter = Router();
 aiRouter.post("/chat", isLoggedIn, handleAiChat);
 
 export default aiRouter;
+

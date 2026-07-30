@@ -2,8 +2,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { useSettings } from "@/hooks/use-settings";
-import { SettingsAppearance, SettingsProfile, SettingsAccessibility, SettingsEmailNotifications, SettingsNotifications, SettingsData } from "@/components/settings";
+import { useSettings } from "@/components/features/settings/hooks/use-settings";
+import { SettingsAppearance, SettingsProfile, SettingsAccessibility, SettingsEmailNotifications, SettingsNotifications, SettingsData } from "@/components/features/settings/components";
 
 export default function SettingsPage() {
   const s = useSettings();

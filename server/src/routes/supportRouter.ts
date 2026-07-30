@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import {
   handleSubmitTicket,
   handleGetAllTickets,
@@ -7,8 +7,8 @@ import {
   handleUpdateTicketStatus,
   handleAddTicketComment,
 } from "../controllers/support";
-import { isLoggedIn, isAdmin, hasPermission } from "../middleware/auth";
-import { Permission } from "../models/interfaces/IUser";
+import { isLoggedIn, isAdmin, hasPermission } from "../middleware";
+import { Permission } from "../models/User";
 import upload from "../config/multer.config";
 
 const supportRouter = Router();
@@ -41,3 +41,5 @@ supportRouter.get("/tickets", hasPermission(Permission.TICKETS_VIEW), handleGetA
 supportRouter.patch("/tickets/:id/status", hasPermission(Permission.TICKETS_EDIT), handleUpdateTicketStatus);
 
 export default supportRouter;
+
+

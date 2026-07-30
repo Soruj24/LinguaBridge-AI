@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import {
   handleCreateUser, handleVerifyEmail, handleLogIn, handleLogOut,
   handleSocialLogin, handleRefreshToken, handleProtected, handleGetMe,
@@ -28,8 +28,8 @@ import {
   handleUpdateUserRole, handleSendEmailToUser, handleUpdateUser,
   handleAdminCreateUser, handleAdminToggleTwoFactor, handleAdminRevokeAllSessions,
 } from "../controllers/adminUserController";
-import { isLoggedIn, isAdmin, isLoggedOut, authorize, hasPermission } from "../middleware/auth";
-import { UserRole, Permission } from "../models/interfaces/IUser";
+import { isLoggedIn, isAdmin, isLoggedOut, authorize, hasPermission } from "../middleware";
+import { UserRole, Permission } from "../models/User";
 import { rateLimitConfig, validationRules } from "../validator/auth";
 import { runValidation } from "../validator";
 import upload from "../config/multer.config";
@@ -98,16 +98,16 @@ authRouter.get("/health", rateLimitConfig.general, (req, res) => {
   res.status(200).json({ status: "OK", timestamp: new Date().toISOString(), uptime: process.uptime(), service: "Authentication Service" });
 });
 
-// POST /refresh (alias for /refresh-token — client interceptor calls this)
+// POST /refresh (alias for /refresh-token â€” client interceptor calls this)
 authRouter.post("/refresh", handleRefreshToken);
 
 // ==================== CLIENT COMPAT ALIASES ====================
-import { extractTokenUser } from "../middleware/auth/tokenAuth";
+import { extractTokenUser } from "../middleware/tokenAuth";
 import { Request, Response } from "express";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import bcrypt from "bcryptjs";
 
-// GET /login-activity → reuse sessions handler
+// GET /login-activity â†’ reuse sessions handler
 authRouter.get("/login-activity", isLoggedIn, rateLimitConfig.general, handleGetSessions);
 
 // 2FA compat aliases (client uses /2fa/*, server uses /setup-2fa etc.)
@@ -116,7 +116,7 @@ authRouter.post("/2fa/setup", isLoggedIn, rateLimitConfig.twoFactor, validationR
 authRouter.post("/2fa/verify", isLoggedIn, rateLimitConfig.twoFactor, validationRules.twoFactorVerify, runValidation, handleVerifyTwoFactor as any);
 authRouter.post("/2fa/disable", isLoggedIn, rateLimitConfig.twoFactor, validationRules.twoFactorDisable, runValidation, handleDisableTwoFactor as any);
 
-// POST /change-password (no userId param — derives from token)
+// POST /change-password (no userId param â€” derives from token)
 authRouter.post("/change-password", isLoggedIn, rateLimitConfig.sensitiveAction, async (req: Request, res: Response) => {
   try {
     const tokenUser = extractTokenUser(req);
@@ -145,3 +145,5 @@ authRouter.post("/change-password", isLoggedIn, rateLimitConfig.sensitiveAction,
 });
 
 export default authRouter;
+
+

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+﻿import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import speakeasy from "speakeasy";
 import QRCode from "qrcode";
@@ -7,7 +7,7 @@ import createError from "http-errors";
 
 import { successResponse } from "./responseControllers";
 import { AuthRequest } from "../types";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import { asyncHandler } from "../middleware/asyncHandler";
 
 const handleSetupTwoFactor = asyncHandler(
@@ -86,3 +86,4 @@ export {
   handleSetupTwoFactor, handleVerifyTwoFactor,
   handleDisableTwoFactor, handleGenerateBackupCodes,
 };
+

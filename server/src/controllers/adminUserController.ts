@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+﻿import { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import { successResponse } from "./responseControllers";
 import { IUser, AuthRequest, GetUsersQuery } from "../types";
-import { UserRole } from "../models/interfaces/IUser";
-import User from "../models/schemas/User";
+import { UserRole } from "../models/User";
+import User from "../models/User";
 import Session from "../models/Session";
 import UserActivity from "../models/UserActivity";
 import { sanitizeUser, getClientIP } from "../utils";
@@ -138,3 +138,4 @@ const handleAdminRevokeAllSessions = asyncHandler(async (req: AuthRequest, res: 
 });
 
 export { handleGetAllUsers, handleGetUser, handleDeleteUser, handleUpdateUserRole, handleSendEmailToUser, handleUpdateUser, handleAdminCreateUser, handleAdminToggleTwoFactor, handleAdminRevokeAllSessions };
+

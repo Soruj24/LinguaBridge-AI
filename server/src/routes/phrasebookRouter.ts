@@ -1,7 +1,7 @@
-import { Router, Request, Response } from "express";
+﻿import { Router, Request, Response } from "express";
 import connectDB from "../config/connectDB";
-import { extractTokenUser } from "../middleware/auth/tokenAuth";
-import PhrasebookEntry from "../models/schemas/PhrasebookEntry";
+import { extractTokenUser } from "../middleware/tokenAuth";
+import PhrasebookEntry from "../models/PhrasebookEntry";
 
 const router = Router();
 
@@ -62,3 +62,4 @@ router.patch("/:id", async (req: Request, res: Response) => {
 });
 
 export default router;
+

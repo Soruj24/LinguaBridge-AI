@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { handleGetBillingInfo } from "../controllers/billingInfoController";
 import { handleGetSubscriptionPlans } from "../controllers/planController";
 import { handleGetCurrentSubscription, handleCreateSubscription, handleUpdateSubscription, handleCancelSubscription } from "../controllers/subscriptionController";
@@ -8,8 +8,8 @@ import { handleCreateCheckoutSession } from "../controllers/checkoutController";
 import { handleGetUsageStats } from "../controllers/usageController";
 import { handleStripeWebhook } from "../controllers/stripeWebhookController";
 import { handleAdminListSubscriptions, handleAdminListInvoices, handleAdminUpdateSubscription } from "../controllers/adminBillingController";
-import { isLoggedIn, hasPermission } from "../middleware/auth";
-import { Permission } from "../models/interfaces/IUser";
+import { isLoggedIn, hasPermission } from "../middleware";
+import { Permission } from "../models/User";
 import { runValidation } from "../validator";
 import bodyParser from "body-parser";
 import rateLimit from "express-rate-limit";
@@ -46,3 +46,5 @@ billingRouter.put("/admin/subscriptions/:subscriptionId", isLoggedIn, hasPermiss
 billingRouter.get("/health", generalLimiter, (req, res) => { res.status(200).json({ status: "OK", timestamp: new Date().toISOString(), uptime: process.uptime(), service: "Billing Service", stripe: process.env.STRIPE_SECRET_KEY ? "configured" : "not configured" }); });
 
 export default billingRouter;
+
+

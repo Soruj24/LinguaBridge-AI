@@ -1,7 +1,7 @@
-import { Router, Request, Response } from "express";
+﻿import { Router, Request, Response } from "express";
 import connectDB from "../config/connectDB";
-import { extractTokenUser } from "../middleware/auth/tokenAuth";
-import User from "../models/schemas/User";
+import { extractTokenUser } from "../middleware/tokenAuth";
+import User from "../models/User";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail } from "../helper/email";
 
@@ -52,3 +52,4 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 export default router;
+

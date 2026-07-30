@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+﻿import { Request, Response, NextFunction } from "express";
 import Stripe from "stripe";
 import createError from "http-errors";
-import User from "../models/schemas/User";
+import User from "../models/User";
 import Subscription from "../models/Subscription";
 import Invoice from "../models/Invoice";
 import PaymentMethod from "../models/PaymentMethod";
@@ -56,3 +56,4 @@ const handleStripeWebhook = async (req: Request, res: Response, next: NextFuncti
 };
 
 export { handleStripeWebhook };
+

@@ -1,5 +1,5 @@
-import { PricingPlans } from "@/components/subscription/pricing-plans";
-import { ComparisonTable } from "@/components/subscription/comparison-table";
+import { PricingPlans } from "@/components/features/subscription/components/pricing-plans";
+import { ComparisonTable } from "@/components/features/subscription/components/comparison-table";
 
 export default function SubscriptionPage() {
   return (

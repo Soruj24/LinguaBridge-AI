@@ -1,8 +1,8 @@
-import { Types } from "mongoose";
+﻿import { Types } from "mongoose";
 import createError from "http-errors";
-import User from "../models/schemas/User"; // ensure User exports IUserDoc
+import User from "../models/User"; // ensure User exports IUserDoc
 import { IUser } from "../types";
-import { IUserDoc } from "../models/types/UserTypes";
+import { IUserDoc } from "../models/User";
 
 interface UpdateOptions {
   new?: boolean;
@@ -10,7 +10,7 @@ interface UpdateOptions {
   context?: string;
 }
 
-// ✅ Find user
+// âœ… Find user
 export const findUser = async (id: string | undefined): Promise<IUserDoc> => {
   if (!Types.ObjectId.isValid(id || "")) {
     throw createError(400, "Invalid user ID");
@@ -23,7 +23,7 @@ export const findUser = async (id: string | undefined): Promise<IUserDoc> => {
   return user;
 };
 
-// ✅ Delete user
+// âœ… Delete user
 export const deleteUser = async (id: string): Promise<IUserDoc> => {
   if (!Types.ObjectId.isValid(id)) {
     throw createError(400, "Invalid user ID");
@@ -36,7 +36,7 @@ export const deleteUser = async (id: string): Promise<IUserDoc> => {
   return userDelete;
 };
 
-// ✅ Update user
+// âœ… Update user
 export const updateUser = async (
   id: string,
   updates: Partial<IUser>,
@@ -53,7 +53,7 @@ export const updateUser = async (
   return userUpdate;
 };
 
-// ✅ Create user
+// âœ… Create user
 export const createUser = async (
   username: string,
   email: string,
@@ -63,10 +63,11 @@ export const createUser = async (
   return user;
 };
 
-// ✅ Check existing user
+// âœ… Check existing user
 export const existingUser = async (email: string): Promise<void> => {
   const userExists = await User.findOne({ email });
   if (userExists) {
     throw createError(400, "User already exists");
   }
 };
+

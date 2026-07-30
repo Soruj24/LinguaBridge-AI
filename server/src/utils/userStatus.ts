@@ -1,7 +1,7 @@
-import { IUser } from "../types";
+﻿import { IUser } from "../types";
 import { AUTH_CONSTANTS } from "../constants";
 import createError from "http-errors";
-import User from "../models/schemas/User";
+import User from "../models/User";
 
 export const validateUserStatus = (user: IUser): void => {
   if (user.isBanned) {
@@ -53,3 +53,4 @@ export const checkAccountLockout = (user: IUser): void => {
     );
   }
 };
+

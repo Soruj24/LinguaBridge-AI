@@ -1,8 +1,8 @@
-import { Response, NextFunction } from "express";
+﻿import { Response, NextFunction } from "express";
 import { notificationService } from "../services/notificationService";
 import { successResponse } from "./responseControllers";
 import createError from "http-errors";
-import { AuthenticatedRequest } from "../middleware/auth";
+import { AuthenticatedRequest } from "../middleware";
 
 export const getNotifications = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
@@ -58,3 +58,4 @@ export const markAllAsRead = async (req: AuthenticatedRequest, res: Response, ne
     next(error);
   }
 };
+

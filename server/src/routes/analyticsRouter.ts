@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+﻿import { Router, Request, Response } from "express";
 import {
   getOverviewStats,
   getRevenueData,
@@ -8,14 +8,14 @@ import {
   getConversionData,
   exportAnalyticsData,
 } from "../controllers/analytics";
-import { isLoggedIn, isAdmin, hasPermission } from "../middleware/auth";
-import { Permission } from "../models/interfaces/IUser";
+import { isLoggedIn, isAdmin, hasPermission } from "../middleware";
+import { Permission } from "../models/User";
 import connectDB from "../config/connectDB";
-import { ChatMessage, Chat } from "../models/chat";
+import { ChatMessage, Chat } from "../models/chat/index";
 
 const analyticsRouter = Router();
 
-// ── Public compat routes (no auth) ──
+// â”€â”€ Public compat routes (no auth) â”€â”€
 analyticsRouter.get("/stats", async (req: Request, res: Response) => {
   try {
     await connectDB();
@@ -117,3 +117,5 @@ analyticsRouter.post("/export", exportAnalyticsData);
 analyticsRouter.get("/recent-activity", getRecentActivity);
 
 export default analyticsRouter;
+
+

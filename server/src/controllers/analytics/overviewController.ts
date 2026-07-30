@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+﻿import { Request, Response, NextFunction } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler";
 import Invoice from "../../models/Invoice";
-import User from "../../models/schemas/User";
+import User from "../../models/User";
 import { SupportTicket } from "../../models/SupportTicket";
 import createError from "http-errors";
 import { successResponse } from "../responseControllers";
@@ -125,3 +125,4 @@ export const getOverviewStats = asyncHandler(
     }
   }
 );
+

@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+﻿import { Router, Request, Response } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -10,7 +10,7 @@ import { processTranslationPipeline } from "../services/ai";
 import { textToSpeech, transcribeAudio } from "../services/ai";
 import { generateSmartReplies } from "../services/ai";
 import { rewriteText } from "../services/ai";
-import { extractTokenUser } from "../middleware/auth/tokenAuth";
+import { extractTokenUser } from "../middleware/tokenAuth";
 
 const router = Router();
 
@@ -37,7 +37,7 @@ function requireUser(res: Response): null {
   return null;
 }
 
-// ── List chats ──
+// â”€â”€ List chats â”€â”€
 router.get("/", async (req: Request, res: Response) => {
   await connectDB();
   const user = await resolveUser(req);
@@ -74,7 +74,7 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
-// ── Get messages for a chat ──
+// â”€â”€ Get messages for a chat â”€â”€
 router.get("/:chatId", async (req: Request, res: Response) => {
   await connectDB();
   const { chatId } = req.params;
@@ -103,7 +103,7 @@ router.get("/:chatId", async (req: Request, res: Response) => {
   res.json({ messages: messages.reverse(), chat, hasMore });
 });
 
-// ── Create chat ──
+// â”€â”€ Create chat â”€â”€
 router.post("/", async (req: Request, res: Response) => {
   await connectDB();
   const user = await resolveUser(req);
@@ -132,7 +132,7 @@ router.post("/", async (req: Request, res: Response) => {
   res.status(201).json(populated);
 });
 
-// ── Mark messages as read ──
+// â”€â”€ Mark messages as read â”€â”€
 router.post("/read", async (req: Request, res: Response) => {
   await connectDB();
   const user = await resolveUser(req);
@@ -145,7 +145,7 @@ router.post("/read", async (req: Request, res: Response) => {
   res.json({ success: true });
 });
 
-// ── Forward message ──
+// â”€â”€ Forward message â”€â”€
 router.post("/forward", async (req: Request, res: Response) => {
   await connectDB();
   const user = await resolveUser(req);
@@ -170,7 +170,7 @@ router.post("/forward", async (req: Request, res: Response) => {
   res.status(201).json(populated);
 });
 
-// ── TTS ──
+// â”€â”€ TTS â”€â”€
 router.post("/tts", async (req: Request, res: Response) => {
   try {
     const { text } = req.body;
@@ -184,7 +184,7 @@ router.post("/tts", async (req: Request, res: Response) => {
   }
 });
 
-// ── Voice message (upload + transcribe) ──
+// â”€â”€ Voice message (upload + transcribe) â”€â”€
 router.post("/voice", upload.single("file"), async (req: Request, res: Response) => {
   await connectDB();
   try {
@@ -218,7 +218,7 @@ router.post("/voice", upload.single("file"), async (req: Request, res: Response)
   }
 });
 
-// ── File message (upload) ──
+// â”€â”€ File message (upload) â”€â”€
 router.post("/file", upload.single("file"), async (req: Request, res: Response) => {
   await connectDB();
   try {
@@ -254,7 +254,7 @@ router.post("/file", upload.single("file"), async (req: Request, res: Response) 
   }
 });
 
-// ── Rewrite text ──
+// â”€â”€ Rewrite text â”€â”€
 router.post("/rewrite", async (req: Request, res: Response) => {
   try {
     const { text, tone } = req.body;
@@ -267,7 +267,7 @@ router.post("/rewrite", async (req: Request, res: Response) => {
   }
 });
 
-// ── Group chat ──
+// â”€â”€ Group chat â”€â”€
 router.post("/group", upload.single("avatar"), async (req: Request, res: Response) => {
   await connectDB();
   const user = await resolveUser(req);
@@ -288,7 +288,7 @@ router.post("/group", upload.single("avatar"), async (req: Request, res: Respons
   res.status(201).json(populated);
 });
 
-// ── Scheduled messages ──
+// â”€â”€ Scheduled messages â”€â”€
 router.get("/scheduled", async (req: Request, res: Response) => {
   await connectDB();
   const { chatId } = req.query;
@@ -321,7 +321,7 @@ router.delete("/scheduled/:messageId", async (req: Request, res: Response) => {
   res.json({ success: true });
 });
 
-// ── Search messages ──
+// â”€â”€ Search messages â”€â”€
 router.get("/search", async (req: Request, res: Response) => {
   await connectDB();
   const user = await resolveUser(req);
@@ -352,7 +352,7 @@ router.get("/search", async (req: Request, res: Response) => {
   res.json(messages);
 });
 
-// ── GIFs (Tenor) ──
+// â”€â”€ GIFs (Tenor) â”€â”€
 router.get("/gifs", async (req: Request, res: Response) => {
   const { q } = req.query;
   const apiKey = process.env.TENOR_API_KEY;
@@ -374,7 +374,7 @@ router.get("/gifs", async (req: Request, res: Response) => {
   }
 });
 
-// ── Voice translate ──
+// â”€â”€ Voice translate â”€â”€
 router.post("/voice-translate", upload.single("file"), async (req: Request, res: Response) => {
   try {
     const file = req.file;
@@ -392,7 +392,7 @@ router.post("/voice-translate", upload.single("file"), async (req: Request, res:
   }
 });
 
-// ── Edit message ──
+// â”€â”€ Edit message â”€â”€
 router.patch("/message/:messageId", async (req: Request, res: Response) => {
   await connectDB();
   const user = await resolveUser(req);
@@ -413,7 +413,7 @@ router.patch("/message/:messageId", async (req: Request, res: Response) => {
   res.json(populated);
 });
 
-// ── Delete message ──
+// â”€â”€ Delete message â”€â”€
 router.delete("/message/:messageId", async (req: Request, res: Response) => {
   await connectDB();
   const user = await resolveUser(req);
@@ -430,7 +430,7 @@ router.delete("/message/:messageId", async (req: Request, res: Response) => {
   res.json({ success: true });
 });
 
-// ── Pin/unpin ──
+// â”€â”€ Pin/unpin â”€â”€
 router.post("/message/:messageId/pin", async (req: Request, res: Response) => {
   await connectDB();
   const { action } = req.body;
@@ -442,7 +442,7 @@ router.post("/message/:messageId/pin", async (req: Request, res: Response) => {
   res.json({ success: true, isPinned: message.isPinned });
 });
 
-// ── React to message ──
+// â”€â”€ React to message â”€â”€
 router.post("/message/:messageId/react", async (req: Request, res: Response) => {
   await connectDB();
   const user = await resolveUser(req);
@@ -464,7 +464,7 @@ router.post("/message/:messageId/react", async (req: Request, res: Response) => 
   res.json({ success: true, reactions: message.reactions });
 });
 
-// ── Smart replies / suggestions ──
+// â”€â”€ Smart replies / suggestions â”€â”€
 router.post("/:chatId/suggestions", async (req: Request, res: Response) => {
   await connectDB();
   const { chatId } = req.params;
@@ -485,7 +485,7 @@ router.post("/:chatId/suggestions", async (req: Request, res: Response) => {
   res.json({ suggestions });
 });
 
-// ── Update chat settings / clear / archive ──
+// â”€â”€ Update chat settings / clear / archive â”€â”€
 router.patch("/:chatId", async (req: Request, res: Response) => {
   await connectDB();
   const { chatId } = req.params;
@@ -508,7 +508,7 @@ router.patch("/:chatId", async (req: Request, res: Response) => {
   res.json({ success: true });
 });
 
-// ── Delete chat ──
+// â”€â”€ Delete chat â”€â”€
 router.delete("/:chatId", async (req: Request, res: Response) => {
   await connectDB();
   await ChatMessage.deleteMany({ chatId: req.params.chatId });
@@ -516,7 +516,7 @@ router.delete("/:chatId", async (req: Request, res: Response) => {
   res.json({ success: true });
 });
 
-// ── Export chat ──
+// â”€â”€ Export chat â”€â”€
 router.get("/:chatId/export", async (req: Request, res: Response) => {
   await connectDB();
   const { chatId } = req.params;
@@ -541,7 +541,7 @@ router.get("/:chatId/export", async (req: Request, res: Response) => {
   }
 });
 
-// ── Archive/unarchive ──
+// â”€â”€ Archive/unarchive â”€â”€
 router.post("/:chatId/archive", async (req: Request, res: Response) => {
   await connectDB();
   const { action } = req.body;
@@ -553,3 +553,4 @@ router.post("/:chatId/archive", async (req: Request, res: Response) => {
 });
 
 export default router;
+

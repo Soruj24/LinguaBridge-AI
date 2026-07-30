@@ -6,8 +6,8 @@ import { SocialLogin } from "@/components/ui/social-login";
 import { Link } from "@/navigation";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { useLogin } from "@/hooks/use-login";
-import { LoginForm } from "@/components/login";
+import { useLogin } from "@/components/features/auth/hooks/use-login";
+import { LoginForm } from "@/components/features/auth/components";
 
 export default function LoginPage() {
   const t = useTranslations('Auth');
